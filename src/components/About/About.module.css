@@ -1,41 +1,5 @@
-.mainContainer {
-    height: 100vh;
-    overflow: hidden;
-}
-
-.banner {
-    height: 15rem;
-}
-
-.imageBanner {
-    width: 100%;
-    height: 15rem;
-    object-fit: cover;
-    object-position: center;
-}
-
-.contentContainer {
-    max-width: 1000px;
-    margin: 0 auto;
-    position: relative;
-}
-
-.turnUpLogo {
-    width: 8rem;
-    height: auto;
-    margin-top: -5rem;
-    border-radius: 50%;
-    background-color: white;
-}
-
-.backgroundContainer {
-    background-color: #1a0d0b;
-    height: calc(100vh - 14rem);
-    margin-top: -1rem;
-}
-
 .title {
-    color: white;
+    color: #ede0d4;
     font-size: 2.5rem;
     font-weight: bold;
     margin: 2rem 0;
@@ -52,7 +16,6 @@
     display: flex;
     align-items: flex-start;
     gap: 0.75rem;
-    margin-bottom: 1rem;
     color: white;
     font-size: 1.125rem;
 }
@@ -63,7 +26,7 @@
 }
 
 .nextButton {
-    margin: 3rem 2rem;
+    margin: 1rem 2rem;
     padding: 0.75rem 2rem;
     background-color: #8b4444;
     color: white;
