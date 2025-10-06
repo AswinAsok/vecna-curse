@@ -1,0 +1,35 @@
+.mainContainer {
+    height: 100vh;
+    overflow: hidden;
+}
+
+.banner {
+    height: 15rem;
+}
+
+.imageBanner {
+    width: 100%;
+    height: 15rem;
+    object-fit: cover;
+    object-position: center;
+}
+
+.contentContainer {
+    max-width: 1000px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.turnUpLogo {
+    width: 8rem;
+    height: auto;
+    margin-top: -5rem;
+    border-radius: 50%;
+    background-color: white;
+}
+
+.backgroundContainer {
+    background-color: #1a0d0b;
+    height: calc(100vh - 14rem);
+    margin-top: -1rem;
+}
