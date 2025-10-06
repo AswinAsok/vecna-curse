@@ -3,9 +3,10 @@ import { type EventData } from "../../services/eventApi";
 
 interface AboutProps {
     eventData: EventData;
+    onNext?: () => void;
 }
 
-const About = ({ eventData }: AboutProps) => {
+const About = ({ eventData, onNext }: AboutProps) => {
     const startDate = new Date(eventData.event_start_date);
     const endDate = new Date(eventData.event_end_date);
 
@@ -66,7 +67,7 @@ const About = ({ eventData }: AboutProps) => {
                 </div>
             </div>
 
-            <button className={styles.nextButton}>Next →</button>
+            <button className={styles.nextButton} onClick={onNext}>Next →</button>
         </>
     );
 };

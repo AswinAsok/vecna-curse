@@ -2,6 +2,27 @@ import axios from 'axios';
 
 const API_BASE_URL = 'https://api.makemypass.com/makemypass/public-form';
 
+export interface FormField {
+    id: string;
+    type: string;
+    title: string;
+    hidden: boolean;
+    unique: boolean | null;
+    options: Array<{
+        values: string[];
+        conditions: Record<string, unknown>;
+    }>;
+    page_num: number;
+    property: Record<string, unknown>;
+    required: boolean;
+    field_key: string;
+    conditions: Record<string, unknown>;
+    team_field: boolean;
+    description: string | null;
+    placeholder: string;
+    admin_field?: boolean;
+}
+
 export interface EventData {
     id: string;
     name: string;
@@ -47,7 +68,7 @@ export interface EventData {
     total_participants: number;
     claim_ticket_id: string | null;
     claim_code_message: string | null;
-    form: unknown[];
+    form: FormField[];
     tickets: unknown[];
     script_injection: unknown[];
     has_scratch_card: boolean;

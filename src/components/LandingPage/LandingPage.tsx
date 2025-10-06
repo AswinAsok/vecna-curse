@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import styles from "./LandingPage.module.css";
 import About from "../About/About";
+import Form from "../Form/Form";
 import { fetchEventInfo, type EventData } from "../../services/eventApi";
 
 const LandingPage = () => {
     const [eventData, setEventData] = useState<EventData | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
+    const [showForm, setShowForm] = useState(false);
 
     useEffect(() => {
         const loadEventData = async () => {
@@ -57,7 +59,11 @@ const LandingPage = () => {
                             className={styles.turnUpLogo}
                         />
 
-                        <About eventData={eventData} />
+                        {!showForm ? (
+                            <About eventData={eventData} onNext={() => setShowForm(true)} />
+                        ) : (
+                            <Form formFields={eventData.form} onBack={() => setShowForm(false)} />
+                        )}
                     </div>
                 </div>
             </div>
