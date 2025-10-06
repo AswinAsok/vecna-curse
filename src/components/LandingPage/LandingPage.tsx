@@ -62,7 +62,13 @@ const LandingPage = () => {
                         {!showForm ? (
                             <About eventData={eventData} onNext={() => setShowForm(true)} />
                         ) : (
-                            <Form formFields={eventData.form} onBack={() => setShowForm(false)} />
+                            <Form
+                                formFields={eventData.form}
+                                eventId={eventData.id}
+                                eventTitle={eventData.title}
+                                ticketId={eventData.tickets[0]?.id || ""}
+                                onBack={() => setShowForm(false)}
+                            />
                         )}
                     </div>
                 </div>

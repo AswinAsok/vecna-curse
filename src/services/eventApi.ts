@@ -69,7 +69,13 @@ export interface EventData {
     claim_ticket_id: string | null;
     claim_code_message: string | null;
     form: FormField[];
-    tickets: unknown[];
+    tickets: Array<{
+        id: string;
+        title: string;
+        description: string | null;
+        price: number;
+        default_selected?: boolean;
+    }>;
     script_injection: unknown[];
     has_scratch_card: boolean;
     paid_perks: unknown[];
@@ -117,6 +123,56 @@ export const fetchEventInfo = async (eventName: string = 'vecnas-curse'): Promis
         return response.data.response;
     } catch (error) {
         console.error('Error fetching event info:', error);
+        throw error;
+    }
+};
+
+export interface SubmitFormData {
+    [key: string]: string;
+    '__tickets[]': string;
+    '__utm': string;
+}
+
+export interface SubmitFormResponse {
+    followup_msg: string;
+    approval_status: string;
+    event_register_id: string;
+    redirection: Record<string, unknown>;
+    extra_tickets: unknown[];
+    thank_you_new_page: boolean;
+    is_online: boolean;
+    type_of_event: string;
+    has_invoice: boolean;
+}
+
+export interface SubmitApiResponse {
+    hasError: boolean;
+    statusCode: number;
+    message: Record<string, unknown>;
+    response: SubmitFormResponse;
+}
+
+export const submitForm = async (eventId: string, formData: Record<string, string>, ticketId: string): Promise<SubmitApiResponse> => {
+    try {
+        const submitData = new FormData();
+
+        // Add all form fields
+        Object.entries(formData).forEach(([key, value]) => {
+            submitData.append(key, value);
+        });
+
+        // Add tickets and utm data
+        submitData.append('__tickets[]', JSON.stringify({ ticket_id: ticketId, count: 1, my_ticket: true }));
+        submitData.append('__utm', JSON.stringify({ utm_source: null, utm_medium: null, utm_campaign: null, utm_term: null, utm_content: null }));
+
+        const response = await axios.post<SubmitApiResponse>(`${API_BASE_URL}/${eventId}/submit/`, submitData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error submitting form:', error);
         throw error;
     }
 };

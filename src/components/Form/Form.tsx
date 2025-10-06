@@ -1,19 +1,26 @@
 import { useState, useMemo } from "react";
 import Select from "react-select";
-import { type FormField } from "../../services/eventApi";
+import { type FormField, type SubmitFormResponse, submitForm } from "../../services/eventApi";
 import styles from "./Form.module.css";
 import countryCodes from "./phoneCountryCodes.json";
+import SuccessModal from "../SuccessModal/SuccessModal";
 
 interface FormProps {
     formFields: FormField[];
+    eventId: string;
+    eventTitle: string;
+    ticketId: string;
     onBack?: () => void;
 }
 
-const Form = ({ formFields, onBack }: FormProps) => {
+const Form = ({ formFields, eventId, eventTitle, ticketId, onBack }: FormProps) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [formData, setFormData] = useState<Record<string, string>>({});
     const [phoneCountryCode, setPhoneCountryCode] = useState<Record<string, string>>({});
     const [errors, setErrors] = useState<Record<string, string>>({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [submitResponse, setSubmitResponse] = useState<SubmitFormResponse | null>(null);
 
     // Group form fields by page_num
     const pageGroups = useMemo(() => {
@@ -83,13 +90,33 @@ const Form = ({ formFields, onBack }: FormProps) => {
         }
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!validateCurrentPage()) {
             return;
         }
-        console.log("Form submitted:", formData);
-        // Add your form submission logic here
+
+        setIsSubmitting(true);
+        try {
+            const response = await submitForm(eventId, formData, ticketId);
+            setSubmitResponse(response.response);
+            setShowSuccessModal(true);
+        } catch (error) {
+            console.error("Form submission failed:", error);
+            alert("Failed to submit form. Please try again.");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleModalClose = () => {
+        setShowSuccessModal(false);
+        // Clear form data
+        setFormData({});
+        setPhoneCountryCode({});
+        setErrors({});
+        // Reset to first page
+        setCurrentPage(1);
     };
 
     // Check if field conditions are met
@@ -456,8 +483,12 @@ const Form = ({ formFields, onBack }: FormProps) => {
                             Next
                         </button>
                     ) : (
-                        <button type="submit" className={styles.submitButton}>
-                            Submit
+                        <button
+                            type="submit"
+                            className={styles.submitButton}
+                            disabled={isSubmitting}
+                        >
+                            {isSubmitting ? "Submitting..." : "Submit"}
                         </button>
                     )}
                     <span className={styles.pageIndicator}>
@@ -465,6 +496,13 @@ const Form = ({ formFields, onBack }: FormProps) => {
                     </span>
                 </div>
             </form>
+            <SuccessModal
+                isOpen={showSuccessModal}
+                onClose={handleModalClose}
+                followupMsg={submitResponse?.followup_msg || ""}
+                eventRegisterId={submitResponse?.event_register_id || ""}
+                eventTitle={eventTitle}
+            />
         </div>
     );
 };
