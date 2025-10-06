@@ -1,7 +1,45 @@
+import { useState, useEffect } from "react";
 import styles from "./LandingPage.module.css";
 import About from "../About/About";
+import { fetchEventInfo, type EventData } from "../../services/eventApi";
 
 const LandingPage = () => {
+    const [eventData, setEventData] = useState<EventData | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
+
+    useEffect(() => {
+        const loadEventData = async () => {
+            try {
+                const data = await fetchEventInfo();
+                setEventData(data);
+                setLoading(false);
+            } catch (error) {
+                console.error("Failed to load event data:", error);
+                setError(true);
+                setLoading(false);
+            }
+        };
+
+        loadEventData();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className={styles.mainContainer}>
+                <div>Loading...</div>
+            </div>
+        );
+    }
+
+    if (error || !eventData) {
+        return (
+            <div className={styles.mainContainer}>
+                <div>Failed to load event data</div>
+            </div>
+        );
+    }
+
     return (
         <div className={styles.mainContainer}>
             <div className={styles.banner}>
@@ -19,7 +57,7 @@ const LandingPage = () => {
                             className={styles.turnUpLogo}
                         />
 
-                        <About />
+                        <About eventData={eventData} />
                     </div>
                 </div>
             </div>

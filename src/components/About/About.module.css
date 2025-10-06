@@ -24,6 +24,80 @@
     line-height: 1.8;
 }
 
+.eventInfo {
+    padding: 0 2rem;
+    margin: 2rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.dateSection {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.dateIcon {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 0.375rem;
+    padding: 0.375rem 0.5rem;
+    min-width: 2.75rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.month {
+    color: #ede0d4;
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+}
+
+.day {
+    color: white;
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.dateDetails {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding-top: 0.25rem;
+}
+
+.fullDate {
+    color: white;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.timeRange {
+    color: #aaa;
+    font-size: 0.875rem;
+}
+
+.locationSection {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.locationIcon {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: #ede0d4;
+    flex-shrink: 0;
+}
+
+.locationText {
+    color: white;
+    font-size: 1rem;
+}
+
 .nextButton {
     margin: 1rem 2rem;
     padding: 0.75rem 2rem;
