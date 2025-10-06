@@ -1,6 +1,8 @@
 import { useState, useMemo } from "react";
+import Select from "react-select";
 import { type FormField } from "../../services/eventApi";
 import styles from "./Form.module.css";
+import countryCodes from "./phoneCountryCodes.json";
 
 interface FormProps {
     formFields: FormField[];
@@ -10,6 +12,8 @@ interface FormProps {
 const Form = ({ formFields, onBack }: FormProps) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [formData, setFormData] = useState<Record<string, string>>({});
+    const [phoneCountryCode, setPhoneCountryCode] = useState<Record<string, string>>({});
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
     // Group form fields by page_num
     const pageGroups = useMemo(() => {
@@ -33,22 +37,57 @@ const Form = ({ formFields, onBack }: FormProps) => {
             ...prev,
             [fieldKey]: value,
         }));
+        // Clear error when user starts typing
+        if (errors[fieldKey]) {
+            setErrors((prev) => {
+                const newErrors = { ...prev };
+                delete newErrors[fieldKey];
+                return newErrors;
+            });
+        }
+    };
+
+    const validateCurrentPage = (): boolean => {
+        const fieldsToValidate = currentFields.filter((field) => checkFieldConditions(field));
+        const newErrors: Record<string, string> = {};
+        let isValid = true;
+
+        for (const field of fieldsToValidate) {
+            if (field.required) {
+                const value = formData[field.field_key];
+                if (!value || value.trim() === "") {
+                    newErrors[field.field_key] = "This field is required";
+                    isValid = false;
+                }
+            }
+        }
+
+        setErrors(newErrors);
+        return isValid;
     };
 
     const handleNext = () => {
+        if (!validateCurrentPage()) {
+            return;
+        }
         if (currentPage < totalPages) {
+            setErrors({});
             setCurrentPage((prev) => prev + 1);
         }
     };
 
     const handlePrevious = () => {
         if (currentPage > 1) {
+            setErrors({});
             setCurrentPage((prev) => prev - 1);
         }
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        if (!validateCurrentPage()) {
+            return;
+        }
         console.log("Form submitted:", formData);
         // Add your form submission logic here
     };
@@ -87,6 +126,41 @@ const Form = ({ formFields, onBack }: FormProps) => {
         }
     };
 
+    const handlePhoneChange = (fieldKey: string, phoneNumber: string) => {
+        const countryCode = phoneCountryCode[fieldKey] || "+91";
+        setFormData((prev) => ({
+            ...prev,
+            [fieldKey]: `${countryCode}${phoneNumber}`,
+        }));
+        // Clear error when user starts typing
+        if (errors[fieldKey]) {
+            setErrors((prev) => {
+                const newErrors = { ...prev };
+                delete newErrors[fieldKey];
+                return newErrors;
+            });
+        }
+    };
+
+    const handleCountryCodeChange = (fieldKey: string, code: string) => {
+        setPhoneCountryCode((prev) => ({
+            ...prev,
+            [fieldKey]: code,
+        }));
+        const phoneNumber = getPhoneNumberWithoutCode(formData[fieldKey] || "", phoneCountryCode[fieldKey] || "+91");
+        setFormData((prev) => ({
+            ...prev,
+            [fieldKey]: `${code}${phoneNumber}`,
+        }));
+    };
+
+    const getPhoneNumberWithoutCode = (fullPhone: string, currentCode: string) => {
+        if (fullPhone.startsWith(currentCode)) {
+            return fullPhone.slice(currentCode.length);
+        }
+        return fullPhone;
+    };
+
     const renderField = (field: FormField) => {
         const value = formData[field.field_key] || "";
 
@@ -94,7 +168,6 @@ const Form = ({ formFields, onBack }: FormProps) => {
             case "text":
             case "email":
             case "number":
-            case "phone":
                 return (
                     <div key={field.id} className={styles.fieldContainer}>
                         <label className={styles.label}>
@@ -105,15 +178,131 @@ const Form = ({ formFields, onBack }: FormProps) => {
                             <p className={styles.description}>{field.description}</p>
                         )}
                         <input
-                            type={field.type === "phone" ? "tel" : field.type}
+                            type={field.type}
                             value={value}
                             onChange={(e) => handleInputChange(field.field_key, e.target.value)}
                             placeholder={field.placeholder}
                             required={field.required}
                             className={styles.input}
                         />
+                        {errors[field.field_key] && (
+                            <p className={styles.error}>{errors[field.field_key]}</p>
+                        )}
                     </div>
                 );
+
+            case "phone": {
+                const currentCountryCode = phoneCountryCode[field.field_key] || "+91";
+                const phoneNumber = getPhoneNumberWithoutCode(value, currentCountryCode);
+                const countryCodeOptions = countryCodes.map((country) => ({
+                    value: country.dial_code,
+                    label: `${country.dial_code} ${country.code}`,
+                }));
+                const selectedOption = countryCodeOptions.find(
+                    (option) => option.value === currentCountryCode
+                );
+
+                return (
+                    <div key={field.id} className={styles.fieldContainer}>
+                        <label className={styles.label}>
+                            {field.title}
+                            {field.required && <span className={styles.required}>*</span>}
+                        </label>
+                        {field.description && (
+                            <p className={styles.description}>{field.description}</p>
+                        )}
+                        <div className={styles.phoneInputContainer}>
+                            <Select
+                                value={selectedOption}
+                                onChange={(option) =>
+                                    option && handleCountryCodeChange(field.field_key, option.value)
+                                }
+                                options={countryCodeOptions}
+                                className={styles.countryCodeSelect}
+                                classNamePrefix="select"
+                                styles={{
+                                    control: (base, state) => ({
+                                        ...base,
+                                        backgroundColor: "rgba(255, 255, 255, 0.05)",
+                                        borderColor: state.isFocused
+                                            ? "#ede0d4"
+                                            : "rgba(255, 255, 255, 0.2)",
+                                        borderRadius: "0.375rem",
+                                        padding: "0.125rem",
+                                        color: "white",
+                                        minWidth: "140px",
+                                        fontSize: "1rem",
+                                        boxShadow: "none",
+                                        "&:hover": {
+                                            borderColor: state.isFocused
+                                                ? "#ede0d4"
+                                                : "rgba(255, 255, 255, 0.2)",
+                                        },
+                                    }),
+                                    valueContainer: (base) => ({
+                                        ...base,
+                                        padding: "0.125rem 0.5rem",
+                                    }),
+                                    singleValue: (base) => ({
+                                        ...base,
+                                        color: "white",
+                                    }),
+                                    input: (base) => ({
+                                        ...base,
+                                        color: "white",
+                                    }),
+                                    indicatorSeparator: () => ({
+                                        display: "none",
+                                    }),
+                                    dropdownIndicator: (base) => ({
+                                        ...base,
+                                        color: "rgba(255, 255, 255, 0.5)",
+                                        "&:hover": {
+                                            color: "rgba(255, 255, 255, 0.7)",
+                                        },
+                                    }),
+                                    menu: (base) => ({
+                                        ...base,
+                                        backgroundColor: "#1a1a1a",
+                                        border: "1px solid rgba(255, 255, 255, 0.2)",
+                                        borderRadius: "0.375rem",
+                                    }),
+                                    menuList: (base) => ({
+                                        ...base,
+                                        padding: "0.25rem",
+                                    }),
+                                    option: (base, state) => ({
+                                        ...base,
+                                        backgroundColor: state.isFocused
+                                            ? "rgba(139, 68, 68, 0.3)"
+                                            : state.isSelected
+                                            ? "rgba(139, 68, 68, 0.5)"
+                                            : "transparent",
+                                        color: "white",
+                                        padding: "0.5rem 0.75rem",
+                                        borderRadius: "0.25rem",
+                                        cursor: "pointer",
+                                        "&:active": {
+                                            backgroundColor: "rgba(139, 68, 68, 0.5)",
+                                        },
+                                    }),
+                                }}
+                            />
+                            <input
+                                type="tel"
+                                value={phoneNumber}
+                                onChange={(e) => handlePhoneChange(field.field_key, e.target.value)}
+                                placeholder={field.placeholder}
+                                required={field.required}
+                                className={styles.phoneInput}
+                            />
+                        </div>
+                        {errors[field.field_key] && (
+                            <p className={styles.error}>{errors[field.field_key]}</p>
+                        )}
+                    </div>
+                );
+            }
 
             case "radio":
                 return (
@@ -143,6 +332,9 @@ const Form = ({ formFields, onBack }: FormProps) => {
                                 </label>
                             ))}
                         </div>
+                        {errors[field.field_key] && (
+                            <p className={styles.error}>{errors[field.field_key]}</p>
+                        )}
                     </div>
                 );
 
@@ -167,6 +359,9 @@ const Form = ({ formFields, onBack }: FormProps) => {
                         {field.description && (
                             <p className={styles.description}>{field.description}</p>
                         )}
+                        {errors[field.field_key] && (
+                            <p className={styles.error}>{errors[field.field_key]}</p>
+                        )}
                     </div>
                 );
 
@@ -187,6 +382,9 @@ const Form = ({ formFields, onBack }: FormProps) => {
                             required={field.required}
                             className={styles.textarea}
                         />
+                        {errors[field.field_key] && (
+                            <p className={styles.error}>{errors[field.field_key]}</p>
+                        )}
                     </div>
                 );
 
@@ -214,6 +412,9 @@ const Form = ({ formFields, onBack }: FormProps) => {
                                 </option>
                             ))}
                         </select>
+                        {errors[field.field_key] && (
+                            <p className={styles.error}>{errors[field.field_key]}</p>
+                        )}
                     </div>
                 );
 
@@ -226,13 +427,23 @@ const Form = ({ formFields, onBack }: FormProps) => {
         return null;
     }
 
+    const handleBack = () => {
+        setErrors({});
+        if (currentPage > 1) {
+            handlePrevious();
+        } else if (onBack) {
+            onBack();
+        }
+    };
+
     return (
         <div className={styles.formContainer}>
+            {(currentPage > 1 || onBack) && (
+                <p className={styles.backLink} onClick={handleBack}>
+                    ← Back
+                </p>
+            )}
             <form onSubmit={handleSubmit} className={styles.form}>
-                <div className={styles.pageIndicator}>
-                    Page {currentPage} of {totalPages}
-                </div>
-
                 <div className={styles.fieldsContainer}>
                     {currentFields
                         .filter((field) => checkFieldConditions(field))
@@ -240,24 +451,6 @@ const Form = ({ formFields, onBack }: FormProps) => {
                 </div>
 
                 <div className={styles.navigationButtons}>
-                    {currentPage > 1 ? (
-                        <button
-                            type="button"
-                            onClick={handlePrevious}
-                            className={styles.previousButton}
-                        >
-                            Previous
-                        </button>
-                    ) : onBack ? (
-                        <button
-                            type="button"
-                            onClick={onBack}
-                            className={styles.backButton}
-                        >
-                            ← Back to About
-                        </button>
-                    ) : null}
-
                     {currentPage < totalPages ? (
                         <button type="button" onClick={handleNext} className={styles.nextButton}>
                             Next
@@ -267,6 +460,9 @@ const Form = ({ formFields, onBack }: FormProps) => {
                             Submit
                         </button>
                     )}
+                    <span className={styles.pageIndicator}>
+                        Page {currentPage} of {totalPages}
+                    </span>
                 </div>
             </form>
         </div>
