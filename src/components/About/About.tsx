@@ -1,35 +1,42 @@
+import { useState, useEffect } from "react";
 import styles from "./About.module.css";
+import { fetchEventInfo, type EventData } from "../../services/eventApi";
 
 const About = () => {
+    const [eventData, setEventData] = useState<EventData | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const loadEventData = async () => {
+            try {
+                const data = await fetchEventInfo();
+                setEventData(data);
+                setLoading(false);
+            } catch (error) {
+                console.error("Failed to load event data:", error);
+                setLoading(false);
+            }
+        };
+
+        loadEventData();
+    }, []);
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    if (!eventData) {
+        return <div>Failed to load event data</div>;
+    }
+
     return (
         <>
-            <h1 className={styles.title}>
-                Vecna's Curse – Stranger Things
-                <br /> Halloween Night
-            </h1>
+            <h1 className={styles.title}>{eventData.title}</h1>
 
-            <div className={styles.infoList}>
-                <div className={styles.infoItem}>
-                    <span className={styles.emoji}>📍</span>
-                    <span>Kochi</span>
-                </div>
-                <div className={styles.infoItem}>
-                    <span className={styles.emoji}>🎲</span>
-                    <span>Invite Only. No entry without the mark.</span>
-                </div>
-                <div className={styles.infoItem}>
-                    <span className={styles.emoji}>🧠</span>
-                    <span>21+ ID Mandatory. Only the strong survive.</span>
-                </div>
-                <div className={styles.infoItem}>
-                    <span className={styles.emoji}>🍷</span>
-                    <span>21+ ID Mandatory (No alcohol will be served.)</span>
-                </div>
-                <div className={styles.infoItem}>
-                    <span className={styles.emoji}>🩸</span>
-                    <span>23+ ID Mandatory</span>
-                </div>
-            </div>
+            <div
+                className={styles.description}
+                dangerouslySetInnerHTML={{ __html: eventData.description }}
+            />
 
             <button className={styles.nextButton}>Next →</button>
         </>
