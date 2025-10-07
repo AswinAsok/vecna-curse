@@ -3,9 +3,10 @@ import Select from "react-select";
 import { type FormField, type SubmitFormResponse, submitForm } from "../../services/eventApi";
 import styles from "./Form.module.css";
 import countryCodes from "./phoneCountryCodes.json";
-import SuccessModal from "../SuccessModal/SuccessModal";
+import SuccessPage from "../SuccessPage/SuccessPage";
 import { useEventDataContext } from "../../contexts/eventDataContext";
 import { checkFieldConditions, getPhoneNumberWithoutCode } from "./function";
+import toast from "react-hot-toast";
 
 interface FormProps {
     onBack?: () => void;
@@ -19,7 +20,7 @@ const Form = ({ onBack }: FormProps) => {
     const [phoneCountryCode, setPhoneCountryCode] = useState<Record<string, string>>({});
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [isFormSubmitted, setIsFormSubmitted] = useState(false);
     const [submitResponse, setSubmitResponse] = useState<SubmitFormResponse | null>(null);
     const justNavigatedRef = useRef(false);
 
@@ -129,23 +130,29 @@ const Form = ({ onBack }: FormProps) => {
         try {
             const response = await submitForm(eventData.id, formData, eventData.tickets[0].id);
             setSubmitResponse(response.response);
-            setShowSuccessModal(true);
-        } catch (error) {
-            console.error("Form submission failed:", error);
-            alert("Failed to submit form. Please try again.");
+            setIsFormSubmitted(true);
+        } catch (error: unknown) {
+            // Handle field-specific validation errors from axios error response
+            const axiosError = error as {
+                response?: { data?: { message?: Record<string, string[]> } };
+            };
+            const errorMessage = axiosError?.response?.data?.message;
+
+            if (errorMessage && typeof errorMessage === "object") {
+                const fieldErrors: Record<string, string> = {};
+                Object.keys(errorMessage).forEach((fieldKey) => {
+                    const errorMessages = errorMessage[fieldKey];
+                    if (Array.isArray(errorMessages) && errorMessages.length > 0) {
+                        fieldErrors[fieldKey] = errorMessages[0];
+                    }
+                });
+                setErrors(fieldErrors);
+            } else {
+                toast.error("Failed to submit the form. Please try again.");
+            }
         } finally {
             setIsSubmitting(false);
         }
-    };
-
-    const handleModalClose = () => {
-        setShowSuccessModal(false);
-        // Clear form data
-        setFormData({});
-        setPhoneCountryCode({});
-        setErrors({});
-        // Reset to first page
-        setCurrentPage(1);
     };
 
     const handlePhoneChange = (fieldKey: string, phoneNumber: string) => {
@@ -458,6 +465,11 @@ const Form = ({ onBack }: FormProps) => {
         }
     };
 
+    // Show success page after form submission
+    if (isFormSubmitted && submitResponse) {
+        return <SuccessPage />;
+    }
+
     return (
         <div className={styles.formContainer}>
             {(currentPage > 1 || onBack) && (
@@ -491,11 +503,6 @@ const Form = ({ onBack }: FormProps) => {
                     </span>
                 </div>
             </form>
-            <SuccessModal
-                isOpen={showSuccessModal}
-                onClose={handleModalClose}
-                followupMsg={submitResponse?.followup_msg || ""}
-            />
         </div>
     );
 };
