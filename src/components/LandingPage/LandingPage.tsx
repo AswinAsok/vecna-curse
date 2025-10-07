@@ -24,7 +24,7 @@ const LandingPage = () => {
         return <Loading color="white" />;
     }
 
-    if (!error || !eventData) {
+    if (error || !eventData) {
         return (
             <Error
                 message="Failed to load event data. Please try again."
