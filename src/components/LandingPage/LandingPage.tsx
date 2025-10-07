@@ -4,9 +4,10 @@ import About from "../About/About";
 import Form from "../Form/Form";
 import { fetchEventInfo } from "../../services/eventApi";
 import { useQuery } from "@tanstack/react-query";
-import Loading from "../Loading";
-import Error from "../Error";
+
 import { EventDataContext } from "../../contexts/eventDataContext";
+import Error from "../ui/Error/Error";
+import Loading from "../ui/Loading/Loading";
 
 const LandingPage = () => {
     const [showForm, setShowForm] = useState(false);

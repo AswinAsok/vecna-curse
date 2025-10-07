@@ -1,4 +1,4 @@
-import styles from "../App.module.css";
+import styles from "./Error.module.css";
 
 interface ErrorProps {
     message?: string;

@@ -5,6 +5,7 @@ import styles from "./Form.module.css";
 import countryCodes from "./phoneCountryCodes.json";
 import SuccessModal from "../SuccessModal/SuccessModal";
 import { useEventDataContext } from "../../contexts/eventDataContext";
+import { checkFieldConditions, getPhoneNumberWithoutCode } from "./function";
 
 interface FormProps {
     onBack?: () => void;
@@ -54,7 +55,9 @@ const Form = ({ onBack }: FormProps) => {
     };
 
     const validateCurrentPage = (): boolean => {
-        const fieldsToValidate = currentFields.filter((field) => checkFieldConditions(field));
+        const fieldsToValidate = currentFields.filter((field) =>
+            checkFieldConditions(field, formData, eventData.form)
+        );
         const newErrors: Record<string, string> = {};
         let isValid = true;
 
@@ -118,43 +121,6 @@ const Form = ({ onBack }: FormProps) => {
         setCurrentPage(1);
     };
 
-    // Check if field conditions are met
-    const checkFieldConditions = (field: FormField): boolean => {
-        if (!field.conditions || Object.keys(field.conditions).length === 0) {
-            return true;
-        }
-
-        const {
-            field: fieldId,
-            value: conditionValue,
-            operator,
-        } = field.conditions as {
-            field?: string;
-            value?: string;
-            operator?: string;
-        };
-
-        if (!fieldId || !conditionValue) {
-            return true;
-        }
-
-        // Find the referenced field to get its field_key
-        const referencedField = eventData.form.find((f) => f.id === fieldId);
-        if (!referencedField) {
-            return true;
-        }
-
-        const currentValue = formData[referencedField.field_key];
-
-        switch (operator) {
-            case "=":
-                return currentValue === conditionValue;
-            case "!=":
-                return currentValue !== conditionValue;
-            default:
-                return true;
-        }
-    };
 
     const handlePhoneChange = (fieldKey: string, phoneNumber: string) => {
         const countryCode = phoneCountryCode[fieldKey] || "+91";
@@ -185,13 +151,6 @@ const Form = ({ onBack }: FormProps) => {
             ...prev,
             [fieldKey]: `${code}${phoneNumber}`,
         }));
-    };
-
-    const getPhoneNumberWithoutCode = (fullPhone: string, currentCode: string) => {
-        if (fullPhone.startsWith(currentCode)) {
-            return fullPhone.slice(currentCode.length);
-        }
-        return fullPhone;
     };
 
     const renderField = (field: FormField) => {
@@ -479,7 +438,7 @@ const Form = ({ onBack }: FormProps) => {
             <form onSubmit={handleSubmit} className={styles.form}>
                 <div className={styles.fieldsContainer}>
                     {currentFields
-                        .filter((field) => checkFieldConditions(field))
+                        .filter((field) => checkFieldConditions(field, formData, eventData.form))
                         .map((field) => renderField(field))}
                 </div>
 

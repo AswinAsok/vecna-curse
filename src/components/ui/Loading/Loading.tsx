@@ -1,5 +1,5 @@
 import { HashLoader } from "react-spinners";
-import styles from "../App.module.css";
+import styles from "./Loading.module.css";
 
 interface LoadingProps {
     size?: number;
