@@ -1,15 +1,16 @@
 import styles from "./About.module.css";
-import { type EventData } from "../../services/eventApi";
 import { Button } from "../ui/Button/Button";
 import { DateComponent } from "../ui/DateComponent/DateComponent";
 import LocationComponent from "../ui/LocationComponent/LocationComponent";
+import { useEventDataContext } from "../../contexts/eventDataContext";
 
 interface AboutProps {
-    eventData: EventData;
     onNext: () => void;
 }
 
-const About = ({ eventData, onNext }: AboutProps) => {
+const About = ({ onNext }: AboutProps) => {
+    const eventData = useEventDataContext();
+
     return (
         <>
             <h1 className={styles.title}>{eventData.title}</h1>

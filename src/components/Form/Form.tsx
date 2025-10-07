@@ -4,16 +4,15 @@ import { type FormField, type SubmitFormResponse, submitForm } from "../../servi
 import styles from "./Form.module.css";
 import countryCodes from "./phoneCountryCodes.json";
 import SuccessModal from "../SuccessModal/SuccessModal";
+import { useEventDataContext } from "../../contexts/eventDataContext";
 
 interface FormProps {
-    formFields: FormField[];
-    eventId: string;
-    eventTitle: string;
-    ticketId: string;
     onBack?: () => void;
 }
 
-const Form = ({ formFields, eventId, eventTitle, ticketId, onBack }: FormProps) => {
+const Form = ({ onBack }: FormProps) => {
+    const eventData = useEventDataContext();
+
     const [currentPage, setCurrentPage] = useState(1);
     const [formData, setFormData] = useState<Record<string, string>>({});
     const [phoneCountryCode, setPhoneCountryCode] = useState<Record<string, string>>({});
@@ -25,7 +24,7 @@ const Form = ({ formFields, eventId, eventTitle, ticketId, onBack }: FormProps) 
     // Group form fields by page_num
     const pageGroups = useMemo(() => {
         const groups: Record<number, FormField[]> = {};
-        formFields.forEach((field) => {
+        eventData.form.forEach((field) => {
             if (!field.hidden) {
                 if (!groups[field.page_num]) {
                     groups[field.page_num] = [];
@@ -34,7 +33,7 @@ const Form = ({ formFields, eventId, eventTitle, ticketId, onBack }: FormProps) 
             }
         });
         return groups;
-    }, [formFields]);
+    }, [eventData.form]);
 
     const totalPages = Object.keys(pageGroups).length;
     const currentFields = pageGroups[currentPage] || [];
@@ -98,7 +97,7 @@ const Form = ({ formFields, eventId, eventTitle, ticketId, onBack }: FormProps) 
 
         setIsSubmitting(true);
         try {
-            const response = await submitForm(eventId, formData, ticketId);
+            const response = await submitForm(eventData.id, formData, eventData.tickets[0].id);
             setSubmitResponse(response.response);
             setShowSuccessModal(true);
         } catch (error) {
@@ -125,7 +124,11 @@ const Form = ({ formFields, eventId, eventTitle, ticketId, onBack }: FormProps) 
             return true;
         }
 
-        const { field: fieldId, value: conditionValue, operator } = field.conditions as {
+        const {
+            field: fieldId,
+            value: conditionValue,
+            operator,
+        } = field.conditions as {
             field?: string;
             value?: string;
             operator?: string;
@@ -136,7 +139,7 @@ const Form = ({ formFields, eventId, eventTitle, ticketId, onBack }: FormProps) 
         }
 
         // Find the referenced field to get its field_key
-        const referencedField = formFields.find((f) => f.id === fieldId);
+        const referencedField = eventData.form.find((f) => f.id === fieldId);
         if (!referencedField) {
             return true;
         }
@@ -174,7 +177,10 @@ const Form = ({ formFields, eventId, eventTitle, ticketId, onBack }: FormProps) 
             ...prev,
             [fieldKey]: code,
         }));
-        const phoneNumber = getPhoneNumberWithoutCode(formData[fieldKey] || "", phoneCountryCode[fieldKey] || "+91");
+        const phoneNumber = getPhoneNumberWithoutCode(
+            formData[fieldKey] || "",
+            phoneCountryCode[fieldKey] || "+91"
+        );
         setFormData((prev) => ({
             ...prev,
             [fieldKey]: `${code}${phoneNumber}`,
@@ -450,7 +456,7 @@ const Form = ({ formFields, eventId, eventTitle, ticketId, onBack }: FormProps) 
         }
     };
 
-    if (formFields.length === 0) {
+    if (eventData.form.length === 0) {
         return null;
     }
 
@@ -501,7 +507,7 @@ const Form = ({ formFields, eventId, eventTitle, ticketId, onBack }: FormProps) 
                 onClose={handleModalClose}
                 followupMsg={submitResponse?.followup_msg || ""}
                 eventRegisterId={submitResponse?.event_register_id || ""}
-                eventTitle={eventTitle}
+                eventTitle={eventData.title}
             />
         </div>
     );
