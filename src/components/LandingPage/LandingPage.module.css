@@ -18,6 +18,7 @@
     margin: 0 auto;
     position: relative;
     min-height: calc(100vh - 14rem);
+    color: black;
 }
 
 .turnUpLogo {
