@@ -4,16 +4,10 @@ interface SuccessModalProps {
     isOpen: boolean;
     onClose: () => void;
     followupMsg: string;
-    eventRegisterId: string;
-    eventTitle: string;
 }
 
-const SuccessModal = ({ isOpen, onClose, followupMsg, eventRegisterId, eventTitle }: SuccessModalProps) => {
+const SuccessModal = ({ isOpen, onClose, followupMsg }: SuccessModalProps) => {
     if (!isOpen) return null;
-
-    const handleViewTicket = () => {
-        window.open(`https://app.makemypass.com/${eventTitle}/view-ticket/${eventRegisterId}`, '_blank');
-    };
 
     return (
         <div className={styles.modalOverlay} onClick={onClose}>
@@ -27,9 +21,6 @@ const SuccessModal = ({ isOpen, onClose, followupMsg, eventRegisterId, eventTitl
                     />
                 )}
                 <div className={styles.buttonContainer}>
-                    <button onClick={handleViewTicket} className={styles.viewTicketButton}>
-                        View Ticket
-                    </button>
                     <button onClick={onClose} className={styles.closeButton}>
                         Close
                     </button>

@@ -27,10 +27,12 @@
     margin-top: -5rem;
     border-radius: 50%;
     background-color: white;
+
+    margin: 0 1rem;
 }
 
 .backgroundContainer {
-    background-color: #1a0d0b;
+    background-color: #000;
     height: calc(100vh - 14rem);
     margin-top: -1rem;
 }

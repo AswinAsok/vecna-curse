@@ -201,8 +201,4 @@
     .formContainer {
         padding: 0 1rem;
     }
-
-    .navigationButtons {
-        flex-direction: column;
-    }
 }

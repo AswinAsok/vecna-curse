@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import Select from "react-select";
 import { type FormField, type SubmitFormResponse, submitForm } from "../../services/eventApi";
 import styles from "./Form.module.css";
@@ -21,6 +21,7 @@ const Form = ({ onBack }: FormProps) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [submitResponse, setSubmitResponse] = useState<SubmitFormResponse | null>(null);
+    const justNavigatedRef = useRef(false);
 
     // Group form fields by page_num
     const pageGroups = useMemo(() => {
@@ -38,6 +39,16 @@ const Form = ({ onBack }: FormProps) => {
 
     const totalPages = Object.keys(pageGroups).length;
     const currentFields = pageGroups[currentPage] || [];
+
+    // Reset navigation flag after page change
+    useEffect(() => {
+        if (justNavigatedRef.current) {
+            const timer = setTimeout(() => {
+                justNavigatedRef.current = false;
+            }, 100);
+            return () => clearTimeout(timer);
+        }
+    }, [currentPage]);
 
     const handleInputChange = (fieldKey: string, value: string) => {
         setFormData((prev) => ({
@@ -62,10 +73,18 @@ const Form = ({ onBack }: FormProps) => {
         let isValid = true;
 
         for (const field of fieldsToValidate) {
-            if (field.required) {
-                const value = formData[field.field_key];
-                if (!value || value.trim() === "") {
-                    newErrors[field.field_key] = "This field is required";
+            const value = formData[field.field_key];
+
+            if (field.required && (!value || value.trim() === "")) {
+                newErrors[field.field_key] = "This field is required";
+                isValid = false;
+            } else if (field.type === "url" && value && value.trim() !== "") {
+                // Validate URL format
+                try {
+                    new URL(value);
+                } catch {
+                    newErrors[field.field_key] =
+                        "Please enter a valid URL (e.g., https://example.com)";
                     isValid = false;
                 }
             }
@@ -81,6 +100,7 @@ const Form = ({ onBack }: FormProps) => {
         }
         if (currentPage < totalPages) {
             setErrors({});
+            justNavigatedRef.current = true;
             setCurrentPage((prev) => prev + 1);
         }
     };
@@ -88,12 +108,19 @@ const Form = ({ onBack }: FormProps) => {
     const handlePrevious = () => {
         if (currentPage > 1) {
             setErrors({});
+            justNavigatedRef.current = true;
             setCurrentPage((prev) => prev - 1);
         }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        // Prevent auto-submit immediately after page navigation
+        if (justNavigatedRef.current) {
+            return;
+        }
+
         if (!validateCurrentPage()) {
             return;
         }
@@ -120,7 +147,6 @@ const Form = ({ onBack }: FormProps) => {
         // Reset to first page
         setCurrentPage(1);
     };
-
 
     const handlePhoneChange = (fieldKey: string, phoneNumber: string) => {
         const countryCode = phoneCountryCode[fieldKey] || "+91";
@@ -160,6 +186,7 @@ const Form = ({ onBack }: FormProps) => {
             case "text":
             case "email":
             case "number":
+            case "url":
                 return (
                     <div key={field.id} className={styles.fieldContainer}>
                         <label className={styles.label}>
@@ -170,10 +197,13 @@ const Form = ({ onBack }: FormProps) => {
                             <p className={styles.description}>{field.description}</p>
                         )}
                         <input
-                            type={field.type}
+                            type={field.type === "url" ? "text" : field.type}
                             value={value}
                             onChange={(e) => handleInputChange(field.field_key, e.target.value)}
-                            placeholder={field.placeholder}
+                            placeholder={
+                                field.placeholder ||
+                                (field.type === "url" ? "https://example.com" : "")
+                            }
                             required={field.required}
                             className={styles.input}
                         />
@@ -465,8 +495,6 @@ const Form = ({ onBack }: FormProps) => {
                 isOpen={showSuccessModal}
                 onClose={handleModalClose}
                 followupMsg={submitResponse?.followup_msg || ""}
-                eventRegisterId={submitResponse?.event_register_id || ""}
-                eventTitle={eventData.title}
             />
         </div>
     );
