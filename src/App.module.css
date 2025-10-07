@@ -34,6 +34,15 @@
     margin-top: -1rem;
 }
 
+.loadingBackgroundContainer {
+    background-color: #1a0d0b;
+    height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .title {
     color: white;
     font-size: 2.5rem;
@@ -77,4 +86,38 @@
 
 .nextButton:hover {
     background-color: #a05555;
+}
+
+.errorContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.errorIcon {
+    color: #ef4444;
+    font-size: 3.75rem;
+}
+
+.errorMessage {
+    color: white;
+    font-size: 1.125rem;
+    text-align: center;
+    max-width: 28rem;
+}
+
+.retryButton {
+    padding: 0.5rem 1.5rem;
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.retryButton:hover {
+    background-color: #1d4ed8;
 }

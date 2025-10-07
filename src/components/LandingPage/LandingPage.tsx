@@ -1,44 +1,35 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import styles from "./LandingPage.module.css";
 import About from "../About/About";
 import Form from "../Form/Form";
-import { fetchEventInfo, type EventData } from "../../services/eventApi";
+import { fetchEventInfo } from "../../services/eventApi";
+import { useQuery } from "@tanstack/react-query";
+import Loading from "../Loading";
+import Error from "../Error";
 
 const LandingPage = () => {
-    const [eventData, setEventData] = useState<EventData | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
     const [showForm, setShowForm] = useState(false);
 
-    useEffect(() => {
-        const loadEventData = async () => {
-            try {
-                const data = await fetchEventInfo();
-                setEventData(data);
-                setLoading(false);
-            } catch (error) {
-                console.error("Failed to load event data:", error);
-                setError(true);
-                setLoading(false);
-            }
-        };
-
-        loadEventData();
-    }, []);
+    const {
+        data: eventData,
+        error,
+        isLoading: loading,
+        refetch,
+    } = useQuery({
+        queryKey: ["eventData"],
+        queryFn: () => fetchEventInfo(),
+    });
 
     if (loading) {
-        return (
-            <div className={styles.mainContainer}>
-                <div>Loading...</div>
-            </div>
-        );
+        return <Loading color="white" />;
     }
 
-    if (error || !eventData) {
+    if (!error || !eventData) {
         return (
-            <div className={styles.mainContainer}>
-                <div>Failed to load event data</div>
-            </div>
+            <Error
+                message="Failed to load event data. Please try again."
+                onRetry={() => refetch()}
+            />
         );
     }
 
