@@ -7,3 +7,27 @@
 body {
     font-family: 'Outfit', sans-serif;
 }
+
+/* Thin scrollbar for all elements */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #8b4444 #1a0d0b;
+}
+
+*::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+}
+
+*::-webkit-scrollbar-track {
+    background: #1a0d0b;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: #8b4444;
+    border-radius: 2px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background: #a05555;
+}
