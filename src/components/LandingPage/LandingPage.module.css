@@ -34,3 +34,45 @@
     background-color: #000;
     margin-top: -1rem;
 }
+
+/* Tablet responsive styles */
+@media (max-width: 768px) {
+    .banner {
+        height: 12rem;
+    }
+
+    .imageBanner {
+        height: 12rem;
+    }
+
+    .turnUpLogo {
+        width: 6rem;
+        margin-top: -3.5rem;
+    }
+
+    .contentContainer {
+        min-height: calc(100vh - 11rem);
+    }
+}
+
+/* Mobile responsive styles */
+@media (max-width: 640px) {
+    .banner {
+        height: 10rem;
+    }
+
+    .imageBanner {
+        height: 10rem;
+    }
+
+    .turnUpLogo {
+        width: 5rem;
+        margin-top: -2.5rem;
+        margin: -2.5rem 1rem 0 1rem;
+    }
+
+    .contentContainer {
+        min-height: calc(100vh - 9rem);
+        padding: 0;
+    }
+}

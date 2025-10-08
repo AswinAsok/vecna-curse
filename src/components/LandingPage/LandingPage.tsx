@@ -2,6 +2,7 @@ import { useState } from "react";
 import styles from "./LandingPage.module.css";
 import About from "../About/About";
 import Form from "../Form/Form";
+import Footer from "../Footer/Footer";
 import { fetchEventInfo } from "../../services/eventApi";
 import { useQuery } from "@tanstack/react-query";
 
@@ -59,6 +60,7 @@ const LandingPage = () => {
                                 <Form onBack={() => setShowForm(false)} />
                             )}
                         </div>
+                        <Footer />
                     </div>
                 </div>
             </div>

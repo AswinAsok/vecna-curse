@@ -49,3 +49,68 @@
     font-size: 1rem;
     line-height: 1.8;
 }
+
+/* Tablet responsive styles */
+@media (max-width: 768px) {
+    .container {
+        padding: 1.5rem;
+    }
+
+    .content h1,
+    .content h2 {
+        font-size: 1.75rem;
+        margin-bottom: 1.25rem;
+        margin-top: 1.5rem;
+    }
+
+    .content p {
+        font-size: 1rem;
+    }
+
+    .heading {
+        font-size: 1.75rem;
+        margin: 1.5rem 0;
+    }
+
+    .paragraph {
+        font-size: 0.9375rem;
+    }
+}
+
+/* Mobile responsive styles */
+@media (max-width: 640px) {
+    .container {
+        padding: 1.5rem 1rem;
+    }
+
+    .content h1,
+    .content h2 {
+        font-size: 1.625rem;
+        margin-bottom: 1rem;
+        margin-top: 1.5rem;
+    }
+
+    .content p {
+        font-size: 1rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .content hr {
+        margin: 1.5rem 0;
+    }
+
+    .heading {
+        font-size: 1.625rem;
+        margin: 1.5rem 0 1rem 0;
+    }
+
+    .heading:first-child {
+        margin-top: 0;
+    }
+
+    .paragraph {
+        font-size: 1rem;
+        line-height: 1.7;
+        margin-bottom: 0.875rem;
+    }
+}

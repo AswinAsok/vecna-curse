@@ -197,8 +197,128 @@
     background-color: #a05555;
 }
 
+/* Tablet responsive styles */
+@media (max-width: 768px) {
+    .formContainer {
+        padding: 0 1.5rem;
+    }
+
+    .backLink {
+        margin: 1.5rem 0 1rem 0;
+    }
+
+    .label {
+        font-size: 0.9375rem;
+    }
+
+    .description {
+        font-size: 0.8125rem;
+    }
+
+    .input,
+    .textarea,
+    .select,
+    .phoneInput {
+        font-size: 0.9375rem;
+        padding: 0.625rem;
+    }
+
+    .navigationButtons {
+        margin-top: 1.5rem;
+    }
+
+    .nextButton,
+    .submitButton {
+        padding: 0.625rem 1.5rem;
+        font-size: 1rem;
+    }
+
+    .phoneInputContainer {
+        flex-direction: row;
+        gap: 0.5rem;
+    }
+
+    .countryCodeSelect {
+        min-width: 120px;
+    }
+}
+
+/* Mobile responsive styles */
 @media (max-width: 640px) {
     .formContainer {
         padding: 0 1rem;
+    }
+
+    .backLink {
+        font-size: 0.9375rem;
+        margin: 1rem 0 1rem 0;
+    }
+
+    .label {
+        font-size: 1rem;
+    }
+
+    .description {
+        font-size: 0.875rem;
+    }
+
+    .error {
+        font-size: 0.875rem;
+    }
+
+    .input,
+    .textarea,
+    .select,
+    .phoneInput {
+        font-size: 1rem;
+        padding: 0.75rem;
+    }
+
+    .textarea {
+        min-height: 100px;
+    }
+
+    .radioLabel {
+        padding: 0.875rem;
+        font-size: 1rem;
+    }
+
+    .radio,
+    .checkbox {
+        width: 1.25rem;
+        height: 1.25rem;
+    }
+
+    .navigationButtons {
+        flex-direction: column-reverse;
+        align-items: stretch;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .nextButton,
+    .submitButton {
+        width: 100%;
+        padding: 0.875rem 1.5rem;
+        font-size: 1.125rem;
+    }
+
+    .pageIndicator {
+        text-align: center;
+        font-size: 0.9375rem;
+    }
+
+    .phoneInputContainer {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .countryCodeSelect {
+        width: 100%;
+        min-width: unset;
+    }
+
+    .phoneInput {
+        width: 100%;
     }
 }

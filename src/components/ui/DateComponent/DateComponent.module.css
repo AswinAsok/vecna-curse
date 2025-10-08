@@ -45,3 +45,59 @@
     color: #aaa;
     font-size: 0.875rem;
 }
+
+/* Tablet responsive styles */
+@media (max-width: 768px) {
+    .dateSection {
+        gap: 0.875rem;
+    }
+
+    .dateIcon {
+        min-width: 2.5rem;
+        padding: 0.375rem 0.375rem;
+    }
+
+    .month {
+        font-size: 0.5625rem;
+    }
+
+    .day {
+        font-size: 1.125rem;
+    }
+
+    .fullDate {
+        font-size: 0.9375rem;
+    }
+
+    .timeRange {
+        font-size: 0.8125rem;
+    }
+}
+
+/* Mobile responsive styles */
+@media (max-width: 640px) {
+    .dateSection {
+        gap: 0.875rem;
+    }
+
+    .dateIcon {
+        min-width: 2.5rem;
+        padding: 0.375rem 0.5rem;
+    }
+
+    .month {
+        font-size: 0.625rem;
+    }
+
+    .day {
+        font-size: 1.125rem;
+    }
+
+    .fullDate {
+        font-size: 1rem;
+    }
+
+    .timeRange {
+        font-size: 0.875rem;
+    }
+}

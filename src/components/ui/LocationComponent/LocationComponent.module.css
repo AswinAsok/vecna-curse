@@ -15,3 +15,35 @@
     color: white;
     font-size: 1rem;
 }
+
+/* Tablet responsive styles */
+@media (max-width: 768px) {
+    .locationSection {
+        gap: 0.625rem;
+    }
+
+    .locationIcon {
+        width: 1.125rem;
+        height: 1.125rem;
+    }
+
+    .locationText {
+        font-size: 0.9375rem;
+    }
+}
+
+/* Mobile responsive styles */
+@media (max-width: 640px) {
+    .locationSection {
+        gap: 0.75rem;
+    }
+
+    .locationIcon {
+        width: 1.125rem;
+        height: 1.125rem;
+    }
+
+    .locationText {
+        font-size: 1rem;
+    }
+}

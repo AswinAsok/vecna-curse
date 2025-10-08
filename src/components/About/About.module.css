@@ -31,3 +31,46 @@
     flex-direction: column;
     gap: 1.5rem;
 }
+
+/* Tablet responsive styles */
+@media (max-width: 768px) {
+    .title {
+        font-size: 2rem;
+        margin: 1.5rem 0;
+        padding: 0 1.5rem;
+    }
+
+    .description {
+        font-size: 1rem;
+        padding: 0 1.5rem;
+        margin: 1.5rem 0;
+    }
+
+    .eventInfo {
+        padding: 0 1.5rem;
+        margin: 1.5rem 0;
+        gap: 1.25rem;
+    }
+}
+
+/* Mobile responsive styles */
+@media (max-width: 640px) {
+    .title {
+        font-size: 1.75rem;
+        margin: 1.25rem 0;
+        padding: 0 1rem;
+    }
+
+    .description {
+        font-size: 1rem;
+        padding: 0 1rem;
+        margin: 1.25rem 0;
+        line-height: 1.7;
+    }
+
+    .eventInfo {
+        padding: 0 1rem;
+        margin: 1.25rem 0;
+        gap: 1.25rem;
+    }
+}
