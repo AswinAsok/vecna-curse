@@ -493,22 +493,17 @@ const Form = () => {
                         .map((field) => renderField(field))}
                 </div>
 
-                <div className={styles.navigationButtons}>
-                    {currentPage < totalPages ? (
-                        <button type="button" onClick={handleNext} className={styles.nextButton}>
-                            Next
-                        </button>
-                    ) : (
-                        <button
-                            type="submit"
-                            className={styles.submitButton}
-                            disabled={isSubmitting}
-                        >
-                            {isSubmitting ? "Submitting..." : "Submit"}
-                        </button>
-                    )}
-                </div>
+                {currentPage === totalPages && (
+                    <button type="submit" className={styles.submitButton} disabled={isSubmitting}>
+                        {isSubmitting ? "Submitting..." : "Submit"}
+                    </button>
+                )}
             </form>
+            {currentPage < totalPages && (
+                <button type="button" onClick={handleNext} className={styles.nextButton}>
+                    Next
+                </button>
+            )}
         </div>
     );
 };
