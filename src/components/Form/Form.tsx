@@ -86,15 +86,6 @@ const Form = ({ onBack }: FormProps) => {
                     newErrors[field.field_key] = "Please enter a valid email address";
                     isValid = false;
                 }
-            } else if (field.type === "url" && value && value.trim() !== "") {
-                // Validate URL format
-                try {
-                    new URL(value);
-                } catch {
-                    newErrors[field.field_key] =
-                        "Please enter a valid URL (e.g., https://example.com)";
-                    isValid = false;
-                }
             }
         }
 
@@ -234,10 +225,7 @@ const Form = ({ onBack }: FormProps) => {
                             type={field.type === "url" ? "text" : field.type}
                             value={value}
                             onChange={(e) => handleInputChange(field.field_key, e.target.value)}
-                            placeholder={
-                                field.placeholder ||
-                                (field.type === "url" ? "https://example.com" : "")
-                            }
+                            placeholder={field.placeholder}
                             required={field.required}
                             className={styles.input}
                         />
