@@ -1,6 +1,6 @@
-import axios from 'axios';
+import axios from "axios";
 
-const API_BASE_URL = 'https://api.makemypass.com/makemypass/public-form';
+const API_BASE_URL = "https://api.makemypass.com/makemypass/public-form";
 
 export interface FormField {
     id: string;
@@ -117,20 +117,20 @@ export interface EventApiResponse {
     response: EventData;
 }
 
-export const fetchEventInfo = async (eventName: string = 'vecnas-curse'): Promise<EventData> => {
+export const fetchEventInfo = async (eventName: string = "vecnas-curse"): Promise<EventData> => {
     try {
         const response = await axios.get<EventApiResponse>(`${API_BASE_URL}/${eventName}/info/`);
         return response.data.response;
     } catch (error) {
-        console.error('Error fetching event info:', error);
+        console.error("Error fetching event info:", error);
         throw error;
     }
 };
 
 export interface SubmitFormData {
     [key: string]: string;
-    '__tickets[]': string;
-    '__utm': string;
+    "__tickets[]": string;
+    __utm: string;
 }
 
 export interface SubmitFormResponse {
@@ -152,7 +152,13 @@ export interface SubmitApiResponse {
     response: SubmitFormResponse;
 }
 
-export const submitForm = async (eventId: string, formData: Record<string, string>, ticketId: string): Promise<SubmitApiResponse> => {
+export const submitForm = async (
+    eventId: string,
+    formData: Record<string, string>,
+    ticketId: string
+): Promise<SubmitApiResponse> => {
+    console.log(formData);
+
     try {
         const submitData = new FormData();
 
@@ -162,17 +168,33 @@ export const submitForm = async (eventId: string, formData: Record<string, strin
         });
 
         // Add tickets and utm data
-        submitData.append('__tickets[]', JSON.stringify({ ticket_id: ticketId, count: 1, my_ticket: true }));
-        submitData.append('__utm', JSON.stringify({ utm_source: null, utm_medium: null, utm_campaign: null, utm_term: null, utm_content: null }));
+        submitData.append(
+            "__tickets[]",
+            JSON.stringify({ ticket_id: ticketId, count: 1, my_ticket: true })
+        );
+        submitData.append(
+            "__utm",
+            JSON.stringify({
+                utm_source: null,
+                utm_medium: null,
+                utm_campaign: null,
+                utm_term: null,
+                utm_content: null,
+            })
+        );
 
-        const response = await axios.post<SubmitApiResponse>(`${API_BASE_URL}/${eventId}/submit/`, submitData, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
+        const response = await axios.post<SubmitApiResponse>(
+            `${API_BASE_URL}/${eventId}/submit/`,
+            submitData,
+            {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
             }
-        });
+        );
         return response.data;
     } catch (error) {
-        console.error('Error submitting form:', error);
+        console.error("Error submitting form:", error);
         throw error;
     }
 };

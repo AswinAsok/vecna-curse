@@ -1,5 +1,4 @@
 import styles from "./SuccessPage.module.css";
-import Footer from "../Footer/Footer";
 
 const SuccessPage = () => {
     return (
@@ -14,8 +13,12 @@ const SuccessPage = () => {
                     <h2 className={styles.heading}>
                         ⏱️ Your answers are in. The Mind Lair will decide.
                     </h2>
-                    <p className={styles.paragraph}>If chosen, your DM will hit like the 4th chime.</p>
-                    <p className={styles.paragraph}>Private Insta? Feels like hiding from the curse.</p>
+                    <p className={styles.paragraph}>
+                        If chosen, your DM will hit like the 4th chime.
+                    </p>
+                    <p className={styles.paragraph}>
+                        Private Insta? Feels like hiding from the curse.
+                    </p>
                     <p className={styles.paragraph}>No plus-ones — unless marked.</p>
                     <p className={styles.paragraph}>Wrong number? You vanish before we call.</p>
 
@@ -31,7 +34,6 @@ const SuccessPage = () => {
                     </p>
                 </div>
             </div>
-            <Footer />
         </>
     );
 };

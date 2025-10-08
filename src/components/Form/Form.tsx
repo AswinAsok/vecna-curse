@@ -79,6 +79,13 @@ const Form = ({ onBack }: FormProps) => {
             if (field.required && (!value || value.trim() === "")) {
                 newErrors[field.field_key] = "This field is required";
                 isValid = false;
+            } else if (field.type === "email" && value && value.trim() !== "") {
+                // Validate email format
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(value.trim())) {
+                    newErrors[field.field_key] = "Please enter a valid email address";
+                    isValid = false;
+                }
             } else if (field.type === "url" && value && value.trim() !== "") {
                 // Validate URL format
                 try {
@@ -128,7 +135,30 @@ const Form = ({ onBack }: FormProps) => {
 
         setIsSubmitting(true);
         try {
-            const response = await submitForm(eventData.id, formData, eventData.tickets[0].id);
+            // Instagram field keys that need to be converted to profile links
+            const instagramFieldKeys = [
+                "__vecna_sees_your_instagram_id",
+                "partner_instagram_id",
+            ];
+
+            // Transform Instagram IDs to full profile links
+            const transformedFormData = { ...formData };
+            instagramFieldKeys.forEach((fieldKey) => {
+                if (transformedFormData[fieldKey] && transformedFormData[fieldKey].trim() !== "") {
+                    const instagramId = transformedFormData[fieldKey].trim();
+                    // Remove @ if user included it and any instagram.com links if already present
+                    let cleanId = instagramId.replace(/^@/, "");
+                    cleanId = cleanId.replace(/^https?:\/\/(www\.)?instagram\.com\//i, "");
+                    // Convert to full Instagram profile link
+                    transformedFormData[fieldKey] = `https://www.instagram.com/${cleanId}`;
+                }
+            });
+
+            const response = await submitForm(
+                eventData.id,
+                transformedFormData,
+                eventData.tickets[0].id
+            );
             setSubmitResponse(response.response);
             setIsFormSubmitted(true);
         } catch (error: unknown) {
