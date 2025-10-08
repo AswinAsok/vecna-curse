@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useEffect } from "react";
+import { useState } from "react";
 import Select from "react-select";
 import { type FormField, type SubmitFormResponse, submitForm } from "../../services/eventApi";
 import styles from "./Form.module.css";
@@ -7,45 +7,28 @@ import SuccessPage from "../SuccessPage/SuccessPage";
 import { useEventDataContext } from "../../contexts/eventDataContext";
 import { checkFieldConditions, getPhoneNumberWithoutCode } from "./function";
 import toast from "react-hot-toast";
+import { usePagination } from "../../hooks/usePagination";
 
 const Form = () => {
     const eventData = useEventDataContext();
+    const {
+        currentPage,
+        totalPages,
+        currentFields,
+        handleNext,
+        handleBack,
+        errors,
+        setErrors,
+        justNavigatedRef,
+    } = usePagination();
 
-    const [currentPage, setCurrentPage] = useState(1);
     const [formData, setFormData] = useState<Record<string, string>>({});
     const [phoneCountryCode, setPhoneCountryCode] = useState<Record<string, string>>({});
-    const [errors, setErrors] = useState<Record<string, string>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isFormSubmitted, setIsFormSubmitted] = useState(false);
     const [submitResponse, setSubmitResponse] = useState<SubmitFormResponse | null>(null);
-    const justNavigatedRef = useRef(false);
 
     // Group form fields by page_num
-    const pageGroups = useMemo(() => {
-        const groups: Record<number, FormField[]> = {};
-        eventData.form.forEach((field) => {
-            if (!field.hidden) {
-                if (!groups[field.page_num]) {
-                    groups[field.page_num] = [];
-                }
-                groups[field.page_num].push(field);
-            }
-        });
-        return groups;
-    }, [eventData.form]);
-
-    const totalPages = Object.keys(pageGroups).length;
-    const currentFields = pageGroups[currentPage] || [];
-
-    // Reset navigation flag after page change
-    useEffect(() => {
-        if (justNavigatedRef.current) {
-            const timer = setTimeout(() => {
-                justNavigatedRef.current = false;
-            }, 100);
-            return () => clearTimeout(timer);
-        }
-    }, [currentPage]);
 
     const handleInputChange = (fieldKey: string, value: string) => {
         setFormData((prev) => ({
@@ -87,25 +70,6 @@ const Form = () => {
 
         setErrors(newErrors);
         return isValid;
-    };
-
-    const handleNext = () => {
-        if (!validateCurrentPage()) {
-            return;
-        }
-        if (currentPage < totalPages) {
-            setErrors({});
-            justNavigatedRef.current = true;
-            setCurrentPage((prev) => prev + 1);
-        }
-    };
-
-    const handlePrevious = () => {
-        if (currentPage > 1) {
-            setErrors({});
-            justNavigatedRef.current = true;
-            setCurrentPage((prev) => prev - 1);
-        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -467,13 +431,6 @@ const Form = () => {
         return null;
     }
 
-    const handleBack = () => {
-        setErrors({});
-        if (currentPage > 1) {
-            handlePrevious();
-        }
-    };
-
     // Show success page after form submission
     if (isFormSubmitted && submitResponse) {
         return <SuccessPage />;
@@ -500,7 +457,16 @@ const Form = () => {
                 )}
             </form>
             {currentPage < totalPages && (
-                <button type="button" onClick={handleNext} className={styles.nextButton}>
+                <button
+                    type="button"
+                    onClick={() => {
+                        if (!validateCurrentPage()) {
+                            return;
+                        }
+                        handleNext();
+                    }}
+                    className={styles.nextButton}
+                >
                     Next
                 </button>
             )}
