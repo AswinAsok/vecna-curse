@@ -24,11 +24,7 @@ const EventPageLayout = ({ children }: { children: React.ReactNode }) => {
         <EventDataContext.Provider value={eventData}>
             <div className={styles.mainContainer}>
                 <div className={styles.banner}>
-                    <img
-                        src="https://storage.tally.so/617c01de-61fe-457d-b13e-3ef7da9fde23/WhatsApp-Image-2025-10-06-at-14.17.21_173846c6.jpg"
-                        alt=""
-                        className={styles.imageBanner}
-                    />
+                    <img src={eventData.banner} alt="" className={styles.imageBanner} />
 
                     <div className={styles.backgroundContainer}>
                         <div className={styles.childrenContainer}>
