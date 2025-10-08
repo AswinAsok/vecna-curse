@@ -15,7 +15,11 @@ export const DateComponent = ({ eventData }: { eventData: EventData }) => {
             <div className={styles.dateDetails}>
                 <div className={styles.fullDate}>{formatFullDate(startDate)}</div>
                 <div className={styles.timeRange}>
-                    {formatTime(startDate)} - {formatDayWithSuffix(endDate)} {formatTime(endDate)}
+                    {`${formatTime(startDate)} ${
+                        eventData.event_end_date
+                            ? ` - ${formatDayWithSuffix(endDate)} ${formatTime(endDate)}`
+                            : ""
+                    }`}
                 </div>
             </div>
         </div>
