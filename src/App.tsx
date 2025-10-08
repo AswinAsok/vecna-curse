@@ -1,7 +1,7 @@
-import LandingPage from "./components/LandingPage/LandingPage";
+import EventPage from "./components/EventPage/EventPage";
 
 const App = () => {
-    return <LandingPage />;
+    return <EventPage />;
 };
 
 export default App;

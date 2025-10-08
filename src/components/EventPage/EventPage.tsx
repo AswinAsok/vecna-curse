@@ -1,27 +1,15 @@
-import { useState } from "react";
-import styles from "./LandingPage.module.css";
+import styles from "./EventPage.module.css";
 import About from "../About/About";
 import Form from "../Form/Form";
 import Footer from "../Footer/Footer";
-import { fetchEventInfo } from "../../services/eventApi";
-import { useQuery } from "@tanstack/react-query";
 
 import { EventDataContext } from "../../contexts/eventDataContext";
 import Error from "../ui/Error/Error";
 import Loading from "../ui/Loading/Loading";
+import { useEvent } from "../../hooks/useEvent";
 
-const LandingPage = () => {
-    const [showForm, setShowForm] = useState(false);
-
-    const {
-        data: eventData,
-        error,
-        isLoading: loading,
-        refetch,
-    } = useQuery({
-        queryKey: ["eventData"],
-        queryFn: () => fetchEventInfo(),
-    });
+const EventPage = () => {
+    const { eventData, error, loading, showForm, setShowForm } = useEvent();
 
     if (loading) {
         return <Loading color="white" />;
@@ -30,8 +18,8 @@ const LandingPage = () => {
     if (error || !eventData) {
         return (
             <Error
-                message="Failed to load event data. Please try again."
-                onRetry={() => refetch()}
+                message="It seems like the event details are wrong, currenly make sure you entered the correct details or try again later."
+                onRetry={() => window.location.reload()}
             />
         );
     }
@@ -64,4 +52,4 @@ const LandingPage = () => {
     );
 };
 
-export default LandingPage;
+export default EventPage;
