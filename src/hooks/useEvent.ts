@@ -1,11 +1,7 @@
-import { useState } from "react";
-
 import { useQuery } from "@tanstack/react-query";
 import { fetchEventInfo } from "../services/eventApi";
 
 export const useEvent = () => {
-    const [showForm, setShowForm] = useState(false);
-
     const {
         data: eventData,
         error,
@@ -15,5 +11,5 @@ export const useEvent = () => {
         queryFn: () => fetchEventInfo(),
     });
 
-    return { eventData, error, loading, showForm, setShowForm };
+    return { eventData, error, loading };
 };
