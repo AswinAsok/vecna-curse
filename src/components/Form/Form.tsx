@@ -136,10 +136,7 @@ const Form = ({ onBack }: FormProps) => {
         setIsSubmitting(true);
         try {
             // Instagram field keys that need to be converted to profile links
-            const instagramFieldKeys = [
-                "__vecna_sees_your_instagram_id",
-                "partner_instagram_id",
-            ];
+            const instagramFieldKeys = ["__vecna_sees_your_instagram_id", "partner_instagram_id"];
 
             // Transform Instagram IDs to full profile links
             const transformedFormData = { ...formData };
@@ -528,9 +525,6 @@ const Form = ({ onBack }: FormProps) => {
                             {isSubmitting ? "Submitting..." : "Submit"}
                         </button>
                     )}
-                    <span className={styles.pageIndicator}>
-                        Page {currentPage} of {totalPages}
-                    </span>
                 </div>
             </form>
         </div>

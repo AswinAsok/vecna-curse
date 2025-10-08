@@ -48,11 +48,7 @@ const LandingPage = () => {
 
                     <div className={styles.backgroundContainer}>
                         <div className={styles.contentContainer}>
-                            <img
-                                src="https://storage.tally.so/7528d5ea-7f1d-439a-8bda-136d2d15b236/640640.png"
-                                alt=""
-                                className={styles.turnUpLogo}
-                            />
+                            <img src="turnupblack.png" alt="" className={styles.turnUpLogo} />
 
                             {!showForm ? (
                                 <About onNext={() => setShowForm(true)} />
