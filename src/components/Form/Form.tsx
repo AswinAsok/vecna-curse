@@ -11,17 +11,10 @@ import { usePagination } from "../../hooks/usePagination";
 
 const Form = () => {
     const eventData = useEventDataContext();
-    const {
-        currentPage,
-        totalPages,
-        currentFields,
-        handleNext,
-        handleBack,
-        errors,
-        setErrors,
-        justNavigatedRef,
-    } = usePagination();
+    const { currentPage, totalPages, currentFields, handleNext, handleBack, justNavigatedRef } =
+        usePagination();
 
+    const [errors, setErrors] = useState<Record<string, string>>({});
     const [formData, setFormData] = useState<Record<string, string>>({});
     const [phoneCountryCode, setPhoneCountryCode] = useState<Record<string, string>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);

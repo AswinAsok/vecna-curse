@@ -38,7 +38,6 @@ export const usePagination = () => {
 
     const handleNext = () => {
         if (currentPage < totalPages) {
-            setErrors({});
             justNavigatedRef.current = true;
             setCurrentPage((prev) => prev + 1);
         }
@@ -46,14 +45,12 @@ export const usePagination = () => {
 
     const handlePrevious = () => {
         if (currentPage > 1) {
-            setErrors({});
             justNavigatedRef.current = true;
             setCurrentPage((prev) => prev - 1);
         }
     };
 
     const handleBack = () => {
-        setErrors({});
         if (currentPage > 1) {
             handlePrevious();
         }
