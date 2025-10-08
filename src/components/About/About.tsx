@@ -1,14 +1,9 @@
 import styles from "./About.module.css";
-import { Button } from "../ui/Button/Button";
 import { DateComponent } from "../ui/DateComponent/DateComponent";
 import LocationComponent from "../ui/LocationComponent/LocationComponent";
 import { useEventDataContext } from "../../contexts/eventDataContext";
 
-interface AboutProps {
-    onNext: () => void;
-}
-
-const About = ({ onNext }: AboutProps) => {
+const About = () => {
     const eventData = useEventDataContext();
 
     return (
@@ -24,8 +19,6 @@ const About = ({ onNext }: AboutProps) => {
                 <DateComponent eventData={eventData} />
                 <LocationComponent eventData={eventData} />
             </div>
-
-            <Button onClick={onNext}>Next →</Button>
         </>
     );
 };

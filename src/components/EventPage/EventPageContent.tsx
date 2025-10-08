@@ -7,15 +7,14 @@ const EventPageContent = () => {
     const [showForm, setShowForm] = useState(false);
     return (
         <>
-            {!showForm ? (
-                <About onNext={() => setShowForm(true)} />
+            {showForm ? (
+                <Form />
             ) : (
-                <Form onBack={() => setShowForm(false)} />
+                <>
+                    <About />
+                    <Button onClick={() => setShowForm(true)}>Next →</Button>
+                </>
             )}
-
-            <Button onClick={() => setShowForm(!showForm)}>
-                {showForm ? "← Back to About" : "Next →"}
-            </Button>
         </>
     );
 };

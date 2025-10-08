@@ -8,11 +8,7 @@ import { useEventDataContext } from "../../contexts/eventDataContext";
 import { checkFieldConditions, getPhoneNumberWithoutCode } from "./function";
 import toast from "react-hot-toast";
 
-interface FormProps {
-    onBack?: () => void;
-}
-
-const Form = ({ onBack }: FormProps) => {
+const Form = () => {
     const eventData = useEventDataContext();
 
     const [currentPage, setCurrentPage] = useState(1);
@@ -475,8 +471,6 @@ const Form = ({ onBack }: FormProps) => {
         setErrors({});
         if (currentPage > 1) {
             handlePrevious();
-        } else if (onBack) {
-            onBack();
         }
     };
 
@@ -487,7 +481,7 @@ const Form = ({ onBack }: FormProps) => {
 
     return (
         <div className={styles.formContainer}>
-            {(currentPage > 1 || onBack) && (
+            {currentPage > 1 && (
                 <p className={styles.backLink} onClick={handleBack}>
                     ← Back
                 </p>
