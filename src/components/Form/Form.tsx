@@ -1,6 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Select from "react-select";
-import { type FormField, type SubmitFormResponse, submitForm } from "../../services/eventApi";
+import {
+    type FormField,
+    type SubmitFormResponse,
+    submitForm,
+    updateFormLog,
+    getFormLogKey,
+} from "../../services/eventApi";
 import styles from "./Form.module.css";
 import countryCodes from "./phoneCountryCodes.json";
 import SuccessPage from "../SuccessPage/SuccessPage";
@@ -20,6 +26,50 @@ const Form = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isFormSubmitted, setIsFormSubmitted] = useState(false);
     const [submitResponse, setSubmitResponse] = useState<SubmitFormResponse | null>(null);
+    const [logId, setLogId] = useState<string | null>(null);
+
+    // Load saved log ID on mount
+    useEffect(() => {
+        if (eventData.id) {
+            const formLogKey = getFormLogKey(eventData.id);
+            const formLogId = localStorage.getItem(formLogKey);
+            if (formLogId) {
+                try {
+                    setLogId(JSON.parse(formLogId));
+                } catch {
+                    localStorage.removeItem(formLogKey);
+                }
+            }
+        }
+    }, [eventData.id]);
+
+    // Debounced form data tracking
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            if (!eventData.id || Object.keys(formData).length === 0) return;
+
+            // Update form log via API
+            if (eventData.tickets && eventData.tickets.length > 0) {
+                updateFormLog(eventData.id, formData, eventData.form, logId, eventData.tickets[0].id)
+                    .then((response) => {
+                        if (!logId && response.response.log_id) {
+                            setLogId(response.response.log_id);
+                            const formLogKey = getFormLogKey(eventData.id);
+                            localStorage.setItem(
+                                formLogKey,
+                                JSON.stringify(response.response.log_id)
+                            );
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Error updating form log:", error);
+                        // Fail silently - form should still work even if logging fails
+                    });
+            }
+        }, 1500); // Debounce for 1.5 seconds
+
+        return () => clearTimeout(handler);
+    }, [formData, eventData.id, eventData.form, eventData.tickets, logId]);
 
     // Group form fields by page_num
 
@@ -79,6 +129,20 @@ const Form = () => {
 
         setIsSubmitting(true);
         try {
+            // Update form log one final time before submitting
+            if (eventData.id && eventData.tickets && eventData.tickets.length > 0) {
+                await updateFormLog(
+                    eventData.id,
+                    formData,
+                    eventData.form,
+                    logId,
+                    eventData.tickets[0].id
+                ).catch((error) => {
+                    console.error("Error updating form log before submit:", error);
+                    // Continue with submission even if log update fails
+                });
+            }
+
             // Instagram field keys that need to be converted to profile links
             const instagramFieldKeys = ["__vecna_sees_your_instagram_id", "partner_instagram_id"];
 
@@ -98,10 +162,16 @@ const Form = () => {
             const response = await submitForm(
                 eventData.id,
                 transformedFormData,
-                eventData.tickets[0].id
+                eventData.tickets[0].id,
+                logId
             );
             setSubmitResponse(response.response);
             setIsFormSubmitted(true);
+
+            // Clear form log ID from localStorage on successful submission
+            const formLogKey = getFormLogKey(eventData.id);
+            localStorage.removeItem(formLogKey);
+            setLogId(null);
         } catch (error: unknown) {
             // Handle field-specific validation errors from axios error response
             const axiosError = error as {

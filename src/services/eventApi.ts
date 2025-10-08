@@ -155,7 +155,8 @@ export interface SubmitApiResponse {
 export const submitForm = async (
     eventId: string,
     formData: Record<string, string>,
-    ticketId: string
+    ticketId: string,
+    logId?: string | null
 ): Promise<SubmitApiResponse> => {
     console.log(formData);
 
@@ -183,6 +184,11 @@ export const submitForm = async (
             })
         );
 
+        // Add log_id if it exists
+        if (logId) {
+            submitData.append("log_id", logId);
+        }
+
         const response = await axios.post<SubmitApiResponse>(
             `${API_BASE_URL}/${eventId}/submit/`,
             submitData,
@@ -198,3 +204,71 @@ export const submitForm = async (
         throw error;
     }
 };
+
+// Form-log API types and functions
+export interface FormLogResponse {
+    log_id: string;
+}
+
+export interface FormLogApiResponse {
+    hasError: boolean;
+    statusCode: number;
+    message: Record<string, unknown>;
+    response: FormLogResponse;
+}
+
+export const updateFormLog = async (
+    eventId: string,
+    formData: Record<string, string>,
+    _eventForm: FormField[],
+    logId: string | null,
+    ticketId: string
+): Promise<FormLogApiResponse> => {
+    try {
+        const backendFormData = new FormData();
+
+        // Process and trim form data
+        Object.entries(formData).forEach(([key, value]) => {
+            if (typeof value === "string") {
+                // Trim string values
+                const trimmedValue = value.trim();
+                backendFormData.append(key, trimmedValue);
+            } else {
+                backendFormData.append(key, value);
+            }
+        });
+
+        // Add ticket information
+        backendFormData.append(
+            "__tickets[]",
+            JSON.stringify({ ticket_id: ticketId, count: 1, my_ticket: true })
+        );
+
+        // Add log_id if it exists (for updates)
+        if (logId) {
+            backendFormData.append("log_id", logId);
+        }
+
+        // Add metadata flags
+        backendFormData.append("is_next_btn_clk", "false");
+        backendFormData.append("is_ticket_selected", "true");
+
+        const response = await axios.post<FormLogApiResponse>(
+            `https://api.makemypass.com/makemypass/manage-event/${eventId}/form-log/`,
+            backendFormData,
+            {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            }
+        );
+
+        return response.data;
+    } catch (error) {
+        console.error("Error updating form log:", error);
+        throw error;
+    }
+};
+
+// LocalStorage helper function for log_id
+export const getFormLogKey = (eventId: string): string => `form_log_id_${eventId}`;
