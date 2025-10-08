@@ -1,8 +1,8 @@
-import { EventDataContext } from "../../../contexts/eventDataContext";
-import { useEvent } from "../../../hooks/useEvent";
-import Footer from "../../Footer/Footer";
-import Error from "../../ui/Error/Error";
-import Loading from "../../ui/Loading/Loading";
+import { EventDataContext } from "../../contexts/eventDataContext";
+import { useEvent } from "../../hooks/useEvent";
+import Footer from "../Footer/Footer";
+import Error from "../ui/Error/Error";
+import Loading from "../ui/Loading/Loading";
 import styles from "./EventPageLayout.module.css";
 
 const EventPageLayout = ({ children }: { children: React.ReactNode }) => {

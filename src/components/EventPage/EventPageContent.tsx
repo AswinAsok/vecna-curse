@@ -1,6 +1,7 @@
 import { useState } from "react";
-import About from "../../About/About";
-import Form from "../../Form/Form";
+import About from "../About/About";
+import Form from "../Form/Form";
+import { Button } from "../ui/Button/Button";
 
 const EventPageContent = () => {
     const [showForm, setShowForm] = useState(false);
@@ -11,6 +12,10 @@ const EventPageContent = () => {
             ) : (
                 <Form onBack={() => setShowForm(false)} />
             )}
+
+            <Button onClick={() => setShowForm(!showForm)}>
+                {showForm ? "← Back to About" : "Next →"}
+            </Button>
         </>
     );
 };
