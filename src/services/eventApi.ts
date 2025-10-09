@@ -1,5 +1,6 @@
 import axios from "axios";
 import type { EventData, FormField } from "./types";
+import { getTicketIdBasedOnRadio } from "../components/Form/function";
 
 const API_BASE_URL = "https://api.makemypass.com/makemypass/public-form";
 
@@ -11,13 +12,8 @@ interface EventApiResponse {
 }
 
 export const fetchEventInfo = async (eventName: string = "vecnas-curse"): Promise<EventData> => {
-    try {
-        const response = await axios.get<EventApiResponse>(`${API_BASE_URL}/${eventName}/info/`);
-        return response.data.response;
-    } catch (error) {
-        console.error("Error fetching event info:", error);
-        throw error;
-    }
+    const response = await axios.get<EventApiResponse>(`${API_BASE_URL}/${eventName}/info/`);
+    return response.data.response;
 };
 
 export interface SubmitFormResponse {
@@ -42,7 +38,6 @@ interface SubmitApiResponse {
 export const submitForm = async (
     eventId: string,
     formData: Record<string, string>,
-    ticketId: string,
     logId?: string | null
 ): Promise<SubmitApiResponse> => {
     console.log(formData);
@@ -58,7 +53,11 @@ export const submitForm = async (
         // Add tickets and utm data
         submitData.append(
             "__tickets[]",
-            JSON.stringify({ ticket_id: ticketId, count: 1, my_ticket: true })
+            JSON.stringify({
+                ticket_id: getTicketIdBasedOnRadio(submitData),
+                count: 1,
+                my_ticket: true,
+            })
         );
         submitData.append(
             "__utm",
@@ -107,8 +106,7 @@ export const updateFormLog = async (
     eventId: string,
     formData: Record<string, string>,
     _eventForm: FormField[],
-    logId: string | null,
-    ticketId: string
+    logId: string | null
 ): Promise<FormLogApiResponse> => {
     try {
         const backendFormData = new FormData();
@@ -127,7 +125,11 @@ export const updateFormLog = async (
         // Add ticket information
         backendFormData.append(
             "__tickets[]",
-            JSON.stringify({ ticket_id: ticketId, count: 1, my_ticket: true })
+            JSON.stringify({
+                ticket_id: getTicketIdBasedOnRadio(backendFormData),
+                count: 1,
+                my_ticket: true,
+            })
         );
 
         // Add log_id if it exists (for updates)

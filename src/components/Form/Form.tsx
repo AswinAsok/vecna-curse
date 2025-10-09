@@ -1,11 +1,6 @@
 import { useState, useEffect } from "react";
 import Select from "react-select";
-import {
-    type FormField,
-    type SubmitFormResponse,
-    submitForm,
-    updateFormLog,
-} from "../../services/eventApi";
+import { type SubmitFormResponse, submitForm, updateFormLog } from "../../services/eventApi";
 import styles from "./Form.module.css";
 import countryCodes from "./phoneCountryCodes.json";
 import SuccessPage from "../SuccessPage/SuccessPage";
@@ -13,6 +8,7 @@ import { useEventDataContext } from "../../contexts/eventDataContext";
 import { checkFieldConditions, getPhoneNumberWithoutCode } from "./function";
 import toast from "react-hot-toast";
 import { usePagination } from "../../hooks/usePagination";
+import type { FormField } from "../../services/types";
 
 const Form = () => {
     const eventData = useEventDataContext();
@@ -28,21 +24,6 @@ const Form = () => {
     const [logId, setLogId] = useState<string | null>(null);
 
     // Helper function to get the correct ticket ID based on the radio selection
-    const getTicketId = (): string => {
-        const radioSelection = formData["who_walks_willingly_into_the_nwod_edispu"];
-
-        switch (radioSelection) {
-            case "🕷 The Marked One (Stag Male) – Heard the clock. Chose to stay.":
-                return "749a205d-5094-460c-85fb-faca0bbd9894";
-            case "🩸 The Unshaken (Stag Female) – Not afraid of the flicker.":
-                return "8839c1be-b1b8-4d20-a469-7cbdf12de501";
-            case "👁 The Bonded Souls (Couple) – If Vecna takes one, he takes both.":
-                return "646d2ca6-f068-4b01-a3b9-a5363dff9965";
-            default:
-                // Fallback to first ticket if no selection yet
-                return eventData.tickets[0]?.id || "";
-        }
-    };
 
     // Debounced form data tracking
     useEffect(() => {
@@ -51,7 +32,7 @@ const Form = () => {
 
             // Update form log via API
             if (eventData.tickets && eventData.tickets.length > 0) {
-                updateFormLog(eventData.id, formData, eventData.form, logId, getTicketId())
+                updateFormLog(eventData.id, formData, eventData.form, logId)
                     .then((response) => {
                         if (!logId && response.response.log_id) {
                             setLogId(response.response.log_id);
@@ -65,7 +46,6 @@ const Form = () => {
         }, 1500); // Debounce for 1.5 seconds
 
         return () => clearTimeout(handler);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [formData, eventData.id, eventData.form, eventData.tickets, logId]);
 
     // Group form fields by page_num
@@ -143,16 +123,12 @@ const Form = () => {
         try {
             // Update form log one final time before submitting
             if (eventData.id && eventData.tickets && eventData.tickets.length > 0) {
-                await updateFormLog(
-                    eventData.id,
-                    formData,
-                    eventData.form,
-                    logId,
-                    getTicketId()
-                ).catch((error) => {
-                    console.error("Error updating form log before submit:", error);
-                    // Continue with submission even if log update fails
-                });
+                await updateFormLog(eventData.id, formData, eventData.form, logId).catch(
+                    (error) => {
+                        console.error("Error updating form log before submit:", error);
+                        // Continue with submission even if log update fails
+                    }
+                );
             }
 
             // Instagram field keys that need to be converted to profile links
@@ -171,12 +147,7 @@ const Form = () => {
                 }
             });
 
-            const response = await submitForm(
-                eventData.id,
-                transformedFormData,
-                getTicketId(),
-                logId
-            );
+            const response = await submitForm(eventData.id, transformedFormData, logId);
             setSubmitResponse(response.response);
             setIsFormSubmitted(true);
 
