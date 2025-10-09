@@ -269,6 +269,3 @@ export const updateFormLog = async (
         throw error;
     }
 };
-
-// LocalStorage helper function for log_id
-export const getFormLogKey = (eventId: string): string => `form_log_id_${eventId}`;

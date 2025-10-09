@@ -5,7 +5,6 @@ import {
     type SubmitFormResponse,
     submitForm,
     updateFormLog,
-    getFormLogKey,
 } from "../../services/eventApi";
 import styles from "./Form.module.css";
 import countryCodes from "./phoneCountryCodes.json";
@@ -45,21 +44,6 @@ const Form = () => {
         }
     };
 
-    // Load saved log ID on mount
-    useEffect(() => {
-        if (eventData.id) {
-            const formLogKey = getFormLogKey(eventData.id);
-            const formLogId = localStorage.getItem(formLogKey);
-            if (formLogId) {
-                try {
-                    setLogId(JSON.parse(formLogId));
-                } catch {
-                    localStorage.removeItem(formLogKey);
-                }
-            }
-        }
-    }, [eventData.id]);
-
     // Debounced form data tracking
     useEffect(() => {
         const handler = setTimeout(() => {
@@ -71,11 +55,6 @@ const Form = () => {
                     .then((response) => {
                         if (!logId && response.response.log_id) {
                             setLogId(response.response.log_id);
-                            const formLogKey = getFormLogKey(eventData.id);
-                            localStorage.setItem(
-                                formLogKey,
-                                JSON.stringify(response.response.log_id)
-                            );
                         }
                     })
                     .catch((error) => {
@@ -86,6 +65,7 @@ const Form = () => {
         }, 1500); // Debounce for 1.5 seconds
 
         return () => clearTimeout(handler);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [formData, eventData.id, eventData.form, eventData.tickets, logId]);
 
     // Group form fields by page_num
@@ -200,9 +180,6 @@ const Form = () => {
             setSubmitResponse(response.response);
             setIsFormSubmitted(true);
 
-            // Clear form log ID from localStorage on successful submission
-            const formLogKey = getFormLogKey(eventData.id);
-            localStorage.removeItem(formLogKey);
             setLogId(null);
         } catch (error: unknown) {
             // Handle field-specific validation errors from axios error response
