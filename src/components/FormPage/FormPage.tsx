@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Select from "react-select";
 import { type SubmitFormResponse, submitForm } from "../../services/eventApi";
-import styles from "./Form.module.css";
+import styles from "./FormPage.module.css";
 import SuccessPage from "../SuccessPage/SuccessPage";
 import { useEventDataContext } from "../../contexts/eventDataContext";
 import { checkFieldConditions, getPhoneNumberWithoutCode } from "./services/function";
@@ -12,7 +12,7 @@ import { useFormLogUpdation } from "./hooks/useFormLogUpdation.hook";
 import { usePagination } from "./hooks/usePagination.hook";
 import countryCodes from "./data/phoneCountryCodes.json";
 
-const Form = () => {
+const FormPage = () => {
     const eventData = useEventDataContext();
 
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -520,4 +520,4 @@ const Form = () => {
     );
 };
 
-export default Form;
+export default FormPage;

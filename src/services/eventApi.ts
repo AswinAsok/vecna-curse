@@ -1,6 +1,6 @@
 import axios from "axios";
 import type { EventData } from "./types";
-import { getTicketIdBasedOnRadio } from "../components/Form/services/function";
+import { getTicketIdBasedOnRadio } from "../components/FormPage/services/function";
 
 const API_BASE_URL = "https://api.makemypass.com/makemypass/public-form";
 

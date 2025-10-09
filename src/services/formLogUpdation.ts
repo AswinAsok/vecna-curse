@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getTicketIdBasedOnRadio } from "../components/Form/services/function";
+import { getTicketIdBasedOnRadio } from "../components/FormPage/services/function";
 import type { FormLogApiResponse } from "./eventApi";
 import type { FormField } from "./types";
 

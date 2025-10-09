@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import { useEventDataContext } from "../../contexts/eventDataContext";
-import { updateFormLog } from "../../services/formLogUpdation";
+import { useEventDataContext } from "../../../contexts/eventDataContext";
+import { updateFormLog } from "../../../services/formLogUpdation";
 
 export const useFormLogUpdation = ({
     formData,

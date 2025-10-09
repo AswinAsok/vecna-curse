@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Form from "../../Form/Form";
+import FormPage from "../../FormPage/FormPage";
 import About from "../../About/About";
 import { Button } from "../../ui/Button/Button";
 
@@ -7,7 +7,7 @@ const EventPageContent = () => {
     const [showForm, setShowForm] = useState(false);
 
     return showForm ? (
-        <Form />
+        <FormPage />
     ) : (
         <>
             <About />
