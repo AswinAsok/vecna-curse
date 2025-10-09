@@ -4,11 +4,6 @@ const SuccessPage = () => {
     return (
         <>
             <div className={styles.container}>
-                {/* <div
-                    className={styles.content}
-                    dangerouslySetInnerHTML={{ __html: followupMsg }}
-                /> */}
-
                 <div className={styles.additionalContent}>
                     <h2 className={styles.heading}>
                         ⏱️ Your answers are in. The Mind Lair will decide.
