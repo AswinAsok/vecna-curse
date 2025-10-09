@@ -1,5 +1,4 @@
 import { useState } from "react";
-import Select from "react-select";
 import { type SubmitFormResponse, submitForm } from "../../services/eventApi";
 import styles from "./FormPage.module.css";
 import SuccessPage from "../SuccessPage/SuccessPage";
@@ -10,7 +9,12 @@ import type { FormField } from "../../services/types";
 import { updateFormLog } from "../../services/formLogUpdation";
 import { useFormLogUpdation } from "./hooks/useFormLogUpdation.hook";
 import { usePagination } from "./hooks/usePagination.hook";
-import countryCodes from "./data/phoneCountryCodes.json";
+import TextField from "./components/TextField";
+import PhoneField from "./components/PhoneField";
+import RadioField from "./components/RadioField";
+import CheckboxField from "./components/CheckboxField";
+import TextAreaField from "./components/TextAreaField";
+import SelectField from "./components/SelectField";
 
 const FormPage = () => {
     const eventData = useEventDataContext();
@@ -29,7 +33,7 @@ const FormPage = () => {
         setLogId,
     });
 
-    const { currentPage, totalPages, currentFields, handleNext, handleBack, justNavigatedRef } =
+    const { currentPage, totalPages, currentFields, handleNext, handlePrevious, justNavigatedRef } =
         usePagination();
 
     // Group form fields by page_num
@@ -67,6 +71,7 @@ const FormPage = () => {
 
             return true;
         });
+
         const newErrors: Record<string, string> = {};
         let isValid = true;
 
@@ -199,253 +204,71 @@ const FormPage = () => {
             case "number":
             case "url":
                 return (
-                    <div key={field.id} className={styles.fieldContainer}>
-                        <label className={styles.label}>
-                            {field.title}
-                            {field.required && <span className={styles.required}>*</span>}
-                        </label>
-                        {field.description && (
-                            <p className={styles.description}>{field.description}</p>
-                        )}
-                        <input
-                            type={field.type === "url" ? "text" : field.type}
-                            value={value}
-                            onChange={(e) => handleInputChange(field.field_key, e.target.value)}
-                            placeholder={field.placeholder}
-                            required={field.required}
-                            className={styles.input}
-                        />
-                        {errors[field.field_key] && (
-                            <p className={styles.error}>{errors[field.field_key]}</p>
-                        )}
-                    </div>
+                    <TextField
+                        key={field.id}
+                        field={field}
+                        value={value}
+                        handleInputChange={handleInputChange}
+                        errors={errors}
+                    />
                 );
 
-            case "phone": {
-                const currentCountryCode = phoneCountryCode[field.field_key] || "+91";
-                const phoneNumber = getPhoneNumberWithoutCode(value, currentCountryCode);
-                const countryCodeOptions = countryCodes.map((country) => ({
-                    value: country.dial_code,
-                    label: `${country.dial_code} ${country.code}`,
-                }));
-                const selectedOption = countryCodeOptions.find(
-                    (option) => option.value === currentCountryCode
-                );
-
+            case "phone":
                 return (
-                    <div key={field.id} className={styles.fieldContainer}>
-                        <label className={styles.label}>
-                            {field.title}
-                            {field.required && <span className={styles.required}>*</span>}
-                        </label>
-                        {field.description && (
-                            <p className={styles.description}>{field.description}</p>
-                        )}
-                        <div className={styles.phoneInputContainer}>
-                            <Select
-                                value={selectedOption}
-                                onChange={(option) =>
-                                    option && handleCountryCodeChange(field.field_key, option.value)
-                                }
-                                options={countryCodeOptions}
-                                className={styles.countryCodeSelect}
-                                classNamePrefix="select"
-                                styles={{
-                                    control: (base, state) => ({
-                                        ...base,
-                                        backgroundColor: "rgba(255, 255, 255, 0.05)",
-                                        borderColor: state.isFocused
-                                            ? "#ede0d4"
-                                            : "rgba(255, 255, 255, 0.2)",
-                                        borderRadius: "0.375rem",
-                                        padding: "0.125rem",
-                                        color: "white",
-                                        minWidth: "140px",
-                                        fontSize: "1rem",
-                                        boxShadow: "none",
-                                        "&:hover": {
-                                            borderColor: state.isFocused
-                                                ? "#ede0d4"
-                                                : "rgba(255, 255, 255, 0.2)",
-                                        },
-                                    }),
-                                    valueContainer: (base) => ({
-                                        ...base,
-                                        padding: "0.125rem 0.5rem",
-                                    }),
-                                    singleValue: (base) => ({
-                                        ...base,
-                                        color: "white",
-                                    }),
-                                    input: (base) => ({
-                                        ...base,
-                                        color: "white",
-                                    }),
-                                    indicatorSeparator: () => ({
-                                        display: "none",
-                                    }),
-                                    dropdownIndicator: (base) => ({
-                                        ...base,
-                                        color: "rgba(255, 255, 255, 0.5)",
-                                        "&:hover": {
-                                            color: "rgba(255, 255, 255, 0.7)",
-                                        },
-                                    }),
-                                    menu: (base) => ({
-                                        ...base,
-                                        backgroundColor: "#1a1a1a",
-                                        border: "1px solid rgba(255, 255, 255, 0.2)",
-                                        borderRadius: "0.375rem",
-                                    }),
-                                    menuList: (base) => ({
-                                        ...base,
-                                        padding: "0.25rem",
-                                    }),
-                                    option: (base, state) => ({
-                                        ...base,
-                                        backgroundColor: state.isFocused
-                                            ? "rgba(139, 68, 68, 0.3)"
-                                            : state.isSelected
-                                            ? "rgba(139, 68, 68, 0.5)"
-                                            : "transparent",
-                                        color: "white",
-                                        padding: "0.5rem 0.75rem",
-                                        borderRadius: "0.25rem",
-                                        cursor: "pointer",
-                                        "&:active": {
-                                            backgroundColor: "rgba(139, 68, 68, 0.5)",
-                                        },
-                                    }),
-                                }}
-                            />
-                            <input
-                                type="tel"
-                                value={phoneNumber}
-                                onChange={(e) => handlePhoneChange(field.field_key, e.target.value)}
-                                placeholder={field.placeholder}
-                                required={field.required}
-                                className={styles.phoneInput}
-                            />
-                        </div>
-                        {errors[field.field_key] && (
-                            <p className={styles.error}>{errors[field.field_key]}</p>
-                        )}
-                    </div>
+                    <PhoneField
+                        key={field.id}
+                        field={field}
+                        value={value}
+                        handlePhoneChange={handlePhoneChange}
+                        phoneCountryCode={phoneCountryCode}
+                        handleCountryCodeChange={handleCountryCodeChange}
+                        errors={errors}
+                    />
                 );
-            }
 
             case "radio":
                 return (
-                    <div key={field.id} className={styles.fieldContainer}>
-                        <label className={styles.label}>
-                            {field.title}
-                            {field.required && <span className={styles.required}>*</span>}
-                        </label>
-                        {field.description && (
-                            <p className={styles.description}>{field.description}</p>
-                        )}
-                        <div className={styles.radioGroup}>
-                            {field.options[0]?.values.map((option, index) => (
-                                <label key={index} className={styles.radioLabel}>
-                                    <input
-                                        type="radio"
-                                        name={field.field_key}
-                                        value={option}
-                                        checked={value === option}
-                                        onChange={(e) =>
-                                            handleInputChange(field.field_key, e.target.value)
-                                        }
-                                        required={field.required}
-                                        className={styles.radio}
-                                    />
-                                    <span>{option}</span>
-                                </label>
-                            ))}
-                        </div>
-                        {errors[field.field_key] && (
-                            <p className={styles.error}>{errors[field.field_key]}</p>
-                        )}
-                    </div>
+                    <RadioField
+                        key={field.id}
+                        field={field}
+                        value={value}
+                        handleInputChange={handleInputChange}
+                        errors={errors}
+                    />
                 );
 
             case "checkbox":
                 return (
-                    <div key={field.id} className={styles.fieldContainer}>
-                        <label className={styles.checkboxLabel}>
-                            <input
-                                type="checkbox"
-                                checked={value === "true"}
-                                onChange={(e) =>
-                                    handleInputChange(field.field_key, e.target.checked.toString())
-                                }
-                                required={field.required}
-                                className={styles.checkbox}
-                            />
-                            <span>
-                                {field.title}
-                                {field.required && <span className={styles.required}>*</span>}
-                            </span>
-                        </label>
-                        {field.description && (
-                            <p className={styles.description}>{field.description}</p>
-                        )}
-                        {errors[field.field_key] && (
-                            <p className={styles.error}>{errors[field.field_key]}</p>
-                        )}
-                    </div>
+                    <CheckboxField
+                        key={field.id}
+                        field={field}
+                        value={value}
+                        handleInputChange={handleInputChange}
+                        errors={errors}
+                    />
                 );
 
             case "textarea":
                 return (
-                    <div key={field.id} className={styles.fieldContainer}>
-                        <label className={styles.label}>
-                            {field.title}
-                            {field.required && <span className={styles.required}>*</span>}
-                        </label>
-                        {field.description && (
-                            <p className={styles.description}>{field.description}</p>
-                        )}
-                        <textarea
-                            value={value}
-                            onChange={(e) => handleInputChange(field.field_key, e.target.value)}
-                            placeholder={field.placeholder}
-                            required={field.required}
-                            className={styles.textarea}
-                        />
-                        {errors[field.field_key] && (
-                            <p className={styles.error}>{errors[field.field_key]}</p>
-                        )}
-                    </div>
+                    <TextAreaField
+                        key={field.id}
+                        field={field}
+                        value={value}
+                        handleInputChange={handleInputChange}
+                        errors={errors}
+                    />
                 );
 
             case "select":
             case "dropdown":
                 return (
-                    <div key={field.id} className={styles.fieldContainer}>
-                        <label className={styles.label}>
-                            {field.title}
-                            {field.required && <span className={styles.required}>*</span>}
-                        </label>
-                        {field.description && (
-                            <p className={styles.description}>{field.description}</p>
-                        )}
-                        <select
-                            value={value}
-                            onChange={(e) => handleInputChange(field.field_key, e.target.value)}
-                            required={field.required}
-                            className={styles.select}
-                        >
-                            <option value="">Select an option</option>
-                            {field.options[0]?.values.map((option, index) => (
-                                <option key={index} value={option}>
-                                    {option}
-                                </option>
-                            ))}
-                        </select>
-                        {errors[field.field_key] && (
-                            <p className={styles.error}>{errors[field.field_key]}</p>
-                        )}
-                    </div>
+                    <SelectField
+                        key={field.id}
+                        field={field}
+                        value={value}
+                        handleInputChange={handleInputChange}
+                        errors={errors}
+                    />
                 );
 
             default:
@@ -465,7 +288,7 @@ const FormPage = () => {
     return (
         <div className={styles.formContainer}>
             {currentPage > 1 && (
-                <p className={styles.backLink} onClick={handleBack}>
+                <p className={styles.backLink} onClick={handlePrevious}>
                     ← Back
                 </p>
             )}

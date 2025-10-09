@@ -12,7 +12,6 @@ export const useFormLogUpdation = ({
     setLogId: (id: string) => void;
 }) => {
     const eventData = useEventDataContext();
-    // Debounced form data tracking
     useEffect(() => {
         const handler = setTimeout(() => {
             if (

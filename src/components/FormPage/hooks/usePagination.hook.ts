@@ -3,12 +3,11 @@ import { useEventDataContext } from "../../../contexts/eventDataContext";
 import type { FormField } from "../../../services/types";
 
 export const usePagination = () => {
+    const justNavigatedRef = useRef(false);
     const eventData = useEventDataContext();
 
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [errors, setErrors] = useState<Record<string, string>>({});
-
-    const justNavigatedRef = useRef(false);
 
     // Reset navigation flag after page change
     useEffect(() => {
@@ -50,19 +49,13 @@ export const usePagination = () => {
         }
     };
 
-    const handleBack = () => {
-        if (currentPage > 1) {
-            handlePrevious();
-        }
-    };
-
     return {
         currentPage,
         totalPages,
         currentFields,
         handleNext,
         handlePrevious,
-        handleBack,
+
         errors,
         setErrors,
         justNavigatedRef,
