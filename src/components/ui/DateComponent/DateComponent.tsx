@@ -1,4 +1,4 @@
-import type { EventData } from "../../../services/eventApi";
+import type { EventData } from "../../../services/types";
 import styles from "./DateComponent.module.css";
 
 export const DateComponent = ({ eventData }: { eventData: EventData }) => {

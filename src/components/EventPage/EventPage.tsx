@@ -1,5 +1,5 @@
-import EventPageLayout from "./EventPageLayout";
-import EventPageContent from "./EventPageContent";
+import EventPageContent from "./components/EventPageContent";
+import EventPageLayout from "./components/EventPageLayout";
 
 const EventPage = () => {
     return (

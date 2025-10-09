@@ -1,7 +1,7 @@
 import { useState } from "react";
-import About from "../About/About";
-import Form from "../Form/Form";
-import { Button } from "../ui/Button/Button";
+import { Form } from "react-router";
+import About from "../../About/About";
+import { Button } from "../../ui/Button/Button";
 
 const EventPageContent = () => {
     const [showForm, setShowForm] = useState(false);

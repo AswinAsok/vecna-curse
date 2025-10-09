@@ -1,8 +1,9 @@
-import { EventDataContext } from "../../contexts/eventDataContext";
-import { useFetchEventInfo } from "./EventPageLayout.hooks";
-import Footer from "../Footer/Footer";
-import Error from "../ui/Error/Error";
-import Loading from "../ui/Loading/Loading";
+import { EventDataContext } from "../../../contexts/eventDataContext";
+
+import Footer from "../../Footer/Footer";
+import Error from "../../ui/Error/Error";
+import Loading from "../../ui/Loading/Loading";
+import { useFetchEventInfo } from "../hooks/EventPageLayout.hooks";
 import styles from "./EventPageLayout.module.css";
 
 const EventPageLayout = ({ children }: { children: React.ReactNode }) => {
