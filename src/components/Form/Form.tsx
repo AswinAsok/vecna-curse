@@ -1,19 +1,19 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Select from "react-select";
-import { type SubmitFormResponse, submitForm, updateFormLog } from "../../services/eventApi";
+import { type SubmitFormResponse, submitForm } from "../../services/eventApi";
 import styles from "./Form.module.css";
 import countryCodes from "./phoneCountryCodes.json";
 import SuccessPage from "../SuccessPage/SuccessPage";
 import { useEventDataContext } from "../../contexts/eventDataContext";
 import { checkFieldConditions, getPhoneNumberWithoutCode } from "./function";
 import toast from "react-hot-toast";
-import { usePagination } from "../../hooks/usePagination";
+import { usePagination } from "./usePagination.hook";
 import type { FormField } from "../../services/types";
+import { useFormLogUpdation } from "./useFormLogUpdation.hook";
+import { updateFormLog } from "../../services/formLogUpdation";
 
 const Form = () => {
     const eventData = useEventDataContext();
-    const { currentPage, totalPages, currentFields, handleNext, handleBack, justNavigatedRef } =
-        usePagination();
 
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [formData, setFormData] = useState<Record<string, string>>({});
@@ -23,31 +23,16 @@ const Form = () => {
     const [submitResponse, setSubmitResponse] = useState<SubmitFormResponse | null>(null);
     const [logId, setLogId] = useState<string | null>(null);
 
-    // Debounced form data tracking
-    useEffect(() => {
-        const handler = setTimeout(() => {
-            if (!eventData.id || Object.keys(formData).length === 0) return;
+    useFormLogUpdation({
+        formData,
+        logId,
+        setLogId,
+    });
 
-            // Update form log via API
-            if (eventData.tickets && eventData.tickets.length > 0) {
-                updateFormLog(eventData.id, formData, eventData.form, logId)
-                    .then((response) => {
-                        if (!logId && response.response.log_id) {
-                            setLogId(response.response.log_id);
-                        }
-                    })
-                    .catch((error) => {
-                        console.error("Error updating form log:", error);
-                        // Fail silently - form should still work even if logging fails
-                    });
-            }
-        }, 1500); // Debounce for 1.5 seconds
-
-        return () => clearTimeout(handler);
-    }, [formData, eventData.id, eventData.form, eventData.tickets, logId]);
+    const { currentPage, totalPages, currentFields, handleNext, handleBack, justNavigatedRef } =
+        usePagination();
 
     // Group form fields by page_num
-
     const handleInputChange = (fieldKey: string, value: string) => {
         setFormData((prev) => ({
             ...prev,
