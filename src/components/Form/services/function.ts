@@ -1,5 +1,5 @@
 import toast from "react-hot-toast";
-import type { FormField } from "../../services/types";
+import type { FormField } from "../../../services/types";
 
 /**
  * Extracts phone number without country code prefix

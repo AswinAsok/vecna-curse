@@ -2,15 +2,15 @@ import { useState } from "react";
 import Select from "react-select";
 import { type SubmitFormResponse, submitForm } from "../../services/eventApi";
 import styles from "./Form.module.css";
-import countryCodes from "./phoneCountryCodes.json";
 import SuccessPage from "../SuccessPage/SuccessPage";
 import { useEventDataContext } from "../../contexts/eventDataContext";
-import { checkFieldConditions, getPhoneNumberWithoutCode } from "./function";
+import { checkFieldConditions, getPhoneNumberWithoutCode } from "./services/function";
 import toast from "react-hot-toast";
-import { usePagination } from "./usePagination.hook";
 import type { FormField } from "../../services/types";
-import { useFormLogUpdation } from "./useFormLogUpdation.hook";
 import { updateFormLog } from "../../services/formLogUpdation";
+import { useFormLogUpdation } from "./hooks/useFormLogUpdation.hook";
+import { usePagination } from "./hooks/usePagination.hook";
+import countryCodes from "./data/phoneCountryCodes.json";
 
 const Form = () => {
     const eventData = useEventDataContext();
