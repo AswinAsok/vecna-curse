@@ -1,5 +1,5 @@
 import { EventDataContext } from "../../contexts/eventDataContext";
-import { useEvent } from "../../hooks/useEvent";
+import { useEvent } from "./EventPageLayout.hooks";
 import Footer from "../Footer/Footer";
 import Error from "../ui/Error/Error";
 import Loading from "../ui/Loading/Loading";

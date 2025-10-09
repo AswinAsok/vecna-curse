@@ -1,5 +1,5 @@
 import React, { createContext } from "react";
-import { type EventData } from "../services/eventApi";
+import type { EventData } from "../services/types";
 
 export const EventDataContext = createContext<EventData | null>(null);
 
