@@ -20,6 +20,7 @@ const EventPageLayout = ({ children }: { children: React.ReactNode }) => {
             />
         );
     }
+
     return (
         <EventDataContext.Provider value={eventData}>
             <div className={styles.mainContainer}>
