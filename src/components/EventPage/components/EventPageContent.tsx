@@ -1,21 +1,19 @@
 import { useState } from "react";
-import { Form } from "react-router";
+import Form from "../../Form/Form";
 import About from "../../About/About";
 import { Button } from "../../ui/Button/Button";
 
 const EventPageContent = () => {
     const [showForm, setShowForm] = useState(false);
 
-    if (showForm) {
-        return <Form />;
-    } else {
-        return (
-            <>
-                <About />
-                <Button onClick={() => setShowForm(true)}>Next →</Button>
-            </>
-        );
-    }
+    return showForm ? (
+        <Form />
+    ) : (
+        <>
+            <About />
+            <Button onClick={() => setShowForm(true)}>Next →</Button>
+        </>
+    );
 };
 
 export default EventPageContent;
