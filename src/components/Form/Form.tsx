@@ -23,8 +23,6 @@ const Form = () => {
     const [submitResponse, setSubmitResponse] = useState<SubmitFormResponse | null>(null);
     const [logId, setLogId] = useState<string | null>(null);
 
-    // Helper function to get the correct ticket ID based on the radio selection
-
     // Debounced form data tracking
     useEffect(() => {
         const handler = setTimeout(() => {

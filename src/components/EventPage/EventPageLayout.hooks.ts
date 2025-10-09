@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchEventInfo } from "../../services/eventApi";
 
-export const useEvent = () => {
+export const useFetchEventInfo = () => {
     const {
         data: eventData,
         error,

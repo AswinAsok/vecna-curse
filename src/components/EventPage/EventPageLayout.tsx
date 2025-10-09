@@ -1,12 +1,12 @@
 import { EventDataContext } from "../../contexts/eventDataContext";
-import { useEvent } from "./EventPageLayout.hooks";
+import { useFetchEventInfo } from "./EventPageLayout.hooks";
 import Footer from "../Footer/Footer";
 import Error from "../ui/Error/Error";
 import Loading from "../ui/Loading/Loading";
 import styles from "./EventPageLayout.module.css";
 
 const EventPageLayout = ({ children }: { children: React.ReactNode }) => {
-    const { eventData, error, loading } = useEvent();
+    const { eventData, error, loading } = useFetchEventInfo();
 
     if (loading) {
         return <Loading color="white" />;

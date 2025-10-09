@@ -4,15 +4,8 @@ import { getTicketIdBasedOnRadio } from "../components/Form/function";
 
 const API_BASE_URL = "https://api.makemypass.com/makemypass/public-form";
 
-interface EventApiResponse {
-    hasError: boolean;
-    statusCode: number;
-    message: Record<string, unknown>;
-    response: EventData;
-}
-
 export const fetchEventInfo = async (eventName: string = "vecnas-curse"): Promise<EventData> => {
-    const response = await axios.get<EventApiResponse>(`${API_BASE_URL}/${eventName}/info/`);
+    const response = await axios.get(`${API_BASE_URL}/${eventName}/info/`);
     return response.data.response;
 };
 

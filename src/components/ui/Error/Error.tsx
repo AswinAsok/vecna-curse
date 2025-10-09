@@ -1,3 +1,4 @@
+import { Button } from "../Button/Button";
 import styles from "./Error.module.css";
 
 interface ErrorProps {
@@ -10,11 +11,7 @@ const Error = ({ message = "Something went wrong. Please try again.", onRetry }:
         <div className={styles.loadingBackgroundContainer}>
             <div className={styles.errorContainer}>
                 <p className={styles.errorMessage}>{message}</p>
-                {onRetry && (
-                    <button onClick={onRetry} className={styles.retryButton}>
-                        Try Again
-                    </button>
-                )}
+                {onRetry && <Button onClick={onRetry}> Try Again</Button>}
             </div>
         </div>
     );
