@@ -498,7 +498,7 @@ const Form = () => {
 
                 {currentPage === totalPages && (
                     <button type="submit" className={styles.submitButton} disabled={isSubmitting}>
-                        {isSubmitting ? "Submitting..." : "Submit"}
+                        {isSubmitting ? "Stepping In..." : "Step Into the Lair →"}
                     </button>
                 )}
             </form>
