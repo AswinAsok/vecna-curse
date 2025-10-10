@@ -4,6 +4,7 @@ import countryCodes from "../data/phoneCountryCodes.json";
 import { extractCountryCode } from "../services/function";
 import { selectStyles } from "../data/selectStyles";
 import type { FormField } from "../../../services/types";
+import { useEffect } from "react";
 
 const PhoneField = ({
     field,
@@ -16,6 +17,12 @@ const PhoneField = ({
     handleInputChange: (key: string, value: string) => void;
     errors: Record<string, string>;
 }) => {
+    useEffect(() => {
+        if (value.length === 0) {
+            handleCountryCodeChange(field.field_key, "+91");
+        }
+    });
+
     const currentCountryCode = extractCountryCode(value);
     const countryCodeOptions = countryCodes.map((country) => ({
         value: country.dial_code,
