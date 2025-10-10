@@ -10,12 +10,10 @@ const FormFieldsRenderer = ({
     field,
     value,
     handleInputChange,
-    errors,
 }: {
     field: FormField;
     value: string;
     handleInputChange: (key: string, value: string) => void;
-    errors: Record<string, string>;
 }) => {
     switch (field.type) {
         case "text":
@@ -28,7 +26,6 @@ const FormFieldsRenderer = ({
                     field={field}
                     value={value}
                     handleInputChange={handleInputChange}
-                    errors={errors}
                 />
             );
 
@@ -39,7 +36,6 @@ const FormFieldsRenderer = ({
                     field={field}
                     value={value}
                     handleInputChange={handleInputChange}
-                    errors={errors}
                 />
             );
 
@@ -50,7 +46,6 @@ const FormFieldsRenderer = ({
                     field={field}
                     value={value}
                     handleInputChange={handleInputChange}
-                    errors={errors}
                 />
             );
 
@@ -61,7 +56,6 @@ const FormFieldsRenderer = ({
                     field={field}
                     value={value}
                     handleInputChange={handleInputChange}
-                    errors={errors}
                 />
             );
 
@@ -72,7 +66,6 @@ const FormFieldsRenderer = ({
                     field={field}
                     value={value}
                     handleInputChange={handleInputChange}
-                    errors={errors}
                 />
             );
 
@@ -84,7 +77,6 @@ const FormFieldsRenderer = ({
                     field={field}
                     value={value}
                     handleInputChange={handleInputChange}
-                    errors={errors}
                 />
             );
 

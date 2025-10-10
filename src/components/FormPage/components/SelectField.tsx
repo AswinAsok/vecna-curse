@@ -5,12 +5,10 @@ const SelectField = ({
     field,
     value,
     handleInputChange,
-    errors,
 }: {
     field: FormField;
     value: string;
     handleInputChange: (key: string, value: string) => void;
-    errors: Record<string, string>;
 }) => {
     return (
         <div key={field.id} className={styles.fieldContainer}>
@@ -32,7 +30,7 @@ const SelectField = ({
                     </option>
                 ))}
             </select>
-            {errors[field.field_key] && <p className={styles.error}>{errors[field.field_key]}</p>}
+            {/* {errors[field.field_key] && <p className={styles.error}>{errors[field.field_key]}</p>} */}
         </div>
     );
 };

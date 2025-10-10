@@ -10,12 +10,10 @@ const PhoneField = ({
     field,
     value,
     handleInputChange,
-    errors,
 }: {
     field: FormField;
     value: string;
     handleInputChange: (key: string, value: string) => void;
-    errors: Record<string, string>;
 }) => {
     useEffect(() => {
         if (!value || !value.startsWith("+")) {
@@ -78,7 +76,7 @@ const PhoneField = ({
                     className={styles.phoneInput}
                 />
             </div>
-            {errors[field.field_key] && <p className={styles.error}>{errors[field.field_key]}</p>}
+            {/* {errors[field.field_key] && <p className={styles.error}>{errors[field.field_key]}</p>} */}
         </div>
     );
 };

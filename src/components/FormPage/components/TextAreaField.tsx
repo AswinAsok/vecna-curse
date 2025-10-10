@@ -5,12 +5,10 @@ const TextAreaField = ({
     field,
     value,
     handleInputChange,
-    errors,
 }: {
     field: FormField;
     value: string;
     handleInputChange: (key: string, value: string) => void;
-    errors: Record<string, string>;
 }) => {
     return (
         <>
@@ -27,9 +25,9 @@ const TextAreaField = ({
                     required={field.required}
                     className={styles.textarea}
                 />
-                {errors[field.field_key] && (
+                {/* {errors[field.field_key] && (
                     <p className={styles.error}>{errors[field.field_key]}</p>
-                )}
+                )} */}
             </div>
         </>
     );
