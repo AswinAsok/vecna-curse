@@ -4,7 +4,7 @@ import { useEventDataContext } from "../../../contexts/eventDataContext";
 import { updateFormLog } from "../../../services/formLogUpdation";
 import toast from "react-hot-toast";
 
-export const useFormSubmission = ({ logId }: { logId: string | null }) => {
+export const useFormSubmission = ({ logId }: { logId?: string | null }) => {
     const eventData = useEventDataContext();
 
     const [formData, setFormData] = useState<Record<string, string>>({});
@@ -17,7 +17,7 @@ export const useFormSubmission = ({ logId }: { logId: string | null }) => {
         setIsSubmitting(true);
         try {
             // Update form log one final time before submitting
-            if (eventData.id && eventData.tickets && eventData.tickets.length > 0) {
+            if (eventData.id && eventData.tickets && eventData.tickets.length > 0 && logId) {
                 await updateFormLog(eventData.id, formData, eventData.form, logId).catch(
                     (error) => {
                         console.error("Error updating form log before submit:", error);

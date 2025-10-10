@@ -1,5 +1,5 @@
 import toast from "react-hot-toast";
-import type { FormField } from "../../../services/types";
+import type { EventData, FormField } from "../../../services/types";
 import countryCodes from "../data/phoneCountryCodes.json";
 
 /**
@@ -73,4 +73,32 @@ export const extractCountryCode = (value: string): string => {
     }
 
     return "+91";
+};
+
+export const doesFieldValidatesConditions = ({
+    field,
+    formData,
+    eventData,
+}: {
+    field: FormField;
+    formData: Record<string, string>;
+    eventData: EventData;
+}) => {
+    // Check standard field conditions
+    if (!checkFieldConditions(field, formData, eventData.form)) {
+        return false;
+    }
+
+    // Special condition for email field - only show if phone code is not +91
+    if (field.field_key === "email") {
+        const phoneFields = eventData.form.filter((f) => f.type === "phone");
+        // Check if any phone field has a country code that's not +91
+        const hasNonIndianPhone = phoneFields.some((phoneField) => {
+            const code = extractCountryCode(formData[phoneField.field_key]);
+            return code !== "+91";
+        });
+        return hasNonIndianPhone;
+    }
+
+    return true;
 };

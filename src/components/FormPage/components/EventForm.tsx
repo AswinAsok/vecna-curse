@@ -1,9 +1,9 @@
 import { useEventDataContext } from "../../../contexts/eventDataContext";
 import styles from "../FormPage.module.css";
 import { useFormSubmission } from "../hooks/useFormSubmission.hook";
-import { useFormValidation } from "../hooks/useFormValidatoin.hook";
+import { useFormValidation } from "../hooks/useFormValidation.hook";
 import { usePagination } from "../hooks/usePagination.hook";
-import { checkFieldConditions, extractCountryCode } from "../services/function";
+import { doesFieldValidatesConditions } from "../services/function";
 import FormFieldsRenderer from "./FormFieldsRenderer";
 
 const EventForm = ({ logId }: { logId: string | null }) => {
@@ -11,9 +11,11 @@ const EventForm = ({ logId }: { logId: string | null }) => {
 
     const { setFormData, formData, isSubmitting, handleSubmit } = useFormSubmission({ logId });
 
-    const { currentPage, totalPages, currentFields } = usePagination();
-
-    const { validateCurrentPage } = useFormValidation({ currentFields, formData });
+    const { currentPage, totalPages, pageGroups } = usePagination();
+    const { validateCurrentPage } = useFormValidation({
+        currentFields: pageGroups[currentPage],
+        formData,
+    });
 
     const handleInputChange = (fieldKey: string, value: string) => {
         setFormData((prev) => ({
@@ -30,26 +32,8 @@ const EventForm = ({ logId }: { logId: string | null }) => {
             className={styles.form}
         >
             <div className={styles.fieldsContainer}>
-                {currentFields
-                    .filter((field) => {
-                        // Check standard field conditions
-                        if (!checkFieldConditions(field, formData, eventData.form)) {
-                            return false;
-                        }
-
-                        // Special condition for email field - only show if phone code is not +91
-                        if (field.field_key === "email") {
-                            const phoneFields = eventData.form.filter((f) => f.type === "phone");
-                            // Check if any phone field has a country code that's not +91
-                            const hasNonIndianPhone = phoneFields.some((phoneField) => {
-                                const code = extractCountryCode(formData[phoneField.field_key]);
-                                return code !== "+91";
-                            });
-                            return hasNonIndianPhone;
-                        }
-
-                        return true;
-                    })
+                {pageGroups[currentPage]
+                    .filter((field) => doesFieldValidatesConditions({ field, formData, eventData }))
                     .map((field) => (
                         <FormFieldsRenderer
                             key={field.id}

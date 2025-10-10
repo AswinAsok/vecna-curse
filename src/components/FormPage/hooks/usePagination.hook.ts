@@ -21,7 +21,6 @@ export const usePagination = () => {
     }, [eventData.form]);
 
     const totalPages = Object.keys(pageGroups).length;
-    const currentFields = pageGroups[currentPage] || [];
 
     const handleNext = () => {
         if (currentPage < totalPages) {
@@ -38,7 +37,7 @@ export const usePagination = () => {
     return {
         currentPage,
         totalPages,
-        currentFields,
+        pageGroups,
         handleNext,
         handlePrevious,
     };
