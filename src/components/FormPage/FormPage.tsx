@@ -5,16 +5,10 @@ import SuccessPage from "../SuccessPage/SuccessPage";
 import { useEventDataContext } from "../../contexts/eventDataContext";
 import { checkFieldConditions, getPhoneNumberWithoutCode } from "./services/function";
 import toast from "react-hot-toast";
-import type { FormField } from "../../services/types";
 import { updateFormLog } from "../../services/formLogUpdation";
 import { useFormLogUpdation } from "./hooks/useFormLogUpdation.hook";
 import { usePagination } from "./hooks/usePagination.hook";
-import TextField from "./components/TextField";
-import PhoneField from "./components/PhoneField";
-import RadioField from "./components/RadioField";
-import CheckboxField from "./components/CheckboxField";
-import TextAreaField from "./components/TextAreaField";
-import SelectField from "./components/SelectField";
+import FormFieldsRenderer from "./components/FormFieldsRenderer";
 
 const FormPage = () => {
     const eventData = useEventDataContext();
@@ -95,6 +89,37 @@ const FormPage = () => {
         return isValid;
     };
 
+    const handlePhoneChange = (fieldKey: string, phoneNumber: string) => {
+        const countryCode = phoneCountryCode[fieldKey] || "+91";
+        setFormData((prev) => ({
+            ...prev,
+            [fieldKey]: `${countryCode}${phoneNumber}`,
+        }));
+        // Clear error when user starts typing
+        if (errors[fieldKey]) {
+            setErrors((prev) => {
+                const newErrors = { ...prev };
+                delete newErrors[fieldKey];
+                return newErrors;
+            });
+        }
+    };
+
+    const handleCountryCodeChange = (fieldKey: string, code: string) => {
+        setPhoneCountryCode((prev) => ({
+            ...prev,
+            [fieldKey]: code,
+        }));
+        const phoneNumber = getPhoneNumberWithoutCode(
+            formData[fieldKey] || "",
+            phoneCountryCode[fieldKey] || "+91"
+        );
+        setFormData((prev) => ({
+            ...prev,
+            [fieldKey]: `${code}${phoneNumber}`,
+        }));
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -164,123 +189,6 @@ const FormPage = () => {
         }
     };
 
-    const handlePhoneChange = (fieldKey: string, phoneNumber: string) => {
-        const countryCode = phoneCountryCode[fieldKey] || "+91";
-        setFormData((prev) => ({
-            ...prev,
-            [fieldKey]: `${countryCode}${phoneNumber}`,
-        }));
-        // Clear error when user starts typing
-        if (errors[fieldKey]) {
-            setErrors((prev) => {
-                const newErrors = { ...prev };
-                delete newErrors[fieldKey];
-                return newErrors;
-            });
-        }
-    };
-
-    const handleCountryCodeChange = (fieldKey: string, code: string) => {
-        setPhoneCountryCode((prev) => ({
-            ...prev,
-            [fieldKey]: code,
-        }));
-        const phoneNumber = getPhoneNumberWithoutCode(
-            formData[fieldKey] || "",
-            phoneCountryCode[fieldKey] || "+91"
-        );
-        setFormData((prev) => ({
-            ...prev,
-            [fieldKey]: `${code}${phoneNumber}`,
-        }));
-    };
-
-    const renderField = (field: FormField) => {
-        const value = formData[field.field_key] || "";
-
-        switch (field.type) {
-            case "text":
-            case "email":
-            case "number":
-            case "url":
-                return (
-                    <TextField
-                        key={field.id}
-                        field={field}
-                        value={value}
-                        handleInputChange={handleInputChange}
-                        errors={errors}
-                    />
-                );
-
-            case "phone":
-                return (
-                    <PhoneField
-                        key={field.id}
-                        field={field}
-                        value={value}
-                        handlePhoneChange={handlePhoneChange}
-                        phoneCountryCode={phoneCountryCode}
-                        handleCountryCodeChange={handleCountryCodeChange}
-                        errors={errors}
-                    />
-                );
-
-            case "radio":
-                return (
-                    <RadioField
-                        key={field.id}
-                        field={field}
-                        value={value}
-                        handleInputChange={handleInputChange}
-                        errors={errors}
-                    />
-                );
-
-            case "checkbox":
-                return (
-                    <CheckboxField
-                        key={field.id}
-                        field={field}
-                        value={value}
-                        handleInputChange={handleInputChange}
-                        errors={errors}
-                    />
-                );
-
-            case "textarea":
-                return (
-                    <TextAreaField
-                        key={field.id}
-                        field={field}
-                        value={value}
-                        handleInputChange={handleInputChange}
-                        errors={errors}
-                    />
-                );
-
-            case "select":
-            case "dropdown":
-                return (
-                    <SelectField
-                        key={field.id}
-                        field={field}
-                        value={value}
-                        handleInputChange={handleInputChange}
-                        errors={errors}
-                    />
-                );
-
-            default:
-                return null;
-        }
-    };
-
-    if (eventData.form.length === 0) {
-        return null;
-    }
-
-    // Show success page after form submission
     if (isFormSubmitted && submitResponse) {
         return <SuccessPage />;
     }
@@ -316,7 +224,18 @@ const FormPage = () => {
 
                             return true;
                         })
-                        .map((field) => renderField(field))}
+                        .map((field) => (
+                            <FormFieldsRenderer
+                                key={field.id}
+                                field={field}
+                                value={formData[field.field_key] || ""}
+                                handleInputChange={handleInputChange}
+                                handlePhoneChange={handlePhoneChange}
+                                phoneCountryCode={phoneCountryCode}
+                                handleCountryCodeChange={handleCountryCodeChange}
+                                errors={errors}
+                            />
+                        ))}
                 </div>
 
                 {currentPage === totalPages && (
