@@ -1,32 +1,46 @@
 import styles from "../FormPage.module.css";
 import Select from "react-select";
 import countryCodes from "../data/phoneCountryCodes.json";
-import { getPhoneNumberWithoutCode } from "../services/function";
+import { extractCountryCode } from "../services/function";
 import { selectStyles } from "../data/selectStyles";
 import type { FormField } from "../../../services/types";
 
 const PhoneField = ({
     field,
     value,
-    handlePhoneChange,
-    phoneCountryCode,
-    handleCountryCodeChange,
+    handleInputChange,
     errors,
 }: {
     field: FormField;
     value: string;
-    handlePhoneChange: (key: string, value: string) => void;
-    phoneCountryCode: Record<string, string>;
-    handleCountryCodeChange: (key: string, code: string) => void;
+    handleInputChange: (key: string, value: string) => void;
     errors: Record<string, string>;
 }) => {
-    const currentCountryCode = phoneCountryCode[field.field_key] || "+91";
-    const phoneNumber = getPhoneNumberWithoutCode(value, currentCountryCode);
+    const currentCountryCode = extractCountryCode(value);
     const countryCodeOptions = countryCodes.map((country) => ({
         value: country.dial_code,
         label: `${country.dial_code} ${country.code}`,
     }));
     const selectedOption = countryCodeOptions.find((option) => option.value === currentCountryCode);
+
+    const handleCountryCodeChange = (key: string, code: string) => {
+        if (value.startsWith("+")) {
+            const countryCode = extractCountryCode(value);
+            const withoutCountryCodoe = value.slice(countryCode.length);
+            handleInputChange(key, code + withoutCountryCodoe);
+        } else {
+            handleInputChange(key, code + value);
+        }
+    };
+
+    const returnPhoneWithoutCountryCode = (value: string) => {
+        if (value.startsWith("+")) {
+            const countryCode = extractCountryCode(value);
+            return value.slice(countryCode.length);
+        }
+
+        return value;
+    };
 
     return (
         <div key={field.id} className={styles.fieldContainer}>
@@ -48,8 +62,8 @@ const PhoneField = ({
                 />
                 <input
                     type="tel"
-                    value={phoneNumber}
-                    onChange={(e) => handlePhoneChange(field.field_key, e.target.value)}
+                    value={returnPhoneWithoutCountryCode(value)}
+                    onChange={(e) => handleInputChange(field.field_key, e.target.value)}
                     placeholder={field.placeholder}
                     required={field.required}
                     className={styles.phoneInput}

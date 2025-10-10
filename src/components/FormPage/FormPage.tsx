@@ -3,7 +3,7 @@ import { type SubmitFormResponse, submitForm } from "../../services/eventApi";
 import styles from "./FormPage.module.css";
 import SuccessPage from "../SuccessPage/SuccessPage";
 import { useEventDataContext } from "../../contexts/eventDataContext";
-import { checkFieldConditions, getPhoneNumberWithoutCode } from "./services/function";
+import { checkFieldConditions, extractCountryCode } from "./services/function";
 import toast from "react-hot-toast";
 import { updateFormLog } from "../../services/formLogUpdation";
 import { useFormLogUpdation } from "./hooks/useFormLogUpdation.hook";
@@ -15,7 +15,7 @@ const FormPage = () => {
 
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [formData, setFormData] = useState<Record<string, string>>({});
-    const [phoneCountryCode, setPhoneCountryCode] = useState<Record<string, string>>({});
+
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isFormSubmitted, setIsFormSubmitted] = useState(false);
     const [submitResponse, setSubmitResponse] = useState<SubmitFormResponse | null>(null);
@@ -30,8 +30,8 @@ const FormPage = () => {
     const { currentPage, totalPages, currentFields, handleNext, handlePrevious, justNavigatedRef } =
         usePagination();
 
-    // Group form fields by page_num
     const handleInputChange = (fieldKey: string, value: string) => {
+        console.log(fieldKey, value);
         setFormData((prev) => ({
             ...prev,
             [fieldKey]: value,
@@ -57,7 +57,7 @@ const FormPage = () => {
             if (field.field_key === "email") {
                 const phoneFields = eventData.form.filter((f) => f.type === "phone");
                 const hasNonIndianPhone = phoneFields.some((phoneField) => {
-                    const code = phoneCountryCode[phoneField.field_key] || "+91";
+                    const code = extractCountryCode(formData[phoneField.field_key]);
                     return code !== "+91";
                 });
                 return hasNonIndianPhone;
@@ -87,37 +87,6 @@ const FormPage = () => {
 
         setErrors(newErrors);
         return isValid;
-    };
-
-    const handlePhoneChange = (fieldKey: string, phoneNumber: string) => {
-        const countryCode = phoneCountryCode[fieldKey] || "+91";
-        setFormData((prev) => ({
-            ...prev,
-            [fieldKey]: `${countryCode}${phoneNumber}`,
-        }));
-        // Clear error when user starts typing
-        if (errors[fieldKey]) {
-            setErrors((prev) => {
-                const newErrors = { ...prev };
-                delete newErrors[fieldKey];
-                return newErrors;
-            });
-        }
-    };
-
-    const handleCountryCodeChange = (fieldKey: string, code: string) => {
-        setPhoneCountryCode((prev) => ({
-            ...prev,
-            [fieldKey]: code,
-        }));
-        const phoneNumber = getPhoneNumberWithoutCode(
-            formData[fieldKey] || "",
-            phoneCountryCode[fieldKey] || "+91"
-        );
-        setFormData((prev) => ({
-            ...prev,
-            [fieldKey]: `${code}${phoneNumber}`,
-        }));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -160,6 +129,7 @@ const FormPage = () => {
                 }
             });
 
+            console.log(transformedFormData);
             const response = await submitForm(eventData.id, transformedFormData, logId);
             setSubmitResponse(response.response);
             setIsFormSubmitted(true);
@@ -216,7 +186,7 @@ const FormPage = () => {
                                 );
                                 // Check if any phone field has a country code that's not +91
                                 const hasNonIndianPhone = phoneFields.some((phoneField) => {
-                                    const code = phoneCountryCode[phoneField.field_key] || "+91";
+                                    const code = extractCountryCode(formData[phoneField.field_key]);
                                     return code !== "+91";
                                 });
                                 return hasNonIndianPhone;
@@ -230,9 +200,6 @@ const FormPage = () => {
                                 field={field}
                                 value={formData[field.field_key] || ""}
                                 handleInputChange={handleInputChange}
-                                handlePhoneChange={handlePhoneChange}
-                                phoneCountryCode={phoneCountryCode}
-                                handleCountryCodeChange={handleCountryCodeChange}
                                 errors={errors}
                             />
                         ))}

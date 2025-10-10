@@ -1,15 +1,6 @@
 import toast from "react-hot-toast";
 import type { FormField } from "../../../services/types";
-
-/**
- * Extracts phone number without country code prefix
- */
-export const getPhoneNumberWithoutCode = (fullPhone: string, currentCode: string): string => {
-    if (fullPhone.startsWith(currentCode)) {
-        return fullPhone.slice(currentCode.length);
-    }
-    return fullPhone;
-};
+import countryCodes from "../data/phoneCountryCodes.json";
 
 /**
  * Checks if field conditions are met based on form data
@@ -68,4 +59,18 @@ export const getTicketIdBasedOnRadio = (formData: FormData): string | undefined 
         default:
             toast.error("Something went wrong. Please try again.");
     }
+};
+
+export const extractCountryCode = (value: string): string => {
+    if (value) {
+        const currentCountryCodes = countryCodes.map((country) => country.dial_code);
+
+        const extractedCode = currentCountryCodes.find((code) => {
+            return value.startsWith(code);
+        });
+
+        return extractedCode || "+91";
+    }
+
+    return "+91";
 };

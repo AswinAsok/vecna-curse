@@ -10,17 +10,11 @@ const FormFieldsRenderer = ({
     field,
     value,
     handleInputChange,
-    handlePhoneChange,
-    phoneCountryCode,
-    handleCountryCodeChange,
     errors,
 }: {
     field: FormField;
     value: string;
     handleInputChange: (key: string, value: string) => void;
-    handlePhoneChange: (key: string, value: string) => void;
-    phoneCountryCode: Record<string, string>;
-    handleCountryCodeChange: (key: string, code: string) => void;
     errors: Record<string, string>;
 }) => {
     switch (field.type) {
@@ -44,9 +38,7 @@ const FormFieldsRenderer = ({
                     key={field.id}
                     field={field}
                     value={value}
-                    handlePhoneChange={handlePhoneChange}
-                    phoneCountryCode={phoneCountryCode}
-                    handleCountryCodeChange={handleCountryCodeChange}
+                    handleInputChange={handleInputChange}
                     errors={errors}
                 />
             );
