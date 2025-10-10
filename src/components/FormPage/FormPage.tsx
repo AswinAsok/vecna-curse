@@ -130,8 +130,8 @@ const FormPage = () => {
             });
 
             console.log(transformedFormData);
-            const response = await submitForm(eventData.id, transformedFormData, logId);
-            setSubmitResponse(response.response);
+            // const response = await submitForm(eventData.id, transformedFormData, logId);
+            // setSubmitResponse(response.response);
             setIsFormSubmitted(true);
 
             setLogId(null);

@@ -18,10 +18,11 @@ const PhoneField = ({
     errors: Record<string, string>;
 }) => {
     useEffect(() => {
-        if (value.length === 0) {
-            handleCountryCodeChange(field.field_key, "+91");
+        if (!value || !value.startsWith("+")) {
+            handleInputChange(field.field_key, "+91");
         }
-    });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const currentCountryCode = extractCountryCode(value);
     const countryCodeOptions = countryCodes.map((country) => ({
@@ -31,18 +32,19 @@ const PhoneField = ({
     const selectedOption = countryCodeOptions.find((option) => option.value === currentCountryCode);
 
     const handleCountryCodeChange = (key: string, code: string) => {
-        if (value.startsWith("+")) {
-            const countryCode = extractCountryCode(value);
-            const withoutCountryCodoe = value.slice(countryCode.length);
-            handleInputChange(key, code + withoutCountryCodoe);
-        } else {
-            handleInputChange(key, code + value);
-        }
+        const phoneNumber = returnPhoneWithoutCountryCode(value);
+        handleInputChange(key, code + phoneNumber);
+    };
+
+    const handlePhoneNumberChange = (phoneNumber: string) => {
+        const countryCode = currentCountryCode || "+91";
+        handleInputChange(field.field_key, countryCode + phoneNumber);
     };
 
     const returnPhoneWithoutCountryCode = (value: string) => {
         if (value.startsWith("+")) {
             const countryCode = extractCountryCode(value);
+
             return value.slice(countryCode.length);
         }
 
@@ -70,7 +72,7 @@ const PhoneField = ({
                 <input
                     type="tel"
                     value={returnPhoneWithoutCountryCode(value)}
-                    onChange={(e) => handleInputChange(field.field_key, e.target.value)}
+                    onChange={(e) => handlePhoneNumberChange(e.target.value)}
                     placeholder={field.placeholder}
                     required={field.required}
                     className={styles.phoneInput}
