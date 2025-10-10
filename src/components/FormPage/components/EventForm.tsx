@@ -4,7 +4,7 @@ import styles from "../FormPage.module.css";
 import { useFormSubmission } from "../hooks/useFormSubmission.hook";
 import { useFormValidation } from "../hooks/useFormValidation.hook";
 import { usePagination } from "../hooks/usePagination.hook";
-import { doesFieldValidatesConditions } from "../services/function";
+import { doesFieldValidatesConditions } from "../../../utils/fieldConditions";
 import FormFieldsRenderer from "./FormFieldsRenderer";
 
 const EventForm = ({ logId }: { logId: string | null }) => {

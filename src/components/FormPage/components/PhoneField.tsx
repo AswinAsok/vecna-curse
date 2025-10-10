@@ -1,7 +1,7 @@
 import styles from "../FormPage.module.css";
 import Select from "react-select";
 import countryCodes from "../data/phoneCountryCodes.json";
-import { extractCountryCode } from "../services/function";
+import { extractCountryCode, removeCountryCode, combinePhoneNumber } from "../../../utils/phoneUtils";
 import { selectStyles } from "../data/selectStyles";
 import type { FormField } from "../../../services/types";
 import { useEffect } from "react";
@@ -30,23 +30,13 @@ const PhoneField = ({
     const selectedOption = countryCodeOptions.find((option) => option.value === currentCountryCode);
 
     const handleCountryCodeChange = (key: string, code: string) => {
-        const phoneNumber = returnPhoneWithoutCountryCode(value);
-        handleInputChange(key, code + phoneNumber);
+        const phoneNumber = removeCountryCode(value);
+        handleInputChange(key, combinePhoneNumber(code, phoneNumber));
     };
 
     const handlePhoneNumberChange = (phoneNumber: string) => {
         const countryCode = currentCountryCode || "+91";
-        handleInputChange(field.field_key, countryCode + phoneNumber);
-    };
-
-    const returnPhoneWithoutCountryCode = (value: string) => {
-        if (value.startsWith("+")) {
-            const countryCode = extractCountryCode(value);
-
-            return value.slice(countryCode.length);
-        }
-
-        return value;
+        handleInputChange(field.field_key, combinePhoneNumber(countryCode, phoneNumber));
     };
 
     return (
@@ -69,7 +59,7 @@ const PhoneField = ({
                 />
                 <input
                     type="tel"
-                    value={returnPhoneWithoutCountryCode(value)}
+                    value={removeCountryCode(value)}
                     onChange={(e) => handlePhoneNumberChange(e.target.value)}
                     placeholder={field.placeholder}
                     required={field.required}

@@ -1,6 +1,6 @@
 import axios from "axios";
 import type { EventData } from "./types";
-import { getTicketIdBasedOnRadio } from "../components/FormPage/services/function";
+import { prepareSubmitFormData } from "../utils/formDataPreparation";
 
 const API_BASE_URL = "https://api.makemypass.com/makemypass/public-form";
 
@@ -36,37 +36,7 @@ export const submitForm = async (
     console.log(formData);
 
     try {
-        const submitData = new FormData();
-
-        // Add all form fields
-        Object.entries(formData).forEach(([key, value]) => {
-            submitData.append(key, value);
-        });
-
-        // Add tickets and utm data
-        submitData.append(
-            "__tickets[]",
-            JSON.stringify({
-                ticket_id: getTicketIdBasedOnRadio(submitData),
-                count: 1,
-                my_ticket: true,
-            })
-        );
-        submitData.append(
-            "__utm",
-            JSON.stringify({
-                utm_source: null,
-                utm_medium: null,
-                utm_campaign: null,
-                utm_term: null,
-                utm_content: null,
-            })
-        );
-
-        // Add log_id if it exists
-        if (logId) {
-            submitData.append("log_id", logId);
-        }
+        const submitData = prepareSubmitFormData(formData, logId);
 
         const response = await axios.post<SubmitApiResponse>(
             `${API_BASE_URL}/${eventId}/submit/`,

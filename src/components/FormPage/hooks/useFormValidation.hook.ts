@@ -1,6 +1,8 @@
 import { useEventDataContext } from "../../../contexts/eventDataContext";
 import type { FormField } from "../../../services/types";
-import { checkFieldConditions, extractCountryCode } from "../services/function";
+import { checkFieldConditions } from "../../../utils/fieldConditions";
+import { shouldValidateEmailField } from "../../../utils/businessRules";
+import { validateField } from "../../../utils/validators";
 
 export const useFormValidation = ({
     currentFields,
@@ -19,12 +21,7 @@ export const useFormValidation = ({
 
             // Special condition for email field - only validate if phone code is not +91
             if (field.field_key === "email") {
-                const phoneFields = eventData.form.filter((f) => f.type === "phone");
-                const hasNonIndianPhone = phoneFields.some((phoneField) => {
-                    const code = extractCountryCode(formData[phoneField.field_key]);
-                    return code !== "+91";
-                });
-                return hasNonIndianPhone;
+                return shouldValidateEmailField(eventData.form, formData);
             }
 
             return true;
@@ -35,17 +32,11 @@ export const useFormValidation = ({
 
         for (const field of fieldsToValidate) {
             const value = formData[field.field_key];
+            const validation = validateField(field, value);
 
-            if (field.required && (!value || value.trim() === "")) {
-                newErrors[field.field_key] = "This field is required";
+            if (!validation.isValid && validation.error) {
+                newErrors[field.field_key] = validation.error;
                 isValid = false;
-            } else if (field.type === "email" && value && value.trim() !== "") {
-                // Validate email format
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailRegex.test(value.trim())) {
-                    newErrors[field.field_key] = "Please enter a valid email address";
-                    isValid = false;
-                }
             }
         }
 

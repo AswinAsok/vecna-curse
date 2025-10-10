@@ -2,6 +2,7 @@ import { useState } from "react";
 import { submitForm, type SubmitFormResponse } from "../../../services/eventApi";
 import { useEventDataContext } from "../../../contexts/eventDataContext";
 import { updateFormLog } from "../../../services/formLogUpdation";
+import { transformInstagramFields } from "../../../utils/formDataTransformers";
 import toast from "react-hot-toast";
 
 export const useFormSubmission = ({ logId }: { logId?: string | null }) => {
@@ -26,21 +27,8 @@ export const useFormSubmission = ({ logId }: { logId?: string | null }) => {
                 );
             }
 
-            // Instagram field keys that need to be converted to profile links
-            const instagramFieldKeys = ["__vecna_sees_your_instagram_id", "partner_instagram_id"];
-
             // Transform Instagram IDs to full profile links
-            const transformedFormData = { ...formData };
-            instagramFieldKeys.forEach((fieldKey) => {
-                if (transformedFormData[fieldKey] && transformedFormData[fieldKey].trim() !== "") {
-                    const instagramId = transformedFormData[fieldKey].trim();
-                    // Remove @ if user included it and any instagram.com links if already present
-                    let cleanId = instagramId.replace(/^@/, "");
-                    cleanId = cleanId.replace(/^https?:\/\/(www\.)?instagram\.com\//i, "");
-                    // Convert to full Instagram profile link
-                    transformedFormData[fieldKey] = `https://www.instagram.com/${cleanId}`;
-                }
-            });
+            const transformedFormData = transformInstagramFields(formData);
 
             const response = await submitForm(eventData.id, transformedFormData, logId);
             setSubmitResponse(response.response);
