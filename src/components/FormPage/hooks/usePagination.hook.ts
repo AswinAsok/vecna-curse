@@ -1,23 +1,11 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { useEventDataContext } from "../../../contexts/eventDataContext";
 import type { FormField } from "../../../services/types";
 
 export const usePagination = () => {
-    const justNavigatedRef = useRef(false);
     const eventData = useEventDataContext();
 
     const [currentPage, setCurrentPage] = useState<number>(1);
-    const [errors, setErrors] = useState<Record<string, string>>({});
-
-    // Reset navigation flag after page change
-    useEffect(() => {
-        if (justNavigatedRef.current) {
-            const timer = setTimeout(() => {
-                justNavigatedRef.current = false;
-            }, 100);
-            return () => clearTimeout(timer);
-        }
-    }, [currentPage]);
 
     const pageGroups = useMemo(() => {
         const groups: Record<number, FormField[]> = {};
@@ -37,14 +25,12 @@ export const usePagination = () => {
 
     const handleNext = () => {
         if (currentPage < totalPages) {
-            justNavigatedRef.current = true;
             setCurrentPage((prev) => prev + 1);
         }
     };
 
     const handlePrevious = () => {
         if (currentPage > 1) {
-            justNavigatedRef.current = true;
             setCurrentPage((prev) => prev - 1);
         }
     };
@@ -55,9 +41,5 @@ export const usePagination = () => {
         currentFields,
         handleNext,
         handlePrevious,
-
-        errors,
-        setErrors,
-        justNavigatedRef,
     };
 };
