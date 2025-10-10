@@ -1,4 +1,5 @@
 import { useEventDataContext } from "../../../contexts/eventDataContext";
+import { usePaginationContext } from "../../../contexts/paginationContext";
 import styles from "../FormPage.module.css";
 import { useFormSubmission } from "../hooks/useFormSubmission.hook";
 import { useFormValidation } from "../hooks/useFormValidation.hook";
@@ -11,7 +12,9 @@ const EventForm = ({ logId }: { logId: string | null }) => {
 
     const { setFormData, formData, isSubmitting, handleSubmit } = useFormSubmission({ logId });
 
-    const { currentPage, totalPages, pageGroups } = usePagination();
+    const currentPage = usePaginationContext();
+
+    const { totalPages, pageGroups } = usePagination();
     const { validateCurrentPage } = useFormValidation({
         currentFields: pageGroups[currentPage],
         formData,

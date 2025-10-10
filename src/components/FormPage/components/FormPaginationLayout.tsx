@@ -1,3 +1,4 @@
+import { PaginationDataContext } from "../../../contexts/paginationContext";
 import styles from "../FormPage.module.css";
 import { usePagination } from "../hooks/usePagination.hook";
 
@@ -5,7 +6,7 @@ const FormPaginationLayout = ({ children }: { children: React.ReactNode }) => {
     const { currentPage, totalPages, handleNext, handlePrevious } = usePagination();
 
     return (
-        <>
+        <PaginationDataContext.Provider value={currentPage}>
             {currentPage > 1 && (
                 <p className={styles.backLink} onClick={handlePrevious}>
                     ← Back
@@ -23,7 +24,7 @@ const FormPaginationLayout = ({ children }: { children: React.ReactNode }) => {
                     Next
                 </button>
             )}
-        </>
+        </PaginationDataContext.Provider>
     );
 };
 
