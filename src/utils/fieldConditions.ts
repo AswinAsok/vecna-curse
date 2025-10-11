@@ -1,4 +1,5 @@
 import type { EventData, FormField } from "../services/types";
+import { operatorRegistry } from "./operators/operatorRegistry";
 import { extractCountryCode } from "./phoneUtils";
 
 /**
@@ -18,9 +19,9 @@ export const checkFieldConditions = (
         value: conditionValue,
         operator,
     } = field.conditions as {
-        field?: string;
-        value?: string;
-        operator?: string;
+        field: string;
+        value: string;
+        operator: string;
     };
 
     if (!fieldId || !conditionValue) {
@@ -33,16 +34,10 @@ export const checkFieldConditions = (
         return true;
     }
 
-    const currentValue = formData[referencedField.field_key];
+    const currentValue = formData[referencedField.field_key] || "";
 
-    switch (operator) {
-        case "=":
-            return currentValue === conditionValue;
-        case "!=":
-            return currentValue !== conditionValue;
-        default:
-            return true;
-    }
+    // Use operator registry instead of switch
+    return operatorRegistry.evaluate(operator, currentValue, conditionValue);
 };
 
 /**
