@@ -1,8 +1,8 @@
 import { useEventDataContext } from "../../../contexts/eventDataContext";
 import type { FormField } from "../../../services/types";
 import { checkFieldConditions } from "../../../utils/fieldConditions";
-import { shouldValidateEmailField } from "../../../utils/businessRules";
 import { validateField } from "../../../utils/validation/validators";
+import { businessRuleRegistry } from "../../../utils/businessRules/rulesRegistry";
 
 export const useFormValidation = ({
     currentFields,
@@ -19,12 +19,11 @@ export const useFormValidation = ({
                 return false;
             }
 
-            // Special condition for email field - only validate if phone code is not +91
-            if (field.field_key === "email") {
-                return shouldValidateEmailField(eventData.form, formData);
-            }
-
-            return true;
+            return businessRuleRegistry.shouldValidate({
+                field,
+                formData,
+                allFormFields: eventData.form,
+            });
         });
 
         const newErrors: Record<string, string> = {};
