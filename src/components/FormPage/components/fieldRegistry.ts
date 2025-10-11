@@ -1,10 +1,4 @@
 import type { FormField } from "../../../services/types";
-import CheckboxField from "./CheckboxField";
-import PhoneField from "./PhoneField";
-import RadioField from "./RadioField";
-import SelectField from "./SelectField";
-import TextAreaField from "./TextAreaField";
-import TextField from "./TextField";
 
 export type FieldComponent = (props: {
     field: FormField;
@@ -12,15 +6,30 @@ export type FieldComponent = (props: {
     handleInputChange: (key: string, value: string) => void;
 }) => React.ReactElement | null;
 
-export const fieldRegistry: Record<string, FieldComponent> = {
-    text: TextField,
-    email: TextField,
-    number: TextField,
-    url: TextField,
-    phone: PhoneField,
-    radio: RadioField,
-    checkbox: CheckboxField,
-    textarea: TextAreaField,
-    select: SelectField,
-    dropdown: SelectField,
+const createFieldRegistry = () => {
+    const registry = new Map<string, FieldComponent>();
+
+    return {
+        register: (type: string, component: FieldComponent): void => {
+            registry.set(type, component);
+        },
+
+        registerMultiple: (types: string[], component: FieldComponent): void => {
+            types.forEach((type) => registry.set(type, component));
+        },
+
+        get: (type: string): FieldComponent | undefined => {
+            return registry.get(type);
+        },
+
+        has: (type: string): boolean => {
+            return registry.has(type);
+        },
+
+        getRegisteredTypes: (): string[] => {
+            return Array.from(registry.keys());
+        },
+    };
 };
+
+export const fieldRegistry = createFieldRegistry();
