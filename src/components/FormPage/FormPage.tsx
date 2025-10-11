@@ -6,7 +6,6 @@ import { useFormLogUpdation } from "./hooks/useFormLogUpdation.hook";
 import { useFormSubmission } from "./hooks/useFormSubmission.hook";
 import FormPaginationLayout from "./components/FormPaginationLayout";
 import EventForm from "./components/EventForm";
-import { registerDefaultValidators } from "../../utils/validation/registerDeafultValidators";
 
 const FormPage = () => {
     const [logId, setLogId] = useState<string | null>(null);
@@ -18,8 +17,6 @@ const FormPage = () => {
         logId,
         setLogId,
     });
-
-    registerDefaultValidators();
 
     if (isFormSubmitted && submitResponse) {
         return <SuccessPage />;

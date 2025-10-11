@@ -7,7 +7,7 @@ export const createCustomValidator = (
     errorMessage: string
 ): ValidatorFunction => {
     return (field, value) => {
-        if (!shouldValidate(field) || !value || value.trim() == "") {
+        if (!shouldValidate(field) || !value || value.trim() === "") {
             return { isValid: true };
         }
 

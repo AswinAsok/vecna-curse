@@ -1,6 +1,5 @@
 import type { FormField } from "../../../services/types";
 import { fieldRegistry } from "./fieldRegistry";
-import { registerDefaultFields } from "./registerDefaultFields";
 
 const FormFieldsRenderer = ({
     field,
@@ -11,8 +10,7 @@ const FormFieldsRenderer = ({
     value: string;
     handleInputChange: (key: string, value: string) => void;
 }) => {
-    registerDefaultFields();
-    const FieldComponent = fieldRegistry.get(field.field_key);
+    const FieldComponent = fieldRegistry.get(field.type);
 
     if (!FieldComponent) {
         return null;
