@@ -1,5 +1,6 @@
 import type { FormField } from "../../../services/types";
 import styles from "../FormPage.module.css";
+import BaseFieldWrapper from "./BaseFieldWrapper";
 
 const TextAreaField = ({
     field,
@@ -11,22 +12,20 @@ const TextAreaField = ({
     handleInputChange: (key: string, value: string) => void;
 }) => {
     return (
-        <>
-            <div key={field.id} className={styles.fieldContainer}>
-                <label className={styles.label}>
-                    {field.title}
-                    {field.required && <span className={styles.required}>*</span>}
-                </label>
-                {field.description && <p className={styles.description}>{field.description}</p>}
-                <textarea
-                    value={value}
-                    onChange={(e) => handleInputChange(field.field_key, e.target.value)}
-                    placeholder={field.placeholder}
-                    required={field.required}
-                    className={styles.textarea}
-                />
-            </div>
-        </>
+        <BaseFieldWrapper
+            id={field.id}
+            title={field.title}
+            required={field.required}
+            description={field.description}
+        >
+            <textarea
+                value={value}
+                onChange={(e) => handleInputChange(field.field_key, e.target.value)}
+                placeholder={field.placeholder}
+                required={field.required}
+                className={styles.textarea}
+            />
+        </BaseFieldWrapper>
     );
 };
 

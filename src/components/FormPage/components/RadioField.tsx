@@ -1,5 +1,6 @@
 import type { FormField } from "../../../services/types";
 import styles from "../FormPage.module.css";
+import BaseFieldWrapper from "./BaseFieldWrapper";
 
 const RadioField = ({
     field,
@@ -11,12 +12,12 @@ const RadioField = ({
     handleInputChange: (key: string, value: string) => void;
 }) => {
     return (
-        <div key={field.id} className={styles.fieldContainer}>
-            <label className={styles.label}>
-                {field.title}
-                {field.required && <span className={styles.required}>*</span>}
-            </label>
-            {field.description && <p className={styles.description}>{field.description}</p>}
+        <BaseFieldWrapper
+            id={field.id}
+            title={field.title}
+            required={field.required}
+            description={field.description}
+        >
             <div className={styles.radioGroup}>
                 {field.options[0]?.values.map((option, index) => (
                     <label key={index} className={styles.radioLabel}>
@@ -33,7 +34,7 @@ const RadioField = ({
                     </label>
                 ))}
             </div>
-        </div>
+        </BaseFieldWrapper>
     );
 };
 

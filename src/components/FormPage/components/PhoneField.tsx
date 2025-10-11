@@ -9,6 +9,7 @@ import {
 import { selectStyles } from "../data/selectStyles";
 import type { FormField } from "../../../services/types";
 import { useEffect } from "react";
+import BaseFieldWrapper from "./BaseFieldWrapper";
 
 const PhoneField = ({
     field,
@@ -44,12 +45,12 @@ const PhoneField = ({
     };
 
     return (
-        <div key={field.id} className={styles.fieldContainer}>
-            <label className={styles.label}>
-                {field.title}
-                {field.required && <span className={styles.required}>*</span>}
-            </label>
-            {field.description && <p className={styles.description}>{field.description}</p>}
+        <BaseFieldWrapper
+            id={field.id}
+            title={field.title}
+            required={field.required}
+            description={field.description}
+        >
             <div className={styles.phoneInputContainer}>
                 <Select
                     value={selectedOption}
@@ -70,7 +71,7 @@ const PhoneField = ({
                     className={styles.phoneInput}
                 />
             </div>
-        </div>
+        </BaseFieldWrapper>
     );
 };
 

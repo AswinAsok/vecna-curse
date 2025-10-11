@@ -1,5 +1,6 @@
 import type { FormField } from "../../../services/types";
 import styles from "../FormPage.module.css";
+import BaseFieldWrapper from "./BaseFieldWrapper";
 
 const SelectField = ({
     field,
@@ -11,12 +12,12 @@ const SelectField = ({
     handleInputChange: (key: string, value: string) => void;
 }) => {
     return (
-        <div key={field.id} className={styles.fieldContainer}>
-            <label className={styles.label}>
-                {field.title}
-                {field.required && <span className={styles.required}>*</span>}
-            </label>
-            {field.description && <p className={styles.description}>{field.description}</p>}
+        <BaseFieldWrapper
+            id={field.id}
+            title={field.title}
+            required={field.required}
+            description={field.description}
+        >
             <select
                 value={value}
                 onChange={(e) => handleInputChange(field.field_key, e.target.value)}
@@ -30,7 +31,7 @@ const SelectField = ({
                     </option>
                 ))}
             </select>
-        </div>
+        </BaseFieldWrapper>
     );
 };
 
