@@ -1,7 +1,11 @@
 import styles from "../FormPage.module.css";
 import Select from "react-select";
 import countryCodes from "../data/phoneCountryCodes.json";
-import { extractCountryCode, removeCountryCode, combinePhoneNumber } from "../../../utils/phoneUtils";
+import {
+    extractCountryCode,
+    removeCountryCode,
+    combinePhoneNumber,
+} from "../../../utils/phoneUtils";
 import { selectStyles } from "../data/selectStyles";
 import type { FormField } from "../../../services/types";
 import { useEffect } from "react";
@@ -66,7 +70,6 @@ const PhoneField = ({
                     className={styles.phoneInput}
                 />
             </div>
-            {/* {errors[field.field_key] && <p className={styles.error}>{errors[field.field_key]}</p>} */}
         </div>
     );
 };

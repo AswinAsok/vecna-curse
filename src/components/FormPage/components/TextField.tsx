@@ -1,5 +1,6 @@
 import styles from "../FormPage.module.css";
 import type { FormField } from "../../../services/types";
+import BaseFieldWrapper from "./BaseFieldWrapper";
 
 const TextField = ({
     field,
@@ -11,12 +12,12 @@ const TextField = ({
     handleInputChange: (key: string, value: string) => void;
 }) => {
     return (
-        <div key={field.id} className={styles.fieldContainer}>
-            <label className={styles.label}>
-                {field.title}
-                {field.required && <span className={styles.required}>*</span>}
-            </label>
-            {field.description && <p className={styles.description}>{field.description}</p>}
+        <BaseFieldWrapper
+            id={field.id}
+            title={field.title}
+            required={field.required}
+            description={field.description}
+        >
             <input
                 type={field.type === "url" ? "text" : field.type}
                 value={value}
@@ -25,8 +26,7 @@ const TextField = ({
                 required={field.required}
                 className={styles.input}
             />
-            {/* {errors[field.field_key] && <p className={styles.error}>{errors[field.field_key]}</p>} */}
-        </div>
+        </BaseFieldWrapper>
     );
 };
 

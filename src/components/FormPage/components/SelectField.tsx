@@ -30,7 +30,6 @@ const SelectField = ({
                     </option>
                 ))}
             </select>
-            {/* {errors[field.field_key] && <p className={styles.error}>{errors[field.field_key]}</p>} */}
         </div>
     );
 };

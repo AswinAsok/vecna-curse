@@ -25,9 +25,6 @@ const TextAreaField = ({
                     required={field.required}
                     className={styles.textarea}
                 />
-                {/* {errors[field.field_key] && (
-                    <p className={styles.error}>{errors[field.field_key]}</p>
-                )} */}
             </div>
         </>
     );

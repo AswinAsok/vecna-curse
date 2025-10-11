@@ -28,7 +28,6 @@ const CheckboxField = ({
                 </span>
             </label>
             {field.description && <p className={styles.description}>{field.description}</p>}
-            {/* {errors[field.field_key] && <p className={styles.error}>{errors[field.field_key]}</p>} */}
         </div>
     );
 };

@@ -33,7 +33,6 @@ const RadioField = ({
                     </label>
                 ))}
             </div>
-            {/* {errors[field.field_key] && <p className={styles.error}>{errors[field.field_key]}</p>} */}
         </div>
     );
 };
