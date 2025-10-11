@@ -2,7 +2,7 @@ import { useState } from "react";
 import { submitForm, type SubmitFormResponse } from "../../../services/eventApi";
 import { useEventDataContext } from "../../../contexts/eventDataContext";
 import { updateFormLog } from "../../../services/formLogUpdation";
-import { transformInstagramFields } from "../../../utils/formDataTransformers";
+import { transformFormData } from "../../../utils/formDataTransformers";
 import toast from "react-hot-toast";
 
 export const useFormSubmission = ({ logId }: { logId?: string | null }) => {
@@ -28,7 +28,7 @@ export const useFormSubmission = ({ logId }: { logId?: string | null }) => {
             }
 
             // Transform Instagram IDs to full profile links
-            const transformedFormData = transformInstagramFields(formData);
+            const transformedFormData = transformFormData(formData);
 
             const response = await submitForm(eventData.id, transformedFormData, logId);
             setSubmitResponse(response.response);
