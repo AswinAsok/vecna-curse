@@ -2,7 +2,7 @@ import { useEventDataContext } from "../../../contexts/eventDataContext";
 import type { FormField } from "../../../services/types";
 import { checkFieldConditions } from "../../../utils/fieldConditions";
 import { shouldValidateEmailField } from "../../../utils/businessRules";
-import { validateField } from "../../../utils/validators";
+import { validateField } from "../../../utils/validation/validators";
 
 export const useFormValidation = ({
     currentFields,
