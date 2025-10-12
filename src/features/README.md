@@ -2,18 +2,18 @@
 
 This directory contains feature-based modules. Each feature is self-contained with its own:
 
-- Components
-- Hooks
-- API calls
-- Types
-- Utils
-- Contexts (if needed)
+-   Components
+-   Hooks
+-   API calls
+-   Types
+-   Utils
+-   Contexts (if needed)
 
 ## Current Features
 
-- **event**: Event information and display
-- **form**: Form rendering, validation, and submission
-- **success**: Success page after form submission
+-   **event**: Event information and display
+-   **form**: Form rendering, validation, and submission
+-   **success**: Success page after form submission
 
 ## Adding a New Feature
 
@@ -41,8 +41,8 @@ your-feature/
 
 ## Best Practices
 
-- Keep features independent and loosely coupled
-- Use barrel exports (`index.ts`) for clean public APIs
-- Share code through the `@/core`, `@/components`, and `@/utils` directories
-- Use feature contexts for feature-specific state
-- Import from other features only through their barrel exports
+-   Keep features independent and loosely coupled
+-   Use barrel exports (`index.ts`) for clean public APIs
+-   Share code through the `@/core`, `@/components`, and `@/utils` directories
+-   Use feature contexts for feature-specific state
+-   Import from other features only through their barrel exports

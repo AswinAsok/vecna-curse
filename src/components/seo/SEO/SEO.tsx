@@ -69,7 +69,7 @@ const SEO = () => {
                         name: eventData.hosts[0]?.title || "TurnUp",
                         url: currentUrl,
                     },
-                    offers: eventData.tickets.map((ticket: any) => ({
+                    offers: eventData.tickets.map((ticket: { title: string; price: number }) => ({
                         "@type": "Offer",
                         name: ticket.title,
                         price: ticket.price,
