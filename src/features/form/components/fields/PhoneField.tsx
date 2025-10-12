@@ -1,16 +1,16 @@
-import styles from "../FormPage.module.css";
+import styles from "../../FormPage.module.css";
 import Select from "react-select";
-import countryCodes from "../data/phoneCountryCodes.json";
+
 import {
     extractCountryCode,
     removeCountryCode,
     combinePhoneNumber,
-} from "../../../utils/phoneUtils";
-import { selectStyles } from "../data/selectStyles";
+} from "../../../../utils/phoneUtils";
 import { useEffect } from "react";
-import BaseFieldWrapper from "./BaseFieldWrapper";
-import type { FormField } from "../../../types/form.types";
-
+import BaseFieldWrapper from "../BaseFieldWrapper";
+import type { FormField } from "../../../../types/form.types";
+import { selectStyles } from "../../data/selectStyles";
+import countryCodes from "../../data/phoneCountryCodes.json";
 const PhoneField = ({
     field,
     value,

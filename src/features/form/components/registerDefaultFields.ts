@@ -1,10 +1,10 @@
-import CheckboxField from "./CheckboxField";
+import CheckboxField from "./fields/CheckboxField";
 import { fieldRegistry } from "./fieldRegistry";
-import PhoneField from "./PhoneField";
-import RadioField from "./RadioField";
-import SelectField from "./SelectField";
-import TextAreaField from "./TextAreaField";
-import TextField from "./TextField";
+import PhoneField from "./fields/PhoneField";
+import RadioField from "./fields/RadioField";
+import SelectField from "./fields/SelectField";
+import TextAreaField from "./fields/TextAreaField";
+import TextField from "./fields/TextField";
 
 export const registerDefaultFields = (): void => {
     fieldRegistry.registerMultiple(["text", "email", "number", "url"], TextField);

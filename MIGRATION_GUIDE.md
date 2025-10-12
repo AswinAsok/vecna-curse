@@ -12,12 +12,12 @@ This guide provides detailed, actionable steps to migrate the **vecnas-curse** p
 
 Before starting the migration, ensure:
 
-- [ ] All current work is committed to Git
-- [ ] Create a new branch: `git checkout -b refactor/folder-structure`
-- [ ] Backup the current codebase
-- [ ] All tests are passing (if applicable)
-- [ ] Team members are informed about the migration
-- [ ] You have a rollback plan (the Git branch)
+-   [ ] All current work is committed to Git
+-   [ ] Create a new branch: `git checkout -b refactor/folder-structure`
+-   [ ] Backup the current codebase
+-   [ ] All tests are passing (if applicable)
+-   [ ] Team members are informed about the migration
+-   [ ] You have a rollback plan (the Git branch)
 
 ---
 
@@ -79,40 +79,40 @@ mv public/turnuplogo.png public/images/logos/turnup-logo.png
 
 ```json
 {
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["src/*"],
-      "@/components/*": ["src/components/*"],
-      "@/features/*": ["src/features/*"],
-      "@/hooks/*": ["src/hooks/*"],
-      "@/utils/*": ["src/utils/*"],
-      "@/types/*": ["src/types/*"],
-      "@/config/*": ["src/config/*"],
-      "@/lib/*": ["src/lib/*"],
-      "@/core/*": ["src/core/*"],
-      "@/styles/*": ["src/styles/*"],
-      "@/app/*": ["src/app/*"]
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["src/*"],
+            "@/components/*": ["src/components/*"],
+            "@/features/*": ["src/features/*"],
+            "@/hooks/*": ["src/hooks/*"],
+            "@/utils/*": ["src/utils/*"],
+            "@/types/*": ["src/types/*"],
+            "@/config/*": ["src/config/*"],
+            "@/lib/*": ["src/lib/*"],
+            "@/core/*": ["src/core/*"],
+            "@/styles/*": ["src/styles/*"],
+            "@/app/*": ["src/app/*"]
+        }
     }
-  }
 }
 ```
 
 **Update `vite.config.ts`**:
 
 ```typescript
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import path from 'path'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import path from "path";
 
 export default defineConfig({
-  plugins: [react()],
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
+    plugins: [react()],
+    resolve: {
+        alias: {
+            "@": path.resolve(__dirname, "./src"),
+        },
     },
-  },
-})
+});
 ```
 
 **Install path package** (if not already installed):
@@ -127,17 +127,17 @@ npm install -D @types/node
 
 ```typescript
 // Re-export all types from this barrel file
-export * from './api.types'
-export * from './common.types'
+export * from "./api.types";
+export * from "./common.types";
 ```
 
 **Create `src/types/common.types.ts`**:
 
 ```typescript
 // Common types used across the application
-export type Nullable<T> = T | null
-export type Optional<T> = T | undefined
-export type ID = string | number
+export type Nullable<T> = T | null;
+export type Optional<T> = T | undefined;
+export type ID = string | number;
 
 // Add other common types as needed
 ```
@@ -147,15 +147,15 @@ export type ID = string | number
 ```typescript
 // API-related types
 export interface ApiResponse<T = unknown> {
-  data: T
-  message?: string
-  success: boolean
+    data: T;
+    message?: string;
+    success: boolean;
 }
 
 export interface ApiError {
-  message: string
-  code?: string
-  details?: unknown
+    message: string;
+    code?: string;
+    details?: unknown;
 }
 ```
 
@@ -176,9 +176,10 @@ cp src/services/types.ts src/types/api.types.ts
 ```
 
 Then manually organize types into:
-- `src/types/api.types.ts` - API response types
-- `src/types/event.types.ts` - Event-related types (to be created later in feature folders)
-- `src/types/form.types.ts` - Form-related types (to be created later in feature folders)
+
+-   `src/types/api.types.ts` - API response types
+-   `src/types/event.types.ts` - Event-related types (to be created later in feature folders)
+-   `src/types/form.types.ts` - Form-related types (to be created later in feature folders)
 
 ### Step 1.6: Create Configuration Files
 
@@ -186,25 +187,25 @@ Then manually organize types into:
 
 ```typescript
 export const env = {
-  apiBaseUrl: import.meta.env.VITE_API_BASE_URL || 'https://api.makemypass.com',
-  isProd: import.meta.env.PROD,
-  isDev: import.meta.env.DEV,
-  mode: import.meta.env.MODE,
-} as const
+    apiBaseUrl: import.meta.env.VITE_API_BASE_URL || "https://api.makemypass.com",
+    isProd: import.meta.env.PROD,
+    isDev: import.meta.env.DEV,
+    mode: import.meta.env.MODE,
+} as const;
 
 // Type for environment variables
-export type Env = typeof env
+export type Env = typeof env;
 ```
 
 **Create `src/config/constants.ts`**:
 
 ```typescript
 export const APP_CONSTANTS = {
-  APP_NAME: 'Vecnas Curse',
-  DEFAULT_PAGE_SIZE: 10,
-  MAX_FILE_SIZE: 5 * 1024 * 1024, // 5MB
-  SUPPORTED_IMAGE_TYPES: ['image/jpeg', 'image/png', 'image/gif'],
-} as const
+    APP_NAME: "Vecnas Curse",
+    DEFAULT_PAGE_SIZE: 10,
+    MAX_FILE_SIZE: 5 * 1024 * 1024, // 5MB
+    SUPPORTED_IMAGE_TYPES: ["image/jpeg", "image/png", "image/gif"],
+} as const;
 
 // Add other constants as needed
 ```
@@ -212,8 +213,8 @@ export const APP_CONSTANTS = {
 **Create `src/config/index.ts`**:
 
 ```typescript
-export * from './env'
-export * from './constants'
+export * from "./env";
+export * from "./constants";
 ```
 
 ### Step 1.7: Setup Axios Client
@@ -221,60 +222,60 @@ export * from './constants'
 **Create `src/lib/axios/client.ts`**:
 
 ```typescript
-import axios from 'axios'
-import { env } from '@/config'
+import axios from "axios";
+import { env } from "@/config";
 
 export const apiClient = axios.create({
-  baseURL: env.apiBaseUrl,
-  timeout: 10000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-})
+    baseURL: env.apiBaseUrl,
+    timeout: 10000,
+    headers: {
+        "Content-Type": "application/json",
+    },
+});
 ```
 
 **Create `src/lib/axios/interceptors.ts`**:
 
 ```typescript
-import { apiClient } from './client'
-import type { AxiosError, AxiosResponse } from 'axios'
+import { apiClient } from "./client";
+import type { AxiosError, AxiosResponse } from "axios";
 
 // Request interceptor
 apiClient.interceptors.request.use(
-  (config) => {
-    // Add auth token if available
-    const token = localStorage.getItem('auth_token')
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
+    (config) => {
+        // Add auth token if available
+        const token = localStorage.getItem("auth_token");
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
     }
-    return config
-  },
-  (error) => {
-    return Promise.reject(error)
-  }
-)
+);
 
 // Response interceptor
 apiClient.interceptors.response.use(
-  (response: AxiosResponse) => {
-    return response
-  },
-  (error: AxiosError) => {
-    // Handle common errors
-    if (error.response?.status === 401) {
-      // Handle unauthorized
-      console.error('Unauthorized access')
+    (response: AxiosResponse) => {
+        return response;
+    },
+    (error: AxiosError) => {
+        // Handle common errors
+        if (error.response?.status === 401) {
+            // Handle unauthorized
+            console.error("Unauthorized access");
+        }
+        return Promise.reject(error);
     }
-    return Promise.reject(error)
-  }
-)
+);
 ```
 
 **Create `src/lib/axios/index.ts`**:
 
 ```typescript
-export { apiClient } from './client'
-export * from './interceptors'
+export { apiClient } from "./client";
+export * from "./interceptors";
 ```
 
 ### Step 1.8: Move Global Styles
@@ -288,10 +289,10 @@ mv src/index.css src/styles/index.css
 
 ```typescript
 // Before
-import './index.css'
+import "./index.css";
 
 // After
-import '@/styles/index.css'
+import "@/styles/index.css";
 ```
 
 ### Step 1.9: Test Phase 1
@@ -349,9 +350,9 @@ rm src/utils/businessRules.ts
 
 ```typescript
 // Export business rules engine and registry
-export * from './rules'
-export * from './engine'
-export * from './registry'
+export * from "./rules";
+export * from "./engine";
+export * from "./registry";
 ```
 
 #### 2.1.2: Move Operators
@@ -364,7 +365,7 @@ mv src/utils/operators src/core/operators/registry
 **Create `src/core/operators/index.ts`**:
 
 ```typescript
-export * from './registry'
+export * from "./registry";
 ```
 
 #### 2.1.3: Move Transformers (Fix Typo)
@@ -377,7 +378,7 @@ mv src/utils/transfomers src/core/transformers/registry
 **Create `src/core/transformers/index.ts`**:
 
 ```typescript
-export * from './registry'
+export * from "./registry";
 ```
 
 #### 2.1.4: Move Validators
@@ -390,7 +391,7 @@ mv src/utils/validation src/core/validators/registry
 **Create `src/core/validators/index.ts`**:
 
 ```typescript
-export * from './registry'
+export * from "./registry";
 ```
 
 ### Step 2.2: Migrate Event Feature
@@ -422,13 +423,13 @@ mv src/components/About src/features/event/components/About
 Move the event API logic from `src/services/apis/` to this new file:
 
 ```typescript
-import { apiClient } from '@/lib/axios'
-import type { EventInfo } from '../types/event.types'
+import { apiClient } from "@/lib/axios";
+import type { EventInfo } from "../types/event.types";
 
 export const getEventInfo = async (eventSlug: string): Promise<EventInfo> => {
-  const response = await apiClient.get(`/makemypass/public-form/${eventSlug}/info/`)
-  return response.data
-}
+    const response = await apiClient.get(`/makemypass/public-form/${eventSlug}/info/`);
+    return response.data;
+};
 ```
 
 #### 2.2.4: Create Event Types
@@ -440,11 +441,11 @@ Move event-related types from `src/services/types.ts`:
 ```typescript
 // Define event-specific types here
 export interface EventInfo {
-  // Add fields from your existing types
-  id: string
-  name: string
-  slug: string
-  // ... other fields
+    // Add fields from your existing types
+    id: string;
+    name: string;
+    slug: string;
+    // ... other fields
 }
 ```
 
@@ -471,7 +472,7 @@ rmdir src/features/event/components/EventPage/hooks
 
 ```typescript
 // Main event page component
-export { default } from './components/EventPage'
+export { default } from "./components/EventPage";
 ```
 
 #### 2.2.7: Create Event Barrel Export
@@ -479,8 +480,8 @@ export { default } from './components/EventPage'
 **Create `src/features/event/index.ts`**:
 
 ```typescript
-export { default as EventPage } from './EventPage'
-export * from './types/event.types'
+export { default as EventPage } from "./EventPage";
+export * from "./types/event.types";
 ```
 
 ### Step 2.3: Migrate Form Feature
@@ -539,8 +540,8 @@ mv src/contexts/paginationContext.ts src/features/form/contexts/
 **Update context exports** - Create `src/features/form/contexts/index.ts`:
 
 ```typescript
-export * from './eventDataContext'
-export * from './paginationContext'
+export * from "./eventDataContext";
+export * from "./paginationContext";
 ```
 
 #### 2.3.6: Move Form-Specific Utils
@@ -557,11 +558,11 @@ mv src/utils/fieldConditions.ts src/features/form/utils/
 **Create utils barrel export** - `src/features/form/utils/index.ts`:
 
 ```typescript
-export * from './prepareLogData'
-export * from './prepareSubmitData'
-export * from './ticketMapping'
-export * from './formDataTransformers'
-export * from './fieldConditions'
+export * from "./prepareLogData";
+export * from "./prepareSubmitData";
+export * from "./ticketMapping";
+export * from "./formDataTransformers";
+export * from "./fieldConditions";
 ```
 
 #### 2.3.7: Move Form Data
@@ -576,30 +577,30 @@ mv src/components/FormPage/data src/features/form/data
 **Create `src/features/form/api/formLogApi.ts`**:
 
 ```typescript
-import { apiClient } from '@/lib/axios'
+import { apiClient } from "@/lib/axios";
 
 export const logFormAction = async (logData: unknown) => {
-  const response = await apiClient.post('/form-log/', logData)
-  return response.data
-}
+    const response = await apiClient.post("/form-log/", logData);
+    return response.data;
+};
 ```
 
 **Create `src/features/form/api/formSubmissionApi.ts`**:
 
 ```typescript
-import { apiClient } from '@/lib/axios'
+import { apiClient } from "@/lib/axios";
 
 export const submitForm = async (formData: unknown) => {
-  const response = await apiClient.post('/form-submission/', formData)
-  return response.data
-}
+    const response = await apiClient.post("/form-submission/", formData);
+    return response.data;
+};
 ```
 
 **Create `src/features/form/api/index.ts`**:
 
 ```typescript
-export * from './formLogApi'
-export * from './formSubmissionApi'
+export * from "./formLogApi";
+export * from "./formSubmissionApi";
 ```
 
 #### 2.3.9: Create Form Types
@@ -610,19 +611,19 @@ Move form-related types from existing locations:
 
 ```typescript
 export interface FormField {
-  id: string
-  name: string
-  type: string
-  required: boolean
-  // ... other fields
+    id: string;
+    name: string;
+    type: string;
+    required: boolean;
+    // ... other fields
 }
 
 export interface FormData {
-  // Define form data structure
+    // Define form data structure
 }
 
 export interface FormSubmission {
-  // Define submission structure
+    // Define submission structure
 }
 ```
 
@@ -633,7 +634,7 @@ export interface FormSubmission {
 ```typescript
 // Main form page component
 // Move or reference the existing FormPage component logic here
-export { default } from './components/FormPage'
+export { default } from "./components/FormPage";
 ```
 
 #### 2.3.11: Create Form Barrel Export
@@ -641,10 +642,10 @@ export { default } from './components/FormPage'
 **Create `src/features/form/index.ts`**:
 
 ```typescript
-export { default as FormPage } from './FormPage'
-export * from './types/form.types'
-export * from './contexts'
-export * from './hooks'
+export { default as FormPage } from "./FormPage";
+export * from "./types/form.types";
+export * from "./contexts";
+export * from "./hooks";
 ```
 
 ### Step 2.4: Migrate Success Feature
@@ -668,7 +669,7 @@ mv src/components/SuccessPage src/features/success/
 **Create `src/features/success/index.ts`**:
 
 ```typescript
-export { default as SuccessPage } from './SuccessPage'
+export { default as SuccessPage } from "./SuccessPage";
 ```
 
 ### Step 2.5: Reorganize Shared Components
@@ -713,9 +714,9 @@ ls src/components/ui/
 
 ```typescript
 // Export all UI components
-export * from './Button'
-export * from './Input'
-export * from './Select'
+export * from "./Button";
+export * from "./Input";
+export * from "./Select";
 // ... add others as needed
 ```
 
@@ -747,34 +748,34 @@ find src -type f \( -name "*.ts" -o -name "*.tsx" \) -exec sed -i 's|from.*conte
 
 ```typescript
 // Event imports
-import { EventInfo } from '../services/types'
+import { EventInfo } from "../services/types";
 // becomes
-import { EventInfo } from '@/features/event/types/event.types'
+import { EventInfo } from "@/features/event/types/event.types";
 
 // Form contexts
-import { EventDataContext } from '../../contexts/eventDataContext'
+import { EventDataContext } from "../../contexts/eventDataContext";
 // becomes
-import { EventDataContext } from '@/features/form/contexts'
+import { EventDataContext } from "@/features/form/contexts";
 
 // Form hooks
-import { usePagination } from './hooks/usePagination.hook'
+import { usePagination } from "./hooks/usePagination.hook";
 // becomes
-import { usePagination } from '@/features/form/hooks/usePagination.hook'
+import { usePagination } from "@/features/form/hooks/usePagination.hook";
 
 // Core business rules
-import { evaluateRule } from '../../utils/businessRules'
+import { evaluateRule } from "../../utils/businessRules";
 // becomes
-import { evaluateRule } from '@/core/business-rules'
+import { evaluateRule } from "@/core/business-rules";
 
 // Utils
-import { phoneUtils } from '../../utils/phoneUtils'
+import { phoneUtils } from "../../utils/phoneUtils";
 // becomes
-import { phoneUtils } from '@/utils/phoneUtils'
+import { phoneUtils } from "@/utils/phoneUtils";
 
 // API client
-import axios from 'axios'
+import axios from "axios";
 // becomes
-import { apiClient } from '@/lib/axios'
+import { apiClient } from "@/lib/axios";
 ```
 
 ### Step 2.7: Update Route Configuration
@@ -784,24 +785,24 @@ If you have route definitions, update them:
 **Create `src/app/routes/index.tsx`**:
 
 ```typescript
-import { EventPage } from '@/features/event'
-import { FormPage } from '@/features/form'
-import { SuccessPage } from '@/features/success'
+import { EventPage } from "@/features/event";
+import { FormPage } from "@/features/form";
+import { SuccessPage } from "@/features/success";
 
 export const routes = [
-  {
-    path: '/',
-    element: <EventPage />,
-  },
-  {
-    path: '/form',
-    element: <FormPage />,
-  },
-  {
-    path: '/success',
-    element: <SuccessPage />,
-  },
-]
+    {
+        path: "/",
+        element: <EventPage />,
+    },
+    {
+        path: "/form",
+        element: <FormPage />,
+    },
+    {
+        path: "/success",
+        element: <SuccessPage />,
+    },
+];
 ```
 
 ### Step 2.8: Clean Up Old Directories
@@ -889,22 +890,22 @@ git commit -m "refactor(structure): Phase 2 - Feature migration
 **Create `src/components/layouts/index.ts`**:
 
 ```typescript
-export * from './Footer'
-export * from './MainLayout'
+export * from "./Footer";
+export * from "./MainLayout";
 ```
 
 **Create `src/components/seo/index.ts`**:
 
 ```typescript
-export * from './SEO'
+export * from "./SEO";
 ```
 
 **Create `src/components/index.ts`**:
 
 ```typescript
-export * from './layouts'
-export * from './seo'
-export * from './ui'
+export * from "./layouts";
+export * from "./seo";
+export * from "./ui";
 ```
 
 #### 3.1.2: Hooks Barrel Export
@@ -913,8 +914,8 @@ export * from './ui'
 
 ```typescript
 // Export all shared hooks
-export * from './useDebouncedEffect'
-export * from './useLocalStorage'
+export * from "./useDebouncedEffect";
+export * from "./useLocalStorage";
 // Add others as needed
 ```
 
@@ -923,10 +924,10 @@ export * from './useLocalStorage'
 **Create `src/utils/index.ts`**:
 
 ```typescript
-export * from './phoneUtils'
-export * from './fieldConditions'
-export * from './formDataTransformers'
-export * from './helpers'
+export * from "./phoneUtils";
+export * from "./fieldConditions";
+export * from "./formDataTransformers";
+export * from "./helpers";
 ```
 
 #### 3.1.4: Core Barrel Exports
@@ -934,10 +935,10 @@ export * from './helpers'
 **Create `src/core/index.ts`**:
 
 ```typescript
-export * from './business-rules'
-export * from './operators'
-export * from './transformers'
-export * from './validators'
+export * from "./business-rules";
+export * from "./operators";
+export * from "./transformers";
+export * from "./validators";
 ```
 
 ### Step 3.2: Optimize Imports
@@ -946,13 +947,13 @@ Update imports to use barrel exports:
 
 ```typescript
 // Before
-import { Button } from '@/components/ui/Button/Button'
-import { Input } from '@/components/ui/Input/Input'
-import { Footer } from '@/components/layouts/Footer/Footer'
+import { Button } from "@/components/ui/Button/Button";
+import { Input } from "@/components/ui/Input/Input";
+import { Footer } from "@/components/layouts/Footer/Footer";
 
 // After
-import { Button, Input } from '@/components/ui'
-import { Footer } from '@/components/layouts'
+import { Button, Input } from "@/components/ui";
+import { Footer } from "@/components/layouts";
 ```
 
 ### Step 3.3: Add Index Files to Feature Subdirectories
@@ -962,21 +963,21 @@ import { Footer } from '@/components/layouts'
 **Create `src/features/form/components/fields/index.ts`**:
 
 ```typescript
-export * from './PhoneField'
-export * from './RadioField'
-export * from './TextAreaField'
-export * from './BaseFieldWrapper'
+export * from "./PhoneField";
+export * from "./RadioField";
+export * from "./TextAreaField";
+export * from "./BaseFieldWrapper";
 ```
 
 Then update imports:
 
 ```typescript
 // Before
-import { PhoneField } from './fields/PhoneField'
-import { RadioField } from './fields/RadioField'
+import { PhoneField } from "./fields/PhoneField";
+import { RadioField } from "./fields/RadioField";
 
 // After
-import { PhoneField, RadioField } from './fields'
+import { PhoneField, RadioField } from "./fields";
 ```
 
 ### Step 3.4: Create Documentation Files
@@ -988,18 +989,18 @@ import { PhoneField, RadioField } from './fields'
 
 This directory contains feature-based modules. Each feature is self-contained with its own:
 
-- Components
-- Hooks
-- API calls
-- Types
-- Utils
-- Contexts (if needed)
+-   Components
+-   Hooks
+-   API calls
+-   Types
+-   Utils
+-   Contexts (if needed)
 
 ## Current Features
 
-- **event**: Event information and display
-- **form**: Form rendering, validation, and submission
-- **success**: Success page after form submission
+-   **event**: Event information and display
+-   **form**: Form rendering, validation, and submission
+-   **success**: Success page after form submission
 
 ## Adding a New Feature
 
@@ -1016,10 +1017,10 @@ This directory contains feature-based modules. Each feature is self-contained wi
 
 This directory contains framework-agnostic business logic:
 
-- **business-rules**: Business rules engine
-- **operators**: Custom operators for rule evaluation
-- **transformers**: Data transformation logic
-- **validators**: Validation logic
+-   **business-rules**: Business rules engine
+-   **operators**: Custom operators for rule evaluation
+-   **transformers**: Data transformation logic
+-   **validators**: Validation logic
 
 This code should be pure TypeScript with no React dependencies.
 ```
@@ -1069,16 +1070,16 @@ npm install -D eslint-plugin-import eslint-plugin-simple-import-sort eslint-plug
 
 ```javascript
 module.exports = {
-  plugins: ['import', 'simple-import-sort', 'unused-imports'],
-  rules: {
-    'simple-import-sort/imports': 'error',
-    'simple-import-sort/exports': 'error',
-    'import/first': 'error',
-    'import/newline-after-import': 'error',
-    'import/no-duplicates': 'error',
-    'unused-imports/no-unused-imports': 'error',
-  },
-}
+    plugins: ["import", "simple-import-sort", "unused-imports"],
+    rules: {
+        "simple-import-sort/imports": "error",
+        "simple-import-sort/exports": "error",
+        "import/first": "error",
+        "import/newline-after-import": "error",
+        "import/no-duplicates": "error",
+        "unused-imports/no-unused-imports": "error",
+    },
+};
 ```
 
 **Run ESLint fix**:
@@ -1098,18 +1099,18 @@ npm install -D rollup-plugin-visualizer
 **Update `vite.config.ts`**:
 
 ```typescript
-import { visualizer } from 'rollup-plugin-visualizer'
+import { visualizer } from "rollup-plugin-visualizer";
 
 export default defineConfig({
-  plugins: [
-    react(),
-    visualizer({
-      open: true,
-      gzipSize: true,
-      brotliSize: true,
-    }),
-  ],
-})
+    plugins: [
+        react(),
+        visualizer({
+            open: true,
+            gzipSize: true,
+            brotliSize: true,
+        }),
+    ],
+});
 ```
 
 **Build and analyze**:
@@ -1124,23 +1125,23 @@ npm run build
 **Update route configuration** for lazy loading:
 
 ```typescript
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense } from "react";
 
-const EventPage = lazy(() => import('@/features/event'))
-const FormPage = lazy(() => import('@/features/form'))
-const SuccessPage = lazy(() => import('@/features/success'))
+const EventPage = lazy(() => import("@/features/event"));
+const FormPage = lazy(() => import("@/features/form"));
+const SuccessPage = lazy(() => import("@/features/success"));
 
 export const routes = [
-  {
-    path: '/',
-    element: (
-      <Suspense fallback={<div>Loading...</div>}>
-        <EventPage />
-      </Suspense>
-    ),
-  },
-  // ... other routes
-]
+    {
+        path: "/",
+        element: (
+            <Suspense fallback={<div>Loading...</div>}>
+                <EventPage />
+            </Suspense>
+        ),
+    },
+    // ... other routes
+];
 ```
 
 ### Step 4.4: Add Pre-commit Hooks
@@ -1156,12 +1157,9 @@ npx husky install
 
 ```json
 {
-  "lint-staged": {
-    "*.{ts,tsx}": [
-      "eslint --fix",
-      "prettier --write"
-    ]
-  }
+    "lint-staged": {
+        "*.{ts,tsx}": ["eslint --fix", "prettier --write"]
+    }
 }
 ```
 
@@ -1179,18 +1177,19 @@ npx husky add .husky/pre-commit "npx lint-staged"
 ## Project Structure
 
 This project follows a feature-based architecture:
-
 ```
+
 src/
-├── features/        # Feature modules (event, form, success)
-├── components/      # Shared components (layouts, ui, seo)
-├── core/           # Business logic (framework-agnostic)
-├── lib/            # Third-party integrations
-├── hooks/          # Shared hooks
-├── utils/          # Utility functions
-├── types/          # Global type definitions
-├── config/         # Configuration files
-└── styles/         # Global styles
+├── features/ # Feature modules (event, form, success)
+├── components/ # Shared components (layouts, ui, seo)
+├── core/ # Business logic (framework-agnostic)
+├── lib/ # Third-party integrations
+├── hooks/ # Shared hooks
+├── utils/ # Utility functions
+├── types/ # Global type definitions
+├── config/ # Configuration files
+└── styles/ # Global styles
+
 ```
 
 See [FOLDER_STRUCTURE.md](./folderStruct.md) for detailed documentation.
@@ -1242,17 +1241,17 @@ git push origin main
 
 ### 2. Team Communication
 
-- Share this migration guide with the team
-- Conduct a code walkthrough session
-- Update team documentation
-- Add architecture diagram
+-   Share this migration guide with the team
+-   Conduct a code walkthrough session
+-   Update team documentation
+-   Add architecture diagram
 
 ### 3. Monitoring
 
-- Monitor build times before and after
-- Check bundle sizes
-- Gather team feedback
-- Track developer productivity
+-   Monitor build times before and after
+-   Check bundle sizes
+-   Gather team feedback
+-   Track developer productivity
 
 ---
 
@@ -1279,6 +1278,7 @@ git branch -D refactor/folder-structure
 **Problem**: TypeScript shows import errors after migration.
 
 **Solution**:
+
 ```bash
 # Clear TypeScript cache
 rm -rf node_modules/.vite
@@ -1295,27 +1295,30 @@ npm install
 **Problem**: `npm run build` fails with module not found errors.
 
 **Solution**:
-- Check that all path aliases are correctly set in both `tsconfig.json` and `vite.config.ts`
-- Verify that all import paths have been updated
-- Use TypeScript compiler to find issues: `npx tsc --noEmit`
+
+-   Check that all path aliases are correctly set in both `tsconfig.json` and `vite.config.ts`
+-   Verify that all import paths have been updated
+-   Use TypeScript compiler to find issues: `npx tsc --noEmit`
 
 ### Issue: Runtime Errors
 
 **Problem**: App runs but crashes at runtime.
 
 **Solution**:
-- Check browser console for specific errors
-- Verify that all dynamic imports are wrapped in Suspense (if using lazy loading)
-- Check that context providers are still wrapping components correctly
+
+-   Check browser console for specific errors
+-   Verify that all dynamic imports are wrapped in Suspense (if using lazy loading)
+-   Check that context providers are still wrapping components correctly
 
 ### Issue: Slow Build Times
 
 **Problem**: Build times increased after migration.
 
 **Solution**:
-- Check for circular dependencies using a tool like `madge`
-- Ensure barrel exports don't re-export too much
-- Consider selective exports instead of `export *`
+
+-   Check for circular dependencies using a tool like `madge`
+-   Ensure barrel exports don't re-export too much
+-   Consider selective exports instead of `export *`
 
 ---
 
@@ -1323,32 +1326,32 @@ npm install
 
 After completing the migration, verify:
 
-- [ ] All pages load without errors
-- [ ] Form submission works correctly
-- [ ] All API calls succeed
-- [ ] TypeScript compilation succeeds
-- [ ] Build completes successfully
-- [ ] No console errors in browser
-- [ ] All tests pass (if applicable)
-- [ ] Bundle size is reasonable
-- [ ] Hot module replacement works in dev mode
-- [ ] Production build works correctly
-- [ ] All imports use path aliases
-- [ ] No duplicate code exists
-- [ ] Documentation is updated
-- [ ] Team is informed
+-   [ ] All pages load without errors
+-   [ ] Form submission works correctly
+-   [ ] All API calls succeed
+-   [ ] TypeScript compilation succeeds
+-   [ ] Build completes successfully
+-   [ ] No console errors in browser
+-   [ ] All tests pass (if applicable)
+-   [ ] Bundle size is reasonable
+-   [ ] Hot module replacement works in dev mode
+-   [ ] Production build works correctly
+-   [ ] All imports use path aliases
+-   [ ] No duplicate code exists
+-   [ ] Documentation is updated
+-   [ ] Team is informed
 
 ---
 
 ## Timeline Estimate
 
-| Phase | Tasks | Estimated Time | Risk Level |
-|-------|-------|----------------|------------|
-| Phase 1 | Foundation setup | 2-3 hours | Low |
-| Phase 2 | Feature migration | 4-6 hours | Medium |
-| Phase 3 | Refinement | 1-2 hours | Low |
-| Phase 4 | Optimization | 2-3 hours | Low |
-| **Total** | | **9-14 hours** | |
+| Phase     | Tasks             | Estimated Time | Risk Level |
+| --------- | ----------------- | -------------- | ---------- |
+| Phase 1   | Foundation setup  | 2-3 hours      | Low        |
+| Phase 2   | Feature migration | 4-6 hours      | Medium     |
+| Phase 3   | Refinement        | 1-2 hours      | Low        |
+| Phase 4   | Optimization      | 2-3 hours      | Low        |
+| **Total** |                   | **9-14 hours** |            |
 
 Spread this work across multiple days for best results.
 
@@ -1359,24 +1362,27 @@ Spread this work across multiple days for best results.
 After migration, you should see improvements in:
 
 1. **Developer Experience**
-   - Faster file location
-   - Clearer code organization
-   - Easier onboarding
+
+    - Faster file location
+    - Clearer code organization
+    - Easier onboarding
 
 2. **Code Quality**
-   - Reduced coupling between features
-   - Better separation of concerns
-   - More testable code
+
+    - Reduced coupling between features
+    - Better separation of concerns
+    - More testable code
 
 3. **Maintainability**
-   - Easier to add new features
-   - Simpler refactoring
-   - Better code reuse
+
+    - Easier to add new features
+    - Simpler refactoring
+    - Better code reuse
 
 4. **Performance**
-   - Optimized bundle sizes
-   - Better tree-shaking
-   - Efficient code splitting
+    - Optimized bundle sizes
+    - Better tree-shaking
+    - Efficient code splitting
 
 ---
 
@@ -1394,10 +1400,10 @@ After migration, you should see improvements in:
 
 ## Additional Resources
 
-- [React Folder Structure Best Practices](https://react.dev/learn/thinking-in-react)
-- [Feature-Sliced Design](https://feature-sliced.design/)
-- [Bulletproof React](https://github.com/alan2207/bulletproof-react)
-- [TypeScript Module Resolution](https://www.typescriptlang.org/docs/handbook/module-resolution.html)
+-   [React Folder Structure Best Practices](https://react.dev/learn/thinking-in-react)
+-   [Feature-Sliced Design](https://feature-sliced.design/)
+-   [Bulletproof React](https://github.com/alan2207/bulletproof-react)
+-   [TypeScript Module Resolution](https://www.typescriptlang.org/docs/handbook/module-resolution.html)
 
 ---
 

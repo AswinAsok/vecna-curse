@@ -1,5 +1,5 @@
 import { Helmet } from "react-helmet";
-import { useEventDataContext } from "../../contexts/eventDataContext";
+import { useEventDataContext } from "../../features/form/contexts/eventDataContext";
 
 const SEO = () => {
     const eventData = useEventDataContext();

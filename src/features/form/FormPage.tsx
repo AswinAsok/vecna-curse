@@ -1,6 +1,6 @@
 import { useState } from "react";
 import styles from "./FormPage.module.css";
-import SuccessPage from "../SuccessPage/SuccessPage";
+import SuccessPage from "../../components/SuccessPage/SuccessPage";
 
 import { useFormLogUpdation } from "./hooks/useFormLogUpdation.hook";
 import { useFormSubmission } from "./hooks/useFormSubmission.hook";

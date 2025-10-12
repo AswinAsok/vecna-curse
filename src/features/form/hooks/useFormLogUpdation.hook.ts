@@ -1,4 +1,4 @@
-import { useEventDataContext } from "../../../contexts/eventDataContext";
+import { useEventDataContext } from "../contexts/eventDataContext";
 import { updateFormLog } from "../../../services/apis";
 
 import { useDebouncedEffect } from "./useDebouncedEffect";

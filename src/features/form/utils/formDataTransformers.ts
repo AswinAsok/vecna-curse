@@ -4,7 +4,7 @@
  * @returns Transformed form data with Instagram profile links
  */
 
-import { transformerRegistry } from "../core/transformers";
+import { transformerRegistry } from "../../../core/transformers";
 
 export const transformFormData = (formData: Record<string, string>): Record<string, string> => {
     return transformerRegistry.transform(formData);

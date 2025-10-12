@@ -1,4 +1,4 @@
-import { EventDataContext } from "../../../contexts/eventDataContext";
+import { EventDataContext } from "../../form";
 
 import Footer from "../../../components/Footer/Footer";
 import Error from "../../../components/ui/Error/Error";

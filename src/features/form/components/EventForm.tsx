@@ -1,11 +1,12 @@
-import { useEventDataContext } from "../../../contexts/eventDataContext";
-import { usePaginationContext } from "../../../contexts/paginationContext";
+import { useEventDataContext } from "../contexts/eventDataContext";
+import { usePaginationContext } from "../contexts/paginationContext";
 import styles from "../FormPage.module.css";
-import { useFormSubmission } from "../hooks/useFormSubmission.hook";
-import { useFormValidation } from "../hooks/useFormValidation.hook";
-import { usePagination } from "../hooks/usePagination.hook";
-import { doesFieldValidatesConditions } from "../../../utils/fieldConditions";
+
 import FormFieldsRenderer from "./FormFieldsRenderer";
+import { usePagination } from "../hooks/usePagination.hook";
+import { useFormValidation } from "../hooks/useFormValidation.hook";
+import { useFormSubmission } from "../hooks/useFormSubmission.hook";
+import { doesFieldValidatesConditions } from "../utils";
 
 const EventForm = ({ logId }: { logId: string | null }) => {
     const eventData = useEventDataContext();

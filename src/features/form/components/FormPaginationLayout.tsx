@@ -1,4 +1,4 @@
-import { PaginationDataContext } from "../../../contexts/paginationContext";
+import { PaginationDataContext } from "../contexts/paginationContext";
 import styles from "../FormPage.module.css";
 import { usePagination } from "../hooks/usePagination.hook";
 

@@ -1,8 +1,8 @@
-import { checkFieldConditions } from "../../../utils/fieldConditions";
 import { validateField } from "../../../core/validators";
 import { businessRuleRegistry } from "../../../core/business-rules";
 import type { FormField } from "../../../types/form.types";
-import { useEventDataContext } from "../../../contexts/eventDataContext";
+import { useEventDataContext } from "../contexts/eventDataContext";
+import { checkFieldConditions } from "../utils";
 
 export const useFormValidation = ({
     currentFields,
