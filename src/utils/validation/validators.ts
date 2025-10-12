@@ -1,4 +1,4 @@
-import type { FormField } from "../../services/types";
+import type { FormField } from "../../types/form.types";
 import { validatorRegistry, type ValidationResult } from "./validatorRegistry";
 
 export const validateField = (field: FormField, value: string | undefined): ValidationResult => {

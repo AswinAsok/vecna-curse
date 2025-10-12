@@ -1,4 +1,4 @@
-import type { FormField } from "../../../services/types";
+import type { FormField } from "../../../types/form.types";
 import { fieldRegistry } from "./fieldRegistry";
 
 const FormFieldsRenderer = ({

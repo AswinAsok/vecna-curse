@@ -1,6 +1,6 @@
 // services/apis/eventInfoApi.ts
 import axios from "axios";
-import type { EventData } from "../types";
+import type { EventData } from "../../types/event.types";
 
 const API_BASE_URL = "https://api.makemypass.com/makemypass/public-form";
 

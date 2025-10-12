@@ -1,4 +1,4 @@
-import type { FormField } from "../../../services/types";
+import type { FormField } from "../../../types/form.types";
 
 export type FieldComponent = (props: {
     field: FormField;

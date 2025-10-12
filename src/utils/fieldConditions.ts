@@ -1,4 +1,5 @@
-import type { EventData, FormField } from "../services/types";
+import type { EventData } from "../types/event.types";
+import type { FormField } from "../types/form.types";
 import { operatorRegistry } from "./operators/operatorRegistry";
 
 /**

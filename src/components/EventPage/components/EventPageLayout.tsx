@@ -32,7 +32,11 @@ const EventPageLayout = ({ children }: { children: React.ReactNode }) => {
 
                     <div className={styles.backgroundContainer}>
                         <div className={styles.childrenContainer}>
-                            <img src="/turnupblack.png" alt="" className={styles.turnUpLogo} />
+                            <img
+                                src="images/logos/turnup-black.png"
+                                alt=""
+                                className={styles.turnUpLogo}
+                            />
                             {children}
                         </div>
                         <Footer />

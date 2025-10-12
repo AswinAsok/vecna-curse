@@ -7,9 +7,9 @@ import {
     combinePhoneNumber,
 } from "../../../utils/phoneUtils";
 import { selectStyles } from "../data/selectStyles";
-import type { FormField } from "../../../services/types";
 import { useEffect } from "react";
 import BaseFieldWrapper from "./BaseFieldWrapper";
+import type { FormField } from "../../../types/form.types";
 
 const PhoneField = ({
     field,

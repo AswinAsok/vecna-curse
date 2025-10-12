@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useEventDataContext } from "../../../contexts/eventDataContext";
-import type { FormField } from "../../../services/types";
+import type { FormField } from "../../../types/form.types";
 
 export const usePagination = () => {
     const eventData = useEventDataContext();

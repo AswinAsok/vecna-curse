@@ -1,4 +1,4 @@
-import type { EventData } from "../../../services/types";
+import type { EventData } from "../../../types/event.types";
 import styles from "./LocationComponent.module.css";
 
 const LocationComponent = ({ eventData }: { eventData: EventData }) => {

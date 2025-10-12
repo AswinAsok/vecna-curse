@@ -5,7 +5,10 @@ const SEO = () => {
     const eventData = useEventDataContext();
 
     // Clean description by removing HTML tags
-    const cleanDescription = eventData.description.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+    const cleanDescription = eventData.description
+        .replace(/<[^>]*>/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
 
     // Get current URL
     const currentUrl = window.location.href;
@@ -34,7 +37,10 @@ const SEO = () => {
             <meta name="twitter:image" content={eventData.banner} />
 
             {/* Additional SEO Tags */}
-            <meta name="keywords" content="Vecna's Curse, Stranger Things, Halloween, Kochi, TurnUp, Casino Durbar Hall, Halloween Party, Halloween Event" />
+            <meta
+                name="keywords"
+                content="Vecna's Curse, Stranger Things, Halloween, Kochi, TurnUp, Casino Durbar Hall, Halloween Party, Halloween Event"
+            />
             <meta name="author" content="TurnUp" />
             <meta name="robots" content="index, follow" />
             <link rel="canonical" href={currentUrl} />
