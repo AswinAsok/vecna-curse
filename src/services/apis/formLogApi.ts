@@ -1,5 +1,5 @@
 import axios from "axios";
-import { prepareFormLogData } from "../../utils/prepareSubmitData";
+import { prepareFormLogData } from "../../utils/prepareLogData";
 export interface FormLogApiResponse {
     hasError: boolean;
     statusCode: number;
