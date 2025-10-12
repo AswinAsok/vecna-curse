@@ -1,5 +1,6 @@
 import { useEventDataContext } from "../../../contexts/eventDataContext";
-import { updateFormLog } from "../../../services/formLogUpdation";
+import { updateFormLog } from "../../../services/apis";
+
 import { useDebouncedEffect } from "./useDebouncedEffect";
 
 export const useFormLogUpdation = ({
@@ -17,7 +18,7 @@ export const useFormLogUpdation = ({
         if (!eventData.id || !eventData.tickets?.length) return;
 
         try {
-            const response = await updateFormLog(eventData.id, formData, eventData.form, logId);
+            const response = await updateFormLog(eventData.id, formData, logId);
 
             if (!logId && response.response.log_id) {
                 setLogId(response.response.log_id);
