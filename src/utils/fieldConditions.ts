@@ -1,6 +1,6 @@
-import type { EventData } from "../types/event.types";
+import type { EventData } from "../features/event/types/event.types";
 import type { FormField } from "../types/form.types";
-import { operatorRegistry } from "./operators/operatorRegistry";
+import { operatorRegistry } from "../core/operators";
 
 /**
  * Checks if field conditions are met based on form data

@@ -1,6 +1,6 @@
 import { checkFieldConditions } from "../../../utils/fieldConditions";
-import { validateField } from "../../../utils/validation/validators";
-import { businessRuleRegistry } from "../../../utils/businessRules/rulesRegistry";
+import { validateField } from "../../../core/validators";
+import { businessRuleRegistry } from "../../../core/business-rules";
 import type { FormField } from "../../../types/form.types";
 import { useEventDataContext } from "../../../contexts/eventDataContext";
 

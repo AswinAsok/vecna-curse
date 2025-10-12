@@ -1,4 +1,4 @@
-import { extractCountryCode } from "../phoneUtils";
+import { extractCountryCode } from "../../../utils/phoneUtils";
 import type { RuleFunction } from "./rulesRegistry";
 
 export const emailRequiredForNonIndianPhone: RuleFunction = (context) => {

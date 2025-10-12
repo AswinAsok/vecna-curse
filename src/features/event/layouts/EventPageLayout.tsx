@@ -1,9 +1,9 @@
 import { EventDataContext } from "../../../contexts/eventDataContext";
 
-import Footer from "../../Footer/Footer";
-import Error from "../../ui/Error/Error";
-import Loading from "../../ui/Loading/Loading";
-import SEO from "../../SEO/SEO";
+import Footer from "../../../components/Footer/Footer";
+import Error from "../../../components/ui/Error/Error";
+import Loading from "../../../components/ui/Loading/Loading";
+import SEO from "../../../components/SEO/SEO";
 import { useFetchEventInfo } from "../hooks/EventPageLayout.hooks";
 import styles from "./EventPageLayout.module.css";
 

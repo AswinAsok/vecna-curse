@@ -2,7 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./styles/index.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import EventPage from "./components/EventPage/EventPage.tsx";
+import EventPage from "./features/event/EventPage.tsx";
 
 const queryClient = new QueryClient();
 

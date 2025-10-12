@@ -1,4 +1,4 @@
-import type { FormField } from "../../types/form.types";
+import type { FormField } from "../../../types/form.types";
 import type { ValidatorFunction } from "./validatorRegistry";
 
 export const createCustomValidator = (

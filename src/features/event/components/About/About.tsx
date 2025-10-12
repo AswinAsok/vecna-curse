@@ -1,7 +1,7 @@
 import styles from "./About.module.css";
-import { DateComponent } from "../ui/DateComponent/DateComponent";
-import LocationComponent from "../ui/LocationComponent/LocationComponent";
-import { useEventDataContext } from "../../contexts/eventDataContext";
+import { DateComponent } from "../../../../components/ui/DateComponent/DateComponent";
+import LocationComponent from "../../../../components/ui/LocationComponent/LocationComponent";
+import { useEventDataContext } from "../../../../contexts/eventDataContext";
 
 const About = () => {
     const eventData = useEventDataContext();

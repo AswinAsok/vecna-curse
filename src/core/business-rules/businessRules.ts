@@ -1,5 +1,5 @@
-import type { FormField } from "../types/form.types";
-import { extractCountryCode } from "./phoneUtils";
+import type { FormField } from "../../types/form.types";
+import { extractCountryCode } from "../../utils/phoneUtils";
 
 /**
  * Determines if email field should be validated based on phone country code
