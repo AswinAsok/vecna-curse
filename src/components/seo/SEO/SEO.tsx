@@ -1,5 +1,5 @@
 import { Helmet } from "react-helmet";
-import { useEventDataContext } from "../../features/form/contexts/eventDataContext";
+import { useEventDataContext } from "../../../features/form";
 
 const SEO = () => {
     const eventData = useEventDataContext();
@@ -69,7 +69,7 @@ const SEO = () => {
                         name: eventData.hosts[0]?.title || "TurnUp",
                         url: currentUrl,
                     },
-                    offers: eventData.tickets.map((ticket) => ({
+                    offers: eventData.tickets.map((ticket: any) => ({
                         "@type": "Offer",
                         name: ticket.title,
                         price: ticket.price,
