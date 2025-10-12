@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { SubmitFormResponse } from "../../../services/apis";
+import type { SubmitFormResponse } from "../api";
 
 export const useSubmissionState = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);

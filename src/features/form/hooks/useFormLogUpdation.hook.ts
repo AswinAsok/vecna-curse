@@ -1,5 +1,5 @@
 import { useEventDataContext } from "../contexts/eventDataContext";
-import { updateFormLog } from "../../../services/apis";
+import { updateFormLog } from "../api";
 
 import { useDebouncedEffect } from "./useDebouncedEffect";
 

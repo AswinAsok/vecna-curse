@@ -1,5 +1,5 @@
 import { useEventDataContext } from "../contexts/eventDataContext";
-import { submitForm, updateFormLog, type SubmitFormResponse } from "../../../services/apis";
+import { submitForm, updateFormLog, type SubmitFormResponse } from "../api";
 import { transformFormData } from "../utils";
 
 export const useFormSubmit = () => {
