@@ -3,6 +3,7 @@ import { EventDataContext } from "../../../contexts/eventDataContext";
 import Footer from "../../Footer/Footer";
 import Error from "../../ui/Error/Error";
 import Loading from "../../ui/Loading/Loading";
+import SEO from "../../SEO/SEO";
 import { useFetchEventInfo } from "../hooks/EventPageLayout.hooks";
 import styles from "./EventPageLayout.module.css";
 
@@ -24,6 +25,7 @@ const EventPageLayout = ({ children }: { children: React.ReactNode }) => {
 
     return (
         <EventDataContext.Provider value={eventData}>
+            <SEO />
             <div className={styles.mainContainer}>
                 <div className={styles.banner}>
                     <img src={eventData.banner} alt="" className={styles.imageBanner} />
