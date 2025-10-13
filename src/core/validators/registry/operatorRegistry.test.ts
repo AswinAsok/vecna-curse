@@ -1,6 +1,4 @@
-import { describe, it } from "node:test";
-
-import { beforeEach, expect } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 
 import { operatorRegistry } from "@/core/operators";
 

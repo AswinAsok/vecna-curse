@@ -1,6 +1,4 @@
-import { describe, it } from "node:test";
-
-import { expect } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import type { FormField } from "@/types/form.types";
 
@@ -26,17 +24,17 @@ describe("requiredValidator", () => {
 
     it("should validate required field with values", () => {
         const result = requiredValidator(mockRequiredField, "John Doe");
-        expect(result).toBe(true);
+        expect(result.isValid).toBe(true);
     });
 
     it("should reject empty required fields", () => {
         const result = requiredValidator(mockRequiredField, "");
-        expect(result).toBe("This field is required");
+        expect(result.error).toBe("This field is required");
     });
 
     it("should reject whitespace-only values", () => {
         const result = requiredValidator(mockRequiredField, "   ");
-        expect(result).toBe("This field is required");
+        expect(result.error).toBe("This field is required");
     });
 
     it("should pass validation for non-required fields", () => {

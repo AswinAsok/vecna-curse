@@ -1,6 +1,4 @@
-import { it } from "node:test";
-
-import { describe, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import type { FormField } from "@/types/form.types";
 
@@ -33,7 +31,7 @@ describe("emailValidator", () => {
     it("should reject invalid email addresses", () => {
         const result = emailValidator(mockEmailField, "invalid-email");
         expect(result.isValid).toBe(false);
-        expect(result.error).toBeInstanceOf(String);
+        expect(result.error).toBe("Please enter a valid email address");
     });
 
     it("should pass validation for empty non-email fields", () => {
