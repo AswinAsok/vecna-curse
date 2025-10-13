@@ -1,11 +1,10 @@
-import { EventDataContext } from "../../form";
-
 import Footer from "../../../components/layouts/Footer/Footer";
+import SEO from "../../../components/seo/SEO/SEO";
 import Error from "../../../components/ui/Error/Error";
 import Loading from "../../../components/ui/Loading/Loading";
+import { EventDataContext } from "../../form";
 import { useFetchEventInfo } from "../hooks/EventPageLayout.hooks";
 import styles from "./EventPageLayout.module.css";
-import SEO from "../../../components/seo/SEO/SEO";
 
 const EventPageLayout = ({ children }: { children: React.ReactNode }) => {
     const { eventData, error, loading } = useFetchEventInfo();

@@ -1,4 +1,5 @@
 import { HashLoader } from "react-spinners";
+
 import styles from "./Loading.module.css";
 
 interface LoadingProps {

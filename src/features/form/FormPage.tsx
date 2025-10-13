@@ -1,11 +1,11 @@
 import { useState } from "react";
-import styles from "./FormPage.module.css";
-import { SuccessPage } from "../success";
 
+import { SuccessPage } from "../success";
+import EventForm from "./components/EventForm";
+import FormPaginationLayout from "./components/FormPaginationLayout";
+import styles from "./FormPage.module.css";
 import { useFormLogUpdation } from "./hooks/useFormLogUpdation.hook";
 import { useFormSubmission } from "./hooks/useFormSubmission.hook";
-import FormPaginationLayout from "./components/FormPaginationLayout";
-import EventForm from "./components/EventForm";
 import { useSubmissionState } from "./hooks/useSubmissionState";
 
 const FormPage = () => {

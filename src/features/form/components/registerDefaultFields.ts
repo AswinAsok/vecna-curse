@@ -1,5 +1,5 @@
-import CheckboxField from "./fields/CheckboxField";
 import { fieldRegistry } from "./fieldRegistry";
+import CheckboxField from "./fields/CheckboxField";
 import PhoneField from "./fields/PhoneField";
 import RadioField from "./fields/RadioField";
 import SelectField from "./fields/SelectField";

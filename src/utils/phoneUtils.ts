@@ -1,4 +1,4 @@
-import countryCodes from "../features/form/data/phoneCountryCodes.json";
+import countryCodes from "@/features/form/data/phoneCountryCodes.json";
 
 /**
  * Extracts the country code from a phone number string

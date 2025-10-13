@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 
-import EventPageLayout from "./layouts/EventPageLayout";
-import { Button } from "../../components/ui/Button/Button";
-import { FormPage } from "../form";
+import { Button } from "@/components/ui/Button/Button";
+import { registerDefaultBusinessRules } from "@/core/business-rules";
+import { registerDefaultOperators } from "@/core/operators";
+import { registerDefaultTransformers } from "@/core/transformers";
+import { registerDefaultValidators } from "@/core/validators";
+import { FormPage, registerDefaultFields } from "@/features/form";
+
 import About from "./components/About/About";
-import { registerDefaultFields } from "../form";
-import { registerDefaultValidators } from "../../core/validators";
-import { registerDefaultOperators } from "../../core/operators";
-import { registerDefaultTransformers } from "../../core/transformers";
-import { registerDefaultBusinessRules } from "../../core/business-rules";
+import EventPageLayout from "./layouts/EventPageLayout";
 
 const EventPage = () => {
     useEffect(() => {

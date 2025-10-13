@@ -1,4 +1,4 @@
-import type { FormField } from "../../../types/form.types";
+import type { FormField } from "@/types/form.types";
 
 export interface EventData {
     id: string;
