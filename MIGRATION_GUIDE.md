@@ -1,1420 +1,1654 @@
-# Step-by-Step Migration Guide
+# Migration Guide: Improving Code Quality Score from 7.5/10 to 10/10
 
 ## Overview
 
-This guide provides detailed, actionable steps to migrate the **vecnas-curse** project from its current structure to the recommended feature-based architecture. The migration is organized into 4 phases to minimize risk and ensure a smooth transition.
+This document provides a comprehensive, step-by-step guide to improve the codebase quality score from **7.5/10 to 10/10**. The migration is divided into phases based on priority and impact.
 
-**Estimated Total Time**: 8-12 hours (spread across multiple sessions)
-
----
-
-## Pre-Migration Checklist
-
-Before starting the migration, ensure:
-
--   [ ] All current work is committed to Git
--   [ ] Create a new branch: `git checkout -b refactor/folder-structure`
--   [ ] Backup the current codebase
--   [ ] All tests are passing (if applicable)
--   [ ] Team members are informed about the migration
--   [ ] You have a rollback plan (the Git branch)
+**Current State:** 7.5/10
+**Target State:** 10/10
+**Estimated Effort:** 40-60 hours
+**Risk Level:** Low-Medium
 
 ---
 
-## Phase 1: Foundation Setup (2-3 hours)
+## Table of Contents
 
-**Goal**: Create new directories and configure tooling without breaking existing code.
+1. [Phase 1: Critical Fixes (Priority: CRITICAL)](#phase-1-critical-fixes)
+   - [1.1 Testing Infrastructure Setup](#11-testing-infrastructure-setup)
+   - [1.2 Accessibility Fixes](#12-accessibility-fixes)
+2. [Phase 2: High Priority Improvements](#phase-2-high-priority-improvements)
+   - [2.1 Dependency Inversion Implementation](#21-dependency-inversion-implementation)
+   - [2.2 Error Handling Strategy](#22-error-handling-strategy)
+   - [2.3 API Client Standardization](#23-api-client-standardization)
+3. [Phase 3: Quality Enhancements](#phase-3-quality-enhancements)
+   - [3.1 Interface Segregation](#31-interface-segregation)
+   - [3.2 Documentation & Type Safety](#32-documentation--type-safety)
+4. [Verification & Validation](#verification--validation)
+5. [Rollback Plan](#rollback-plan)
 
-**Risk Level**: Low
+---
 
-### Step 1.1: Create New Directory Structure
+## Phase 1: Critical Fixes
 
-```bash
-# Navigate to project root
-cd /home/aswinasok/Desktop/vecnas-curse
+**Timeline:** Week 1-2
+**Impact:** High
+**Risk:** Low
 
-# Create new directories
-mkdir -p src/types
-mkdir -p src/config
-mkdir -p src/lib/axios
-mkdir -p src/lib/react-query
-mkdir -p src/lib/validations/schemas
-mkdir -p src/hooks
-mkdir -p src/core/business-rules
-mkdir -p src/core/operators
-mkdir -p src/core/transformers
-mkdir -p src/core/validators
-mkdir -p src/features
-mkdir -p src/styles
-mkdir -p src/app/providers
-mkdir -p src/app/routes
+### 1.1 Testing Infrastructure Setup
 
-# Create organized public assets structure
-mkdir -p public/images/logos
-mkdir -p public/images/icons
-mkdir -p public/fonts
-```
+**Current Score:** 0/10 → **Target Score:** 10/10
 
-### Step 1.2: Move Public Assets
+#### Step 1.1.1: Install Testing Dependencies
 
 ```bash
-# Move existing logo files
-mv public/turnupblack.png public/images/logos/turnup-black.png
-mv public/turnuplogo.png public/images/logos/turnup-logo.png
+# Install Vitest and React Testing Library
+pnpm add -D vitest @vitest/ui @testing-library/react @testing-library/jest-dom @testing-library/user-event jsdom
+
+# Install coverage tools
+pnpm add -D @vitest/coverage-v8
 ```
 
-**Update references**: Search for `turnupblack.png` and `turnuplogo.png` in your codebase and update paths:
+#### Step 1.1.2: Create Vitest Configuration
+
+Create `vitest.config.ts`:
 
 ```typescript
-// Before
-<img src="/turnuplogo.png" />
-
-// After
-<img src="/images/logos/turnup-logo.png" />
-```
-
-### Step 1.3: Setup Path Aliases
-
-**Update `tsconfig.json`**:
-
-```json
-{
-    "compilerOptions": {
-        "baseUrl": ".",
-        "paths": {
-            "@/*": ["src/*"],
-            "@/components/*": ["src/components/*"],
-            "@/features/*": ["src/features/*"],
-            "@/hooks/*": ["src/hooks/*"],
-            "@/utils/*": ["src/utils/*"],
-            "@/types/*": ["src/types/*"],
-            "@/config/*": ["src/config/*"],
-            "@/lib/*": ["src/lib/*"],
-            "@/core/*": ["src/core/*"],
-            "@/styles/*": ["src/styles/*"],
-            "@/app/*": ["src/app/*"]
-        }
-    }
-}
-```
-
-**Update `vite.config.ts`**:
-
-```typescript
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-import path from "path";
+import { defineConfig } from 'vitest/config';
+import react from '@vitejs/plugin-react';
+import path from 'path';
 
 export default defineConfig({
-    plugins: [react()],
-    resolve: {
-        alias: {
-            "@": path.resolve(__dirname, "./src"),
-        },
-    },
+  plugins: [react()],
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: ['./src/test/setup.ts'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html'],
+      exclude: [
+        'node_modules/',
+        'src/test/',
+        '**/*.d.ts',
+        '**/*.config.*',
+        '**/mockData',
+        'dist/'
+      ],
+      thresholds: {
+        lines: 80,
+        functions: 80,
+        branches: 80,
+        statements: 80
+      }
+    }
+  },
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+      '@/components': path.resolve(__dirname, './src/components'),
+      '@/features': path.resolve(__dirname, './src/features'),
+      '@/core': path.resolve(__dirname, './src/core'),
+      '@/utils': path.resolve(__dirname, './src/utils'),
+      '@/types': path.resolve(__dirname, './src/types'),
+      '@/config': path.resolve(__dirname, './src/config'),
+      '@/lib': path.resolve(__dirname, './src/lib'),
+      '@/app': path.resolve(__dirname, './src/app'),
+    }
+  }
 });
 ```
 
-**Install path package** (if not already installed):
+#### Step 1.1.3: Create Test Setup File
+
+Create `src/test/setup.ts`:
+
+```typescript
+import { expect, afterEach } from 'vitest';
+import { cleanup } from '@testing-library/react';
+import * as matchers from '@testing-library/jest-dom/matchers';
+
+// Extend Vitest's expect with jest-dom matchers
+expect.extend(matchers);
+
+// Cleanup after each test
+afterEach(() => {
+  cleanup();
+});
+```
+
+#### Step 1.1.4: Update package.json Scripts
+
+```json
+{
+  "scripts": {
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest --watch"
+  }
+}
+```
+
+#### Step 1.1.5: Create Test Files for Core Modules
+
+**Create `src/core/validators/registry/emailValidator.test.ts`:**
+
+```typescript
+import { describe, it, expect } from 'vitest';
+import { emailValidator } from './emailValidator';
+import type { FormField } from '../../../types/form.types';
+
+describe('emailValidator', () => {
+  const mockEmailField: FormField = {
+    id: '1',
+    type: 'email',
+    title: 'Email',
+    required: true,
+    field_key: 'email',
+    hidden: false,
+    unique: null,
+    options: [],
+    page_num: 1,
+    property: {},
+    conditions: {},
+    team_field: false,
+    description: null,
+    placeholder: 'Enter email'
+  };
+
+  it('should validate correct email addresses', () => {
+    const result = emailValidator(mockEmailField, 'test@example.com');
+    expect(result.isValid).toBe(true);
+    expect(result.error).toBeUndefined();
+  });
+
+  it('should reject invalid email addresses', () => {
+    const result = emailValidator(mockEmailField, 'invalid-email');
+    expect(result.isValid).toBe(false);
+    expect(result.error).toBe('Please enter a valid email address');
+  });
+
+  it('should pass validation for empty non-email fields', () => {
+    const nonEmailField = { ...mockEmailField, type: 'text' };
+    const result = emailValidator(nonEmailField, '');
+    expect(result.isValid).toBe(true);
+  });
+
+  it('should pass validation for empty email value', () => {
+    const result = emailValidator(mockEmailField, '');
+    expect(result.isValid).toBe(true);
+  });
+
+  it('should handle whitespace-only values', () => {
+    const result = emailValidator(mockEmailField, '   ');
+    expect(result.isValid).toBe(true);
+  });
+});
+```
+
+**Create `src/core/validators/registry/requiredValidator.test.ts`:**
+
+```typescript
+import { describe, it, expect } from 'vitest';
+import { requiredValidator } from './requiredValidator';
+import type { FormField } from '../../../types/form.types';
+
+describe('requiredValidator', () => {
+  const mockRequiredField: FormField = {
+    id: '1',
+    type: 'text',
+    title: 'Name',
+    required: true,
+    field_key: 'name',
+    hidden: false,
+    unique: null,
+    options: [],
+    page_num: 1,
+    property: {},
+    conditions: {},
+    team_field: false,
+    description: null,
+    placeholder: 'Enter name'
+  };
+
+  it('should validate required fields with values', () => {
+    const result = requiredValidator(mockRequiredField, 'John Doe');
+    expect(result.isValid).toBe(true);
+  });
+
+  it('should reject empty required fields', () => {
+    const result = requiredValidator(mockRequiredField, '');
+    expect(result.isValid).toBe(false);
+    expect(result.error).toBe('This field is required');
+  });
+
+  it('should reject whitespace-only values', () => {
+    const result = requiredValidator(mockRequiredField, '   ');
+    expect(result.isValid).toBe(false);
+    expect(result.error).toBe('This field is required');
+  });
+
+  it('should pass validation for non-required fields', () => {
+    const optionalField = { ...mockRequiredField, required: false };
+    const result = requiredValidator(optionalField, '');
+    expect(result.isValid).toBe(true);
+  });
+});
+```
+
+**Create `src/core/operators/registry/operatorRegistry.test.ts`:**
+
+```typescript
+import { describe, it, expect, beforeEach } from 'vitest';
+import { operatorRegistry } from './operatorRegistry';
+
+describe('operatorRegistry', () => {
+  beforeEach(() => {
+    // Clear any existing operators
+    const registry = operatorRegistry as any;
+    registry.operators?.clear();
+  });
+
+  it('should register and evaluate equality operator', () => {
+    operatorRegistry.register('=', (a, b) => a === b);
+
+    const result = operatorRegistry.evaluate('=', 'test', 'test');
+    expect(result).toBe(true);
+  });
+
+  it('should register and evaluate inequality operator', () => {
+    operatorRegistry.register('!=', (a, b) => a !== b);
+
+    const result = operatorRegistry.evaluate('!=', 'test', 'other');
+    expect(result).toBe(true);
+  });
+
+  it('should return true for unknown operators with warning', () => {
+    const result = operatorRegistry.evaluate('unknown', 'a', 'b');
+    expect(result).toBe(true);
+  });
+
+  it('should check if operator exists', () => {
+    operatorRegistry.register('exists', (a, b) => a === b);
+
+    expect(operatorRegistry.has('exists')).toBe(true);
+    expect(operatorRegistry.has('notexists')).toBe(false);
+  });
+});
+```
+
+**Create `src/components/ui/Button/Button.test.tsx`:**
+
+```typescript
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { Button } from './Button';
+
+describe('Button', () => {
+  it('should render children correctly', () => {
+    render(<Button onClick={() => {}}>Click Me</Button>);
+    expect(screen.getByText('Click Me')).toBeInTheDocument();
+  });
+
+  it('should call onClick when clicked', async () => {
+    const handleClick = vi.fn();
+    const user = userEvent.setup();
+
+    render(<Button onClick={handleClick}>Click Me</Button>);
+    await user.click(screen.getByText('Click Me'));
+
+    expect(handleClick).toHaveBeenCalledTimes(1);
+  });
+});
+```
+
+#### Step 1.1.6: Run Tests and Verify
 
 ```bash
-npm install -D @types/node
+# Run all tests
+pnpm test
+
+# Run with coverage
+pnpm test:coverage
+
+# Run with UI
+pnpm test:ui
 ```
 
-### Step 1.4: Create Global Type Files
+**Success Criteria:**
+- ✅ All tests pass
+- ✅ Coverage meets 80% threshold
+- ✅ CI/CD integration ready
 
-**Create `src/types/index.ts`**:
+---
 
+### 1.2 Accessibility Fixes
+
+**Current Score:** 5/10 → **Target Score:** 10/10
+
+#### Step 1.2.1: Fix Button Component
+
+**File:** `src/components/ui/Button/Button.tsx`
+
+**Before:**
 ```typescript
-// Re-export all types from this barrel file
-export * from "./api.types";
-export * from "./common.types";
+import styles from "./Button.module.css";
+
+export const Button = ({
+    children,
+    onClick,
+}: {
+    children: React.ReactNode;
+    onClick: () => void;
+}) => {
+    return (
+        <div className={styles.buttonContainer} onClick={onClick}>
+            {children}
+        </div>
+    );
+};
 ```
 
-**Create `src/types/common.types.ts`**:
-
+**After:**
 ```typescript
-// Common types used across the application
-export type Nullable<T> = T | null;
-export type Optional<T> = T | undefined;
-export type ID = string | number;
+import styles from "./Button.module.css";
 
-// Add other common types as needed
+export interface ButtonProps {
+    children: React.ReactNode;
+    onClick: () => void;
+    type?: 'button' | 'submit' | 'reset';
+    disabled?: boolean;
+    ariaLabel?: string;
+    className?: string;
+}
+
+export const Button = ({
+    children,
+    onClick,
+    type = 'button',
+    disabled = false,
+    ariaLabel,
+    className,
+}: ButtonProps) => {
+    return (
+        <button
+            type={type}
+            className={`${styles.buttonContainer} ${className || ''}`}
+            onClick={onClick}
+            disabled={disabled}
+            aria-label={ariaLabel}
+        >
+            {children}
+        </button>
+    );
+};
 ```
 
-**Create `src/types/api.types.ts`**:
+#### Step 1.2.2: Update Button CSS
+
+**File:** `src/components/ui/Button/Button.module.css`
+
+Add the following to ensure button styling is consistent:
+
+```css
+.buttonContainer {
+    /* Existing styles */
+    cursor: pointer;
+    border: none;
+    background: inherit;
+    font: inherit;
+}
+
+.buttonContainer:hover {
+    /* Hover styles */
+}
+
+.buttonContainer:focus {
+    outline: 2px solid var(--focus-color, #0066cc);
+    outline-offset: 2px;
+}
+
+.buttonContainer:focus:not(:focus-visible) {
+    outline: none;
+}
+
+.buttonContainer:focus-visible {
+    outline: 2px solid var(--focus-color, #0066cc);
+    outline-offset: 2px;
+}
+
+.buttonContainer:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+```
+
+#### Step 1.2.3: Update All Button Usages
+
+Search for all Button usages and update them:
+
+```bash
+# Find all Button usages
+grep -r "<Button" src/ --include="*.tsx"
+```
+
+Update usages to use semantic HTML:
 
 ```typescript
-// API-related types
-export interface ApiResponse<T = unknown> {
-    data: T;
-    message?: string;
-    success: boolean;
+// Before
+<Button onClick={handleSubmit}>Submit</Button>
+
+// After
+<Button type="submit" onClick={handleSubmit} ariaLabel="Submit form">
+  Submit
+</Button>
+```
+
+#### Step 1.2.4: Add Accessibility Tests
+
+**Create `src/components/ui/Button/Button.a11y.test.tsx`:**
+
+```typescript
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { Button } from './Button';
+
+describe('Button Accessibility', () => {
+  it('should be keyboard accessible', async () => {
+    const handleClick = vi.fn();
+    const user = userEvent.setup();
+
+    render(<Button onClick={handleClick}>Click Me</Button>);
+    const button = screen.getByRole('button', { name: /click me/i });
+
+    button.focus();
+    expect(button).toHaveFocus();
+
+    await user.keyboard('{Enter}');
+    expect(handleClick).toHaveBeenCalled();
+  });
+
+  it('should have proper ARIA label', () => {
+    render(<Button onClick={() => {}} ariaLabel="Custom label">Click</Button>);
+    expect(screen.getByLabelText('Custom label')).toBeInTheDocument();
+  });
+
+  it('should be disabled when disabled prop is true', () => {
+    render(<Button onClick={() => {}} disabled>Click</Button>);
+    const button = screen.getByRole('button');
+    expect(button).toBeDisabled();
+  });
+
+  it('should have button role', () => {
+    render(<Button onClick={() => {}}>Click Me</Button>);
+    expect(screen.getByRole('button')).toBeInTheDocument();
+  });
+});
+```
+
+**Success Criteria:**
+- ✅ Button uses semantic `<button>` element
+- ✅ Keyboard navigation works (Tab, Enter, Space)
+- ✅ Screen readers properly announce the button
+- ✅ Focus styles are visible
+- ✅ All accessibility tests pass
+
+---
+
+## Phase 2: High Priority Improvements
+
+**Timeline:** Week 3-4
+**Impact:** High
+**Risk:** Medium
+
+### 2.1 Dependency Inversion Implementation
+
+**Current Score:** 6.5/10 → **Target Score:** 10/10
+
+#### Step 2.1.1: Create API Abstraction Layer
+
+**Create `src/lib/api/interfaces/IApiClient.ts`:**
+
+```typescript
+export interface ApiResponse<T> {
+  data: T;
+  status: number;
+  statusText: string;
 }
 
 export interface ApiError {
-    message: string;
-    code?: string;
-    details?: unknown;
+  message: string;
+  status: number;
+  data?: unknown;
+}
+
+export interface IApiClient {
+  get<T>(url: string, config?: RequestConfig): Promise<ApiResponse<T>>;
+  post<T>(url: string, data?: unknown, config?: RequestConfig): Promise<ApiResponse<T>>;
+  put<T>(url: string, data?: unknown, config?: RequestConfig): Promise<ApiResponse<T>>;
+  delete<T>(url: string, config?: RequestConfig): Promise<ApiResponse<T>>;
+}
+
+export interface RequestConfig {
+  headers?: Record<string, string>;
+  timeout?: number;
+  params?: Record<string, string | number>;
 }
 ```
 
-### Step 1.5: Move and Consolidate Existing Types
+#### Step 2.1.2: Create Axios Adapter
 
-**Examine `src/services/types.ts`**:
-
-```bash
-# View the current types file
-cat src/services/types.ts
-```
-
-**Move types to appropriate locations**:
-
-```bash
-# Copy the file to review
-cp src/services/types.ts src/types/api.types.ts
-```
-
-Then manually organize types into:
-
--   `src/types/api.types.ts` - API response types
--   `src/types/event.types.ts` - Event-related types (to be created later in feature folders)
--   `src/types/form.types.ts` - Form-related types (to be created later in feature folders)
-
-### Step 1.6: Create Configuration Files
-
-**Create `src/config/env.ts`**:
+**Create `src/lib/api/adapters/AxiosApiClient.ts`:**
 
 ```typescript
-export const env = {
-    apiBaseUrl: import.meta.env.VITE_API_BASE_URL || "https://api.makemypass.com",
-    isProd: import.meta.env.PROD,
-    isDev: import.meta.env.DEV,
-    mode: import.meta.env.MODE,
-} as const;
+import axios, { AxiosInstance, AxiosError } from 'axios';
+import type { IApiClient, ApiResponse, ApiError, RequestConfig } from '../interfaces/IApiClient';
 
-// Type for environment variables
-export type Env = typeof env;
-```
+export class AxiosApiClient implements IApiClient {
+  private client: AxiosInstance;
 
-**Create `src/config/constants.ts`**:
+  constructor(baseURL: string, timeout: number = 10000) {
+    this.client = axios.create({
+      baseURL,
+      timeout,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
-```typescript
-export const APP_CONSTANTS = {
-    APP_NAME: "Vecnas Curse",
-    DEFAULT_PAGE_SIZE: 10,
-    MAX_FILE_SIZE: 5 * 1024 * 1024, // 5MB
-    SUPPORTED_IMAGE_TYPES: ["image/jpeg", "image/png", "image/gif"],
-} as const;
+    this.setupInterceptors();
+  }
 
-// Add other constants as needed
-```
-
-**Create `src/config/index.ts`**:
-
-```typescript
-export * from "./env";
-export * from "./constants";
-```
-
-### Step 1.7: Setup Axios Client
-
-**Create `src/lib/axios/client.ts`**:
-
-```typescript
-import axios from "axios";
-import { env } from "@/config";
-
-export const apiClient = axios.create({
-    baseURL: env.apiBaseUrl,
-    timeout: 10000,
-    headers: {
-        "Content-Type": "application/json",
-    },
-});
-```
-
-**Create `src/lib/axios/interceptors.ts`**:
-
-```typescript
-import { apiClient } from "./client";
-import type { AxiosError, AxiosResponse } from "axios";
-
-// Request interceptor
-apiClient.interceptors.request.use(
-    (config) => {
-        // Add auth token if available
-        const token = localStorage.getItem("auth_token");
+  private setupInterceptors(): void {
+    // Request interceptor
+    this.client.interceptors.request.use(
+      (config) => {
+        // Add authentication token if available
+        const token = localStorage.getItem('auth_token');
         if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
+          config.headers.Authorization = `Bearer ${token}`;
         }
         return config;
-    },
-    (error) => {
-        return Promise.reject(error);
+      },
+      (error) => Promise.reject(this.handleError(error))
+    );
+
+    // Response interceptor
+    this.client.interceptors.response.use(
+      (response) => response,
+      (error) => Promise.reject(this.handleError(error))
+    );
+  }
+
+  private handleError(error: AxiosError): ApiError {
+    return {
+      message: error.message,
+      status: error.response?.status || 500,
+      data: error.response?.data,
+    };
+  }
+
+  async get<T>(url: string, config?: RequestConfig): Promise<ApiResponse<T>> {
+    const response = await this.client.get<T>(url, config);
+    return {
+      data: response.data,
+      status: response.status,
+      statusText: response.statusText,
+    };
+  }
+
+  async post<T>(url: string, data?: unknown, config?: RequestConfig): Promise<ApiResponse<T>> {
+    const response = await this.client.post<T>(url, data, config);
+    return {
+      data: response.data,
+      status: response.status,
+      statusText: response.statusText,
+    };
+  }
+
+  async put<T>(url: string, data?: unknown, config?: RequestConfig): Promise<ApiResponse<T>> {
+    const response = await this.client.put<T>(url, data, config);
+    return {
+      data: response.data,
+      status: response.status,
+      statusText: response.statusText,
+    };
+  }
+
+  async delete<T>(url: string, config?: RequestConfig): Promise<ApiResponse<T>> {
+    const response = await this.client.delete<T>(url, config);
+    return {
+      data: response.data,
+      status: response.status,
+      statusText: response.statusText,
+    };
+  }
+}
+```
+
+#### Step 2.1.3: Create API Client Factory
+
+**Create `src/lib/api/factory/apiClientFactory.ts`:**
+
+```typescript
+import { env } from '@/config';
+import { AxiosApiClient } from '../adapters/AxiosApiClient';
+import type { IApiClient } from '../interfaces/IApiClient';
+
+class ApiClientFactory {
+  private static instance: IApiClient;
+
+  static getInstance(): IApiClient {
+    if (!ApiClientFactory.instance) {
+      ApiClientFactory.instance = new AxiosApiClient(env.apiBaseUrl);
     }
-);
+    return ApiClientFactory.instance;
+  }
 
-// Response interceptor
-apiClient.interceptors.response.use(
-    (response: AxiosResponse) => {
-        return response;
-    },
-    (error: AxiosError) => {
-        // Handle common errors
-        if (error.response?.status === 401) {
-            // Handle unauthorized
-            console.error("Unauthorized access");
-        }
-        return Promise.reject(error);
+  // For testing purposes
+  static setInstance(client: IApiClient): void {
+    ApiClientFactory.instance = client;
+  }
+}
+
+export const apiClient = ApiClientFactory.getInstance();
+```
+
+#### Step 2.1.4: Create Repository Interface
+
+**Create `src/features/form/repositories/IFormRepository.ts`:**
+
+```typescript
+import type { SubmitFormResponse } from '../api/formSubmissionApi';
+
+export interface IFormRepository {
+  submitForm(
+    eventId: string,
+    formData: Record<string, string>,
+    logId?: string | null
+  ): Promise<SubmitFormResponse>;
+
+  updateFormLog(
+    eventId: string,
+    formData: Record<string, string>,
+    logId: string
+  ): Promise<void>;
+}
+```
+
+#### Step 2.1.5: Implement Repository
+
+**Create `src/features/form/repositories/FormRepository.ts`:**
+
+```typescript
+import type { IApiClient } from '@/lib/api/interfaces/IApiClient';
+import type { IFormRepository } from './IFormRepository';
+import type { SubmitFormResponse } from '../api/formSubmissionApi';
+import { prepareSubmitFormData } from '../utils';
+
+export class FormRepository implements IFormRepository {
+  private apiClient: IApiClient;
+  private baseUrl: string;
+
+  constructor(apiClient: IApiClient, baseUrl: string = 'https://api.makemypass.com/makemypass/public-form') {
+    this.apiClient = apiClient;
+    this.baseUrl = baseUrl;
+  }
+
+  async submitForm(
+    eventId: string,
+    formData: Record<string, string>,
+    logId?: string | null
+  ): Promise<SubmitFormResponse> {
+    const submitData = prepareSubmitFormData(formData, logId);
+
+    const response = await this.apiClient.post<{ response: SubmitFormResponse }>(
+      `${this.baseUrl}/${eventId}/submit/`,
+      submitData,
+      {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      }
+    );
+
+    return response.data.response;
+  }
+
+  async updateFormLog(
+    eventId: string,
+    formData: Record<string, string>,
+    logId: string
+  ): Promise<void> {
+    await this.apiClient.post(
+      `${this.baseUrl}/${eventId}/form-log/${logId}/`,
+      formData
+    );
+  }
+}
+```
+
+#### Step 2.1.6: Update Hook to Use Repository
+
+**Update `src/features/form/hooks/useFormSubmit.ts`:**
+
+```typescript
+import { useMemo } from 'react';
+import { apiClient } from '@/lib/api/factory/apiClientFactory';
+import { FormRepository } from '../repositories/FormRepository';
+import { useEventDataContext } from '../contexts/eventDataContext';
+import { transformFormData } from '../utils';
+import type { SubmitFormResponse } from '../api/formSubmissionApi';
+
+export const useFormSubmit = () => {
+  const eventData = useEventDataContext();
+
+  // Create repository instance (could also be injected via context)
+  const repository = useMemo(() => new FormRepository(apiClient), []);
+
+  const submit = async (
+    formData: Record<string, string>,
+    logId: string | null | undefined
+  ): Promise<SubmitFormResponse> => {
+    // Pre-Submission: Update Form Log
+    if (eventData.id && eventData.tickets?.length > 0 && logId) {
+      await repository.updateFormLog(eventData.id, formData, logId);
     }
-);
+
+    const transformedData = transformFormData(formData);
+    return await repository.submitForm(eventData.id, transformedData, logId);
+  };
+
+  return { submit };
+};
 ```
 
-**Create `src/lib/axios/index.ts`**:
+#### Step 2.1.7: Update Barrel Exports
+
+**Update `src/lib/api/index.ts`:**
 
 ```typescript
-export { apiClient } from "./client";
-export * from "./interceptors";
+export * from './interfaces/IApiClient';
+export * from './adapters/AxiosApiClient';
+export * from './factory/apiClientFactory';
 ```
 
-### Step 1.8: Move Global Styles
-
-```bash
-# Move index.css to styles directory
-mv src/index.css src/styles/index.css
-```
-
-**Update import in `src/main.tsx`**:
-
-```typescript
-// Before
-import "./index.css";
-
-// After
-import "@/styles/index.css";
-```
-
-### Step 1.9: Test Phase 1
-
-```bash
-# Run the build to ensure nothing is broken
-npm run build
-
-# If using a dev server, start it
-npm run dev
-```
-
-**Commit Phase 1**:
-
-```bash
-git add .
-git commit -m "refactor(structure): Phase 1 - Foundation setup
-
-- Created new directory structure (types, config, lib, core, features)
-- Setup path aliases in tsconfig and vite.config
-- Moved public assets to organized structure
-- Created configuration files (env.ts, constants.ts)
-- Setup axios client with interceptors
-- Moved global styles to styles directory
-- Created type files structure"
-```
+**Success Criteria:**
+- ✅ API client abstracted behind interface
+- ✅ Easy to swap implementations (e.g., fetch API, mock client)
+- ✅ Business logic doesn't depend on specific HTTP library
+- ✅ Testable with mock implementations
 
 ---
 
-## Phase 2: Feature Migration (4-6 hours)
+### 2.2 Error Handling Strategy
 
-**Goal**: Migrate page components to feature-based structure.
+**Current Score:** 6/10 → **Target Score:** 10/10
 
-**Risk Level**: Medium
+#### Step 2.2.1: Create Error Classes
 
-### Step 2.1: Migrate Core Business Logic
-
-#### 2.1.1: Move Business Rules
-
-```bash
-# Move business rules directory
-mv src/utils/businessRules src/core/business-rules/rules
-
-# Remove duplicate flat file (after confirming content is in directory)
-# Review the file first
-cat src/utils/businessRules.ts
-
-# If it's just re-exports, delete it
-rm src/utils/businessRules.ts
-
-# If it contains unique logic, integrate it into the new structure
-```
-
-**Create `src/core/business-rules/index.ts`**:
+**Create `src/lib/errors/AppError.ts`:**
 
 ```typescript
-// Export business rules engine and registry
-export * from "./rules";
-export * from "./engine";
-export * from "./registry";
-```
+export enum ErrorCode {
+  VALIDATION_ERROR = 'VALIDATION_ERROR',
+  API_ERROR = 'API_ERROR',
+  NETWORK_ERROR = 'NETWORK_ERROR',
+  NOT_FOUND = 'NOT_FOUND',
+  UNAUTHORIZED = 'UNAUTHORIZED',
+  FORBIDDEN = 'FORBIDDEN',
+  SERVER_ERROR = 'SERVER_ERROR',
+  UNKNOWN_ERROR = 'UNKNOWN_ERROR',
+}
 
-#### 2.1.2: Move Operators
+export class AppError extends Error {
+  public readonly code: ErrorCode;
+  public readonly statusCode?: number;
+  public readonly data?: unknown;
 
-```bash
-# Move operators
-mv src/utils/operators src/core/operators/registry
-```
+  constructor(
+    message: string,
+    code: ErrorCode = ErrorCode.UNKNOWN_ERROR,
+    statusCode?: number,
+    data?: unknown
+  ) {
+    super(message);
+    this.name = 'AppError';
+    this.code = code;
+    this.statusCode = statusCode;
+    this.data = data;
 
-**Create `src/core/operators/index.ts`**:
+    // Maintains proper stack trace for where error was thrown
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, AppError);
+    }
+  }
+}
 
-```typescript
-export * from "./registry";
-```
+export class ValidationError extends AppError {
+  constructor(message: string, data?: unknown) {
+    super(message, ErrorCode.VALIDATION_ERROR, 400, data);
+    this.name = 'ValidationError';
+  }
+}
 
-#### 2.1.3: Move Transformers (Fix Typo)
+export class ApiError extends AppError {
+  constructor(message: string, statusCode: number, data?: unknown) {
+    super(message, ErrorCode.API_ERROR, statusCode, data);
+    this.name = 'ApiError';
+  }
+}
 
-```bash
-# Move and rename transformers
-mv src/utils/transfomers src/core/transformers/registry
-```
-
-**Create `src/core/transformers/index.ts`**:
-
-```typescript
-export * from "./registry";
-```
-
-#### 2.1.4: Move Validators
-
-```bash
-# Move validation logic
-mv src/utils/validation src/core/validators/registry
-```
-
-**Create `src/core/validators/index.ts`**:
-
-```typescript
-export * from "./registry";
-```
-
-### Step 2.2: Migrate Event Feature
-
-#### 2.2.1: Create Event Feature Structure
-
-```bash
-# Create event feature directories
-mkdir -p src/features/event/api
-mkdir -p src/features/event/components
-mkdir -p src/features/event/hooks
-mkdir -p src/features/event/types
-```
-
-#### 2.2.2: Move Event Components
-
-```bash
-# Move EventPage
-mv src/components/EventPage src/features/event/components/EventPage
-
-# Move About component (if it's event-specific)
-mv src/components/About src/features/event/components/About
-```
-
-#### 2.2.3: Create Event API
-
-**Create `src/features/event/api/eventInfoApi.ts`**:
-
-Move the event API logic from `src/services/apis/` to this new file:
-
-```typescript
-import { apiClient } from "@/lib/axios";
-import type { EventInfo } from "../types/event.types";
-
-export const getEventInfo = async (eventSlug: string): Promise<EventInfo> => {
-    const response = await apiClient.get(`/makemypass/public-form/${eventSlug}/info/`);
-    return response.data;
-};
-```
-
-#### 2.2.4: Create Event Types
-
-**Create `src/features/event/types/event.types.ts`**:
-
-Move event-related types from `src/services/types.ts`:
-
-```typescript
-// Define event-specific types here
-export interface EventInfo {
-    // Add fields from your existing types
-    id: string;
-    name: string;
-    slug: string;
-    // ... other fields
+export class NetworkError extends AppError {
+  constructor(message: string = 'Network connection failed') {
+    super(message, ErrorCode.NETWORK_ERROR);
+    this.name = 'NetworkError';
+  }
 }
 ```
 
-#### 2.2.5: Create Event Hooks
+#### Step 2.2.2: Create Error Logger Service
 
-**Check if EventPage has hooks**:
-
-```bash
-# Check for hooks in EventPage
-ls src/features/event/components/EventPage/hooks/
-```
-
-If hooks exist:
-
-```bash
-# Move hooks to feature-level
-mv src/features/event/components/EventPage/hooks/* src/features/event/hooks/
-rmdir src/features/event/components/EventPage/hooks
-```
-
-#### 2.2.6: Create Event Page Entry Point
-
-**Create `src/features/event/EventPage.tsx`**:
+**Create `src/lib/errors/ErrorLogger.ts`:**
 
 ```typescript
-// Main event page component
-export { default } from "./components/EventPage";
-```
+import type { AppError } from './AppError';
 
-#### 2.2.7: Create Event Barrel Export
-
-**Create `src/features/event/index.ts`**:
-
-```typescript
-export { default as EventPage } from "./EventPage";
-export * from "./types/event.types";
-```
-
-### Step 2.3: Migrate Form Feature
-
-#### 2.3.1: Create Form Feature Structure
-
-```bash
-# Create form feature directories
-mkdir -p src/features/form/api
-mkdir -p src/features/form/components/fields
-mkdir -p src/features/form/contexts
-mkdir -p src/features/form/hooks
-mkdir -p src/features/form/services
-mkdir -p src/features/form/types
-mkdir -p src/features/form/utils
-```
-
-#### 2.3.2: Move Form Components
-
-```bash
-# Move FormPage
-mv src/components/FormPage/components src/features/form/components/
-```
-
-**Organize form fields**:
-
-```bash
-# If you have individual field components, organize them
-# Example:
-# mv src/features/form/components/PhoneField.tsx src/features/form/components/fields/
-# mv src/features/form/components/RadioField.tsx src/features/form/components/fields/
-```
-
-#### 2.3.3: Move Form Hooks
-
-```bash
-# Move all form hooks
-mv src/components/FormPage/hooks/* src/features/form/hooks/
-```
-
-#### 2.3.4: Move Form Services
-
-```bash
-# Move form services
-mv src/components/FormPage/services/* src/features/form/services/
-```
-
-#### 2.3.5: Move Form Contexts
-
-```bash
-# Move contexts from root level to form feature
-mv src/contexts/eventDataContext.ts src/features/form/contexts/
-mv src/contexts/paginationContext.ts src/features/form/contexts/
-```
-
-**Update context exports** - Create `src/features/form/contexts/index.ts`:
-
-```typescript
-export * from "./eventDataContext";
-export * from "./paginationContext";
-```
-
-#### 2.3.6: Move Form-Specific Utils
-
-```bash
-# Move form-specific utilities
-mv src/utils/prepareLogData.ts src/features/form/utils/
-mv src/utils/prepareSubmitData.ts src/features/form/utils/
-mv src/utils/ticketMapping.ts src/features/form/utils/
-mv src/utils/formDataTransformers.ts src/features/form/utils/
-mv src/utils/fieldConditions.ts src/features/form/utils/
-```
-
-**Create utils barrel export** - `src/features/form/utils/index.ts`:
-
-```typescript
-export * from "./prepareLogData";
-export * from "./prepareSubmitData";
-export * from "./ticketMapping";
-export * from "./formDataTransformers";
-export * from "./fieldConditions";
-```
-
-#### 2.3.7: Move Form Data
-
-```bash
-# Move form data if it exists
-mv src/components/FormPage/data src/features/form/data
-```
-
-#### 2.3.8: Create Form API Files
-
-**Create `src/features/form/api/formLogApi.ts`**:
-
-```typescript
-import { apiClient } from "@/lib/axios";
-
-export const logFormAction = async (logData: unknown) => {
-    const response = await apiClient.post("/form-log/", logData);
-    return response.data;
-};
-```
-
-**Create `src/features/form/api/formSubmissionApi.ts`**:
-
-```typescript
-import { apiClient } from "@/lib/axios";
-
-export const submitForm = async (formData: unknown) => {
-    const response = await apiClient.post("/form-submission/", formData);
-    return response.data;
-};
-```
-
-**Create `src/features/form/api/index.ts`**:
-
-```typescript
-export * from "./formLogApi";
-export * from "./formSubmissionApi";
-```
-
-#### 2.3.9: Create Form Types
-
-**Create `src/features/form/types/form.types.ts`**:
-
-Move form-related types from existing locations:
-
-```typescript
-export interface FormField {
-    id: string;
-    name: string;
-    type: string;
-    required: boolean;
-    // ... other fields
+export interface IErrorLogger {
+  log(error: Error | AppError): void;
+  logToService(error: Error | AppError): Promise<void>;
 }
 
-export interface FormData {
-    // Define form data structure
-}
-
-export interface FormSubmission {
-    // Define submission structure
-}
-```
-
-#### 2.3.10: Create Form Page Entry Point
-
-**Create `src/features/form/FormPage.tsx`**:
-
-```typescript
-// Main form page component
-// Move or reference the existing FormPage component logic here
-export { default } from "./components/FormPage";
-```
-
-#### 2.3.11: Create Form Barrel Export
-
-**Create `src/features/form/index.ts`**:
-
-```typescript
-export { default as FormPage } from "./FormPage";
-export * from "./types/form.types";
-export * from "./contexts";
-export * from "./hooks";
-```
-
-### Step 2.4: Migrate Success Feature
-
-#### 2.4.1: Create Success Feature
-
-```bash
-# Create success feature directory
-mkdir -p src/features/success
-```
-
-#### 2.4.2: Move Success Page
-
-```bash
-# Move SuccessPage
-mv src/components/SuccessPage src/features/success/
-```
-
-#### 2.4.3: Create Success Entry Point
-
-**Create `src/features/success/index.ts`**:
-
-```typescript
-export { default as SuccessPage } from "./SuccessPage";
-```
-
-### Step 2.5: Reorganize Shared Components
-
-#### 2.5.1: Create Layouts Directory
-
-```bash
-# Create layouts structure
-mkdir -p src/components/layouts/Footer
-mkdir -p src/components/layouts/MainLayout
-```
-
-#### 2.5.2: Move Layout Components
-
-```bash
-# Move Footer
-mv src/components/Footer/* src/components/layouts/Footer/
-rmdir src/components/Footer
-```
-
-#### 2.5.3: Organize SEO Component
-
-```bash
-# Create SEO directory
-mkdir -p src/components/seo
-
-# Move SEO component
-mv src/components/SEO/* src/components/seo/
-rmdir src/components/SEO
-```
-
-#### 2.5.4: Organize UI Components
-
-The `src/components/ui` directory should already exist. Ensure all generic UI components are here:
-
-```bash
-# List UI components
-ls src/components/ui/
-```
-
-**Create barrel export** - `src/components/ui/index.ts`:
-
-```typescript
-// Export all UI components
-export * from "./Button";
-export * from "./Input";
-export * from "./Select";
-// ... add others as needed
-```
-
-### Step 2.6: Update All Import Paths
-
-This is the most time-consuming step. You need to update imports throughout the codebase.
-
-#### 2.6.1: Find and Replace Strategy
-
-**Use your IDE's find-and-replace** or use these bash commands:
-
-```bash
-# Find all TypeScript/TSX files
-find src -type f \( -name "*.ts" -o -name "*.tsx" \) -exec echo {} \;
-
-# For each file, you'll need to update imports
-# Example: Update context imports
-find src -type f \( -name "*.ts" -o -name "*.tsx" \) -exec sed -i 's|from.*contexts/eventDataContext|from "@/features/form/contexts"|g' {} \;
-```
-
-**Manual approach** (recommended for accuracy):
-
-1. Start your development server: `npm run dev`
-2. Open your code editor with TypeScript error checking
-3. Look for import errors (red squiggly lines)
-4. Update imports one by one using the new paths
-
-**Common replacements**:
-
-```typescript
-// Event imports
-import { EventInfo } from "../services/types";
-// becomes
-import { EventInfo } from "@/features/event/types/event.types";
-
-// Form contexts
-import { EventDataContext } from "../../contexts/eventDataContext";
-// becomes
-import { EventDataContext } from "@/features/form/contexts";
-
-// Form hooks
-import { usePagination } from "./hooks/usePagination.hook";
-// becomes
-import { usePagination } from "@/features/form/hooks/usePagination.hook";
-
-// Core business rules
-import { evaluateRule } from "../../utils/businessRules";
-// becomes
-import { evaluateRule } from "@/core/business-rules";
-
-// Utils
-import { phoneUtils } from "../../utils/phoneUtils";
-// becomes
-import { phoneUtils } from "@/utils/phoneUtils";
-
-// API client
-import axios from "axios";
-// becomes
-import { apiClient } from "@/lib/axios";
-```
-
-### Step 2.7: Update Route Configuration
-
-If you have route definitions, update them:
-
-**Create `src/app/routes/index.tsx`**:
-
-```typescript
-import { EventPage } from "@/features/event";
-import { FormPage } from "@/features/form";
-import { SuccessPage } from "@/features/success";
-
-export const routes = [
-    {
-        path: "/",
-        element: <EventPage />,
-    },
-    {
-        path: "/form",
-        element: <FormPage />,
-    },
-    {
-        path: "/success",
-        element: <SuccessPage />,
-    },
-];
-```
-
-### Step 2.8: Clean Up Old Directories
-
-**Only after everything works**, remove old empty directories:
-
-```bash
-# Check if directories are empty before removing
-ls src/components/EventPage  # Should be empty or not exist
-ls src/components/FormPage   # Should be empty or not exist
-
-# Remove empty directories
-rm -rf src/components/EventPage
-rm -rf src/components/FormPage
-rm -rf src/contexts
-
-# Clean up old services directory structure
-# Review first, then remove
-ls src/services/apis/
-# If empty:
-rm -rf src/services
-```
-
-### Step 2.9: Update Remaining Utils
-
-Keep only shared utilities in `src/utils/`:
-
-```bash
-# What should remain in utils:
-ls src/utils/
-
-# Expected files:
-# - phoneUtils.ts (if used across features)
-# - helpers.ts (general helpers)
-# - formatters.ts (if exists)
-```
-
-### Step 2.10: Test Phase 2
-
-```bash
-# Run TypeScript compiler
-npx tsc --noEmit
-
-# Run build
-npm run build
-
-# Start dev server and test all routes
-npm run dev
-
-# Test each feature:
-# 1. Navigate to event page
-# 2. Navigate to form page
-# 3. Test form submission
-# 4. Check success page
-```
-
-**Commit Phase 2**:
-
-```bash
-git add .
-git commit -m "refactor(structure): Phase 2 - Feature migration
-
-- Migrated core business logic to src/core/
-- Created event feature module with components, hooks, types, and API
-- Created form feature module with full colocation
-- Created success feature module
-- Reorganized shared components (layouts, seo, ui)
-- Moved contexts into form feature
-- Updated all import paths to use new structure
-- Cleaned up old directory structure"
-```
-
----
-
-## Phase 3: Refinement (1-2 hours)
-
-**Goal**: Add barrel exports and optimize imports.
-
-**Risk Level**: Low
-
-### Step 3.1: Create Comprehensive Barrel Exports
-
-#### 3.1.1: Components Barrel Exports
-
-**Create `src/components/layouts/index.ts`**:
-
-```typescript
-export * from "./Footer";
-export * from "./MainLayout";
-```
-
-**Create `src/components/seo/index.ts`**:
-
-```typescript
-export * from "./SEO";
-```
-
-**Create `src/components/index.ts`**:
-
-```typescript
-export * from "./layouts";
-export * from "./seo";
-export * from "./ui";
-```
-
-#### 3.1.2: Hooks Barrel Export
-
-**Create `src/hooks/index.ts`**:
-
-```typescript
-// Export all shared hooks
-export * from "./useDebouncedEffect";
-export * from "./useLocalStorage";
-// Add others as needed
-```
-
-#### 3.1.3: Utils Barrel Export
-
-**Create `src/utils/index.ts`**:
-
-```typescript
-export * from "./phoneUtils";
-export * from "./fieldConditions";
-export * from "./formDataTransformers";
-export * from "./helpers";
-```
-
-#### 3.1.4: Core Barrel Exports
-
-**Create `src/core/index.ts`**:
-
-```typescript
-export * from "./business-rules";
-export * from "./operators";
-export * from "./transformers";
-export * from "./validators";
-```
-
-### Step 3.2: Optimize Imports
-
-Update imports to use barrel exports:
-
-```typescript
-// Before
-import { Button } from "@/components/ui/Button/Button";
-import { Input } from "@/components/ui/Input/Input";
-import { Footer } from "@/components/layouts/Footer/Footer";
-
-// After
-import { Button, Input } from "@/components/ui";
-import { Footer } from "@/components/layouts";
-```
-
-### Step 3.3: Add Index Files to Feature Subdirectories
-
-**Example for form fields**:
-
-**Create `src/features/form/components/fields/index.ts`**:
-
-```typescript
-export * from "./PhoneField";
-export * from "./RadioField";
-export * from "./TextAreaField";
-export * from "./BaseFieldWrapper";
-```
-
-Then update imports:
-
-```typescript
-// Before
-import { PhoneField } from "./fields/PhoneField";
-import { RadioField } from "./fields/RadioField";
-
-// After
-import { PhoneField, RadioField } from "./fields";
-```
-
-### Step 3.4: Create Documentation Files
-
-**Create `src/features/README.md`**:
-
-```markdown
-# Features Directory
-
-This directory contains feature-based modules. Each feature is self-contained with its own:
-
--   Components
--   Hooks
--   API calls
--   Types
--   Utils
--   Contexts (if needed)
-
-## Current Features
-
--   **event**: Event information and display
--   **form**: Form rendering, validation, and submission
--   **success**: Success page after form submission
-
-## Adding a New Feature
-
-1. Create a new directory: `src/features/your-feature/`
-2. Add subdirectories: `api/`, `components/`, `hooks/`, `types/`
-3. Create feature entry point: `YourFeature.tsx`
-4. Export from `index.ts`
-```
-
-**Create `src/core/README.md`**:
-
-```markdown
-# Core Directory
-
-This directory contains framework-agnostic business logic:
-
--   **business-rules**: Business rules engine
--   **operators**: Custom operators for rule evaluation
--   **transformers**: Data transformation logic
--   **validators**: Validation logic
-
-This code should be pure TypeScript with no React dependencies.
-```
-
-### Step 3.5: Test Phase 3
-
-```bash
-# Run build
-npm run build
-
-# Check bundle size
-du -sh dist/
-
-# Verify dev server
-npm run dev
-```
-
-**Commit Phase 3**:
-
-```bash
-git add .
-git commit -m "refactor(structure): Phase 3 - Refinement
-
-- Added barrel exports for all directories
-- Optimized imports using barrel exports
-- Added documentation files for features and core
-- Improved code organization and discoverability"
-```
-
----
-
-## Phase 4: Optimization (Optional, 2-3 hours)
-
-**Goal**: Optimize performance and developer experience.
-
-**Risk Level**: Low
-
-### Step 4.1: Setup ESLint Rules
-
-**Install plugins**:
-
-```bash
-npm install -D eslint-plugin-import eslint-plugin-simple-import-sort eslint-plugin-unused-imports
-```
-
-**Update `.eslintrc.cjs` or `eslint.config.js`**:
-
-```javascript
-module.exports = {
-    plugins: ["import", "simple-import-sort", "unused-imports"],
-    rules: {
-        "simple-import-sort/imports": "error",
-        "simple-import-sort/exports": "error",
-        "import/first": "error",
-        "import/newline-after-import": "error",
-        "import/no-duplicates": "error",
-        "unused-imports/no-unused-imports": "error",
-    },
-};
-```
-
-**Run ESLint fix**:
-
-```bash
-npm run lint -- --fix
-```
-
-### Step 4.2: Analyze Bundle Size
-
-**Install bundle analyzer**:
-
-```bash
-npm install -D rollup-plugin-visualizer
-```
-
-**Update `vite.config.ts`**:
-
-```typescript
-import { visualizer } from "rollup-plugin-visualizer";
-
-export default defineConfig({
-    plugins: [
-        react(),
-        visualizer({
-            open: true,
-            gzipSize: true,
-            brotliSize: true,
+class ErrorLogger implements IErrorLogger {
+  private isDevelopment = import.meta.env.DEV;
+
+  log(error: Error | AppError): void {
+    if (this.isDevelopment) {
+      console.error('[Error]', {
+        name: error.name,
+        message: error.message,
+        stack: error.stack,
+        ...(this.isAppError(error) && {
+          code: error.code,
+          statusCode: error.statusCode,
+          data: error.data,
         }),
-    ],
-});
+      });
+    } else {
+      // In production, log to service
+      this.logToService(error).catch(console.error);
+    }
+  }
+
+  async logToService(error: Error | AppError): Promise<void> {
+    try {
+      // Replace with actual error logging service (e.g., Sentry, LogRocket)
+      // await fetch('/api/log-error', {
+      //   method: 'POST',
+      //   body: JSON.stringify({
+      //     name: error.name,
+      //     message: error.message,
+      //     stack: error.stack,
+      //   }),
+      // });
+    } catch (loggingError) {
+      console.error('Failed to log error:', loggingError);
+    }
+  }
+
+  private isAppError(error: Error | AppError): error is AppError {
+    return 'code' in error;
+  }
+}
+
+export const errorLogger = new ErrorLogger();
 ```
 
-**Build and analyze**:
+#### Step 2.2.3: Create Error Boundary Component
 
-```bash
-npm run build
-# Opens visualization in browser
-```
-
-### Step 4.3: Implement Code Splitting
-
-**Update route configuration** for lazy loading:
+**Create `src/components/errors/ErrorBoundary.tsx`:**
 
 ```typescript
-import { lazy, Suspense } from "react";
+import React, { Component, ErrorInfo, ReactNode } from 'react';
+import { errorLogger } from '@/lib/errors/ErrorLogger';
+import { AppError } from '@/lib/errors/AppError';
 
-const EventPage = lazy(() => import("@/features/event"));
-const FormPage = lazy(() => import("@/features/form"));
-const SuccessPage = lazy(() => import("@/features/success"));
+interface Props {
+  children: ReactNode;
+  fallback?: ReactNode;
+  onError?: (error: Error, errorInfo: ErrorInfo) => void;
+}
 
-export const routes = [
-    {
-        path: "/",
-        element: (
-            <Suspense fallback={<div>Loading...</div>}>
-                <EventPage />
-            </Suspense>
-        ),
-    },
-    // ... other routes
-];
-```
+interface State {
+  hasError: boolean;
+  error?: Error;
+}
 
-### Step 4.4: Add Pre-commit Hooks
+export class ErrorBoundary extends Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
+    this.state = { hasError: false };
+  }
 
-**Install husky and lint-staged**:
+  static getDerivedStateFromError(error: Error): State {
+    return { hasError: true, error };
+  }
 
-```bash
-npm install -D husky lint-staged
-npx husky install
-```
+  componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
+    errorLogger.log(error);
 
-**Add to `package.json`**:
-
-```json
-{
-    "lint-staged": {
-        "*.{ts,tsx}": ["eslint --fix", "prettier --write"]
+    if (this.props.onError) {
+      this.props.onError(error, errorInfo);
     }
+  }
+
+  handleReset = (): void => {
+    this.setState({ hasError: false, error: undefined });
+  };
+
+  render(): ReactNode {
+    if (this.state.hasError) {
+      if (this.props.fallback) {
+        return this.props.fallback;
+      }
+
+      return (
+        <div style={{ padding: '20px', textAlign: 'center' }}>
+          <h1>Something went wrong</h1>
+          <p>{this.state.error?.message || 'An unexpected error occurred'}</p>
+          <button onClick={this.handleReset}>Try again</button>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
 }
 ```
 
-**Create pre-commit hook**:
+#### Step 2.2.4: Create Error Fallback Component
 
-```bash
-npx husky add .husky/pre-commit "npx lint-staged"
+**Create `src/components/errors/ErrorFallback.tsx`:**
+
+```typescript
+import { Button } from '@/components/ui';
+import styles from './ErrorFallback.module.css';
+
+interface ErrorFallbackProps {
+  error: Error;
+  resetError: () => void;
+}
+
+export const ErrorFallback = ({ error, resetError }: ErrorFallbackProps) => {
+  return (
+    <div className={styles.container}>
+      <div className={styles.content}>
+        <h1 className={styles.title}>Oops! Something went wrong</h1>
+        <p className={styles.message}>{error.message}</p>
+        {import.meta.env.DEV && (
+          <pre className={styles.stack}>{error.stack}</pre>
+        )}
+        <Button onClick={resetError}>Try Again</Button>
+      </div>
+    </div>
+  );
+};
 ```
 
-### Step 4.5: Document Changes
+**Create `src/components/errors/ErrorFallback.module.css`:**
 
-**Update main `README.md`**:
+```css
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+}
 
-```markdown
-## Project Structure
+.content {
+  max-width: 600px;
+  text-align: center;
+}
 
-This project follows a feature-based architecture:
+.title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 16px;
+  color: #dc2626;
+}
+
+.message {
+  font-size: 16px;
+  margin-bottom: 24px;
+  color: #4b5563;
+}
+
+.stack {
+  text-align: left;
+  background: #f3f4f6;
+  padding: 12px;
+  border-radius: 4px;
+  overflow-x: auto;
+  font-size: 12px;
+  margin-bottom: 24px;
+}
 ```
 
-src/
-├── features/ # Feature modules (event, form, success)
-├── components/ # Shared components (layouts, ui, seo)
-├── core/ # Business logic (framework-agnostic)
-├── lib/ # Third-party integrations
-├── hooks/ # Shared hooks
-├── utils/ # Utility functions
-├── types/ # Global type definitions
-├── config/ # Configuration files
-└── styles/ # Global styles
+#### Step 2.2.5: Update Operator Registry (Remove console.warn)
 
+**Update `src/core/operators/registry/operatorRegistry.ts`:**
+
+```typescript
+import { errorLogger } from '@/lib/errors/ErrorLogger';
+import { AppError, ErrorCode } from '@/lib/errors/AppError';
+
+export type OperatorFunction = (currentValue: string, conditionValue: string) => boolean;
+
+const createOperatorRegistry = () => {
+  const operators = new Map<string, OperatorFunction>();
+
+  return {
+    register: (operator: string, fn: OperatorFunction): void => {
+      operators.set(operator, fn);
+    },
+
+    evaluate: (operator: string, currentValue: string, conditionValue: string): boolean => {
+      const fn = operators.get(operator);
+
+      if (!fn) {
+        const error = new AppError(
+          `Unknown operator: ${operator}`,
+          ErrorCode.VALIDATION_ERROR
+        );
+        errorLogger.log(error);
+
+        // Return true as fallback to prevent breaking the form
+        return true;
+      }
+
+      return fn(currentValue, conditionValue);
+    },
+
+    has: (operator: string): boolean => operators.has(operator),
+  };
+};
+
+export const operatorRegistry = createOperatorRegistry();
 ```
 
-See [FOLDER_STRUCTURE.md](./folderStruct.md) for detailed documentation.
+#### Step 2.2.6: Wrap Application with Error Boundary
+
+**Update `src/main.tsx`:**
+
+```typescript
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { ErrorBoundary } from '@/components/errors/ErrorBoundary';
+import { ErrorFallback } from '@/components/errors/ErrorFallback';
+import App from './App';
+import './styles/index.css';
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <ErrorBoundary
+      fallback={<ErrorFallback error={new Error('Application Error')} resetError={() => window.location.reload()} />}
+    >
+      <App />
+    </ErrorBoundary>
+  </React.StrictMode>
+);
 ```
 
-### Step 4.6: Final Testing
+#### Step 2.2.7: Create Custom Error Hook
 
-```bash
-# Run all checks
-npm run lint
-npm run build
-npm run dev
+**Create `src/hooks/useErrorHandler.ts`:**
 
-# Test all features thoroughly
-# - Event page loads correctly
-# - Form submission works
-# - Success page displays
-# - No console errors
-# - Navigation works
+```typescript
+import { useCallback } from 'react';
+import { errorLogger } from '@/lib/errors/ErrorLogger';
+import { AppError } from '@/lib/errors/AppError';
+import toast from 'react-hot-toast';
+
+export const useErrorHandler = () => {
+  const handleError = useCallback((error: Error | AppError) => {
+    errorLogger.log(error);
+
+    // Show user-friendly error message
+    const message = error instanceof AppError
+      ? error.message
+      : 'An unexpected error occurred';
+
+    toast.error(message);
+  }, []);
+
+  return { handleError };
+};
 ```
 
-**Commit Phase 4**:
-
-```bash
-git add .
-git commit -m "refactor(structure): Phase 4 - Optimization
-
-- Added ESLint rules for import organization
-- Implemented bundle size analysis
-- Added code splitting for routes
-- Setup pre-commit hooks with husky
-- Updated documentation"
-```
+**Success Criteria:**
+- ✅ Centralized error handling
+- ✅ Error boundaries in place
+- ✅ No console.warn in production code
+- ✅ Errors logged to service in production
+- ✅ User-friendly error messages
 
 ---
 
-## Post-Migration Tasks
+### 2.3 API Client Standardization
 
-### 1. Merge and Deploy
+**Current Score:** Part of DIP → **Target Score:** Consistent usage
+
+#### Step 2.3.1: Audit and Update All API Calls
+
+**Find all direct axios usages:**
 
 ```bash
-# Merge feature branch
-git checkout main
-git merge refactor/folder-structure
-
-# Push to remote
-git push origin main
+grep -r "import axios" src/ --include="*.ts" --include="*.tsx"
+grep -r "axios\." src/ --include="*.ts" --include="*.tsx"
 ```
 
-### 2. Team Communication
+#### Step 2.3.2: Migrate formSubmissionApi
 
--   Share this migration guide with the team
--   Conduct a code walkthrough session
--   Update team documentation
--   Add architecture diagram
+**Update `src/features/form/api/formSubmissionApi.ts`:**
 
-### 3. Monitoring
+```typescript
+import { apiClient } from '@/lib/api';
+import { prepareSubmitFormData } from '../utils';
 
--   Monitor build times before and after
--   Check bundle sizes
--   Gather team feedback
--   Track developer productivity
+const API_BASE_URL = "https://api.makemypass.com/makemypass/public-form";
+
+export interface SubmitFormResponse {
+  followup_msg: string;
+  approval_status: string;
+  event_register_id: string;
+  redirection: Record<string, unknown>;
+  extra_tickets: unknown[];
+  thank_you_new_page: boolean;
+  is_online: boolean;
+  type_of_event: string;
+  has_invoice: boolean;
+}
+
+interface SubmitApiResponse {
+  hasError: boolean;
+  statusCode: number;
+  message: Record<string, unknown>;
+  response: SubmitFormResponse;
+}
+
+export const submitForm = async (
+  eventId: string,
+  formData: Record<string, string>,
+  logId?: string | null
+): Promise<SubmitApiResponse> => {
+  const submitData = prepareSubmitFormData(formData, logId);
+
+  const response = await apiClient.post<SubmitApiResponse>(
+    `${API_BASE_URL}/${eventId}/submit/`,
+    submitData,
+    {
+      headers: { "Content-Type": "multipart/form-data" },
+    }
+  );
+
+  return response.data;
+};
+```
+
+#### Step 2.3.3: Create API Constants
+
+**Create `src/config/apiEndpoints.ts`:**
+
+```typescript
+export const API_ENDPOINTS = {
+  FORM: {
+    SUBMIT: (eventId: string) => `/makemypass/public-form/${eventId}/submit/`,
+    LOG: (eventId: string, logId: string) => `/makemypass/public-form/${eventId}/form-log/${logId}/`,
+    INFO: (eventId: string) => `/makemypass/public-form/${eventId}/info/`,
+  },
+  EVENT: {
+    DETAILS: (eventId: string) => `/events/${eventId}/`,
+  },
+} as const;
+```
+
+**Update `src/config/index.ts`:**
+
+```typescript
+export * from './constants';
+export * from './env';
+export * from './apiEndpoints';
+```
+
+**Success Criteria:**
+- ✅ All API calls use centralized client
+- ✅ API endpoints defined as constants
+- ✅ Consistent error handling across API calls
+- ✅ Easy to mock for testing
+
+---
+
+## Phase 3: Quality Enhancements
+
+**Timeline:** Week 5-6
+**Impact:** Medium
+**Risk:** Low
+
+### 3.1 Interface Segregation
+
+**Current Score:** 8.5/10 → **Target Score:** 10/10
+
+#### Step 3.1.1: Split FormField Interface
+
+**Create `src/types/form/BaseField.types.ts`:**
+
+```typescript
+export interface BaseFieldProperties {
+  id: string;
+  type: string;
+  field_key: string;
+}
+
+export interface FieldDisplay {
+  title: string;
+  description: string | null;
+  placeholder: string;
+  hidden: boolean;
+}
+
+export interface FieldValidation {
+  required: boolean;
+  unique: boolean | null;
+  conditions: Record<string, unknown>;
+}
+
+export interface FieldConfiguration {
+  page_num: number;
+  property: Record<string, unknown>;
+  options: Array<{
+    values: string[];
+    conditions: Record<string, unknown>;
+  }>;
+}
+
+export interface FieldMetadata {
+  team_field: boolean;
+  admin_field?: boolean;
+}
+```
+
+**Create `src/types/form/FormField.types.ts`:**
+
+```typescript
+import type {
+  BaseFieldProperties,
+  FieldDisplay,
+  FieldValidation,
+  FieldConfiguration,
+  FieldMetadata,
+} from './BaseField.types';
+
+// Composed interface for backward compatibility
+export interface FormField
+  extends BaseFieldProperties,
+    FieldDisplay,
+    FieldValidation,
+    FieldConfiguration,
+    FieldMetadata {}
+
+// Specific use-case interfaces
+export type DisplayField = BaseFieldProperties & FieldDisplay;
+export type ValidatableField = BaseFieldProperties & FieldValidation;
+export type ConfigurableField = BaseFieldProperties & FieldConfiguration;
+```
+
+**Update `src/types/form.types.ts`:**
+
+```typescript
+export * from './form/BaseField.types';
+export * from './form/FormField.types';
+```
+
+#### Step 3.1.2: Update Validators to Use Specific Interfaces
+
+**Update validators:**
+
+```typescript
+import type { ValidatableField } from '@/types/form.types';
+
+export type ValidatorFunction = (
+  field: ValidatableField,
+  value: string | undefined
+) => ValidationResult;
+```
+
+#### Step 3.1.3: Update Components to Use Specific Interfaces
+
+**Update `BaseFieldWrapper.tsx`:**
+
+```typescript
+import type { ReactNode } from 'react';
+import type { DisplayField } from '@/types/form.types';
+import styles from '../FormPage.module.css';
+
+interface BaseFieldProps extends DisplayField {
+  children: ReactNode;
+}
+
+const BaseFieldWrapper = ({ id, title, required, description, children }: BaseFieldProps) => {
+  return (
+    <div key={id} className={styles.fieldContainer}>
+      <label className={styles.label}>
+        {title}
+        {required && <span className={styles.required}>*</span>}
+      </label>
+      {description && <p className={styles.description}>{description}</p>}
+      {children}
+    </div>
+  );
+};
+
+export default BaseFieldWrapper;
+```
+
+**Success Criteria:**
+- ✅ Interfaces split by concern
+- ✅ Components only depend on needed properties
+- ✅ Backward compatibility maintained
+- ✅ Easier to extend and maintain
+
+---
+
+### 3.2 Documentation & Type Safety
+
+**Current Score:** 9/10 → **Target Score:** 10/10
+
+#### Step 3.2.1: Add JSDoc Comments to Core Functions
+
+**Update validators with JSDoc:**
+
+```typescript
+/**
+ * Validates email field format
+ *
+ * @param field - The form field configuration
+ * @param value - The value to validate
+ * @returns Validation result with error message if invalid
+ *
+ * @example
+ * ```typescript
+ * const result = emailValidator(field, 'test@example.com');
+ * if (!result.isValid) {
+ *   console.error(result.error);
+ * }
+ * ```
+ */
+export const emailValidator: ValidatorFunction = (field, value) => {
+  // Implementation
+};
+```
+
+#### Step 3.2.2: Replace Record<string, unknown> with Specific Types
+
+**Create specific types:**
+
+```typescript
+// Instead of Record<string, unknown>
+export interface FieldProperty {
+  maxLength?: number;
+  minLength?: number;
+  pattern?: string;
+  [key: string]: unknown;
+}
+
+export interface FieldConditions {
+  field: string;
+  operator: string;
+  value: string;
+}
+```
+
+#### Step 3.2.3: Add Type Guards
+
+**Create `src/utils/typeGuards.ts`:**
+
+```typescript
+import type { FormField } from '@/types/form.types';
+import type { AppError } from '@/lib/errors/AppError';
+
+export function isFormField(value: unknown): value is FormField {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'id' in value &&
+    'type' in value &&
+    'field_key' in value
+  );
+}
+
+export function isAppError(error: unknown): error is AppError {
+  return error instanceof Error && 'code' in error;
+}
+
+export function isValidEmail(value: string): boolean {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(value);
+}
+```
+
+#### Step 3.2.4: Add API Documentation
+
+**Create `docs/API.md`:**
+
+```markdown
+# API Documentation
+
+## Endpoints
+
+### Form Submission
+
+**POST** `/makemypass/public-form/{eventId}/submit/`
+
+Submits form data for a specific event.
+
+#### Parameters
+
+- `eventId` (string, required): The unique identifier for the event
+
+#### Request Body
+
+```typescript
+{
+  [fieldKey: string]: string;
+  form_log_id?: string;
+}
+```
+
+#### Response
+
+```typescript
+{
+  followup_msg: string;
+  approval_status: string;
+  event_register_id: string;
+  // ... other fields
+}
+```
+
+#### Example
+
+```typescript
+const response = await submitForm('event-123', {
+  name: 'John Doe',
+  email: 'john@example.com',
+}, 'log-456');
+```
+```
+
+**Success Criteria:**
+- ✅ Core functions documented with JSDoc
+- ✅ Specific types replace generic Records
+- ✅ Type guards added for runtime checks
+- ✅ API documentation complete
+
+---
+
+## Verification & Validation
+
+### Automated Checks
+
+Create `scripts/verify-migration.sh`:
+
+```bash
+#!/bin/bash
+
+echo "Starting migration verification..."
+
+# Run tests
+echo "✓ Running tests..."
+pnpm test:coverage || exit 1
+
+# Run linter
+echo "✓ Running linter..."
+pnpm lint || exit 1
+
+# Run type check
+echo "✓ Type checking..."
+pnpm tsc --noEmit || exit 1
+
+# Check test coverage thresholds
+echo "✓ Checking coverage thresholds..."
+pnpm test:coverage --run || exit 1
+
+# Run accessibility tests
+echo "✓ Running accessibility tests..."
+pnpm test -- --grep "a11y|accessibility" || exit 1
+
+echo "✅ All verification checks passed!"
+```
+
+### Manual Checklist
+
+**SOLID Principles:**
+- [ ] SRP: Each module has single responsibility
+- [ ] OCP: Can extend without modifying existing code
+- [ ] LSP: Substitutable implementations work correctly
+- [ ] ISP: No component depends on unused interfaces
+- [ ] DIP: Business logic doesn't depend on frameworks
+
+**Industry Standards:**
+- [ ] 80%+ test coverage
+- [ ] All accessibility tests pass
+- [ ] ESLint shows no errors
+- [ ] TypeScript compiles without errors
+- [ ] No console.log/warn in production code
+- [ ] Error boundaries catch all errors
+- [ ] API calls use centralized client
+- [ ] Documentation is complete
 
 ---
 
 ## Rollback Plan
 
-If something goes wrong:
+### Before Migration
+
+1. **Create backup branch:**
+```bash
+git checkout -b backup/pre-migration-$(date +%Y%m%d)
+git push origin backup/pre-migration-$(date +%Y%m%d)
+```
+
+2. **Document current state:**
+```bash
+git log --oneline -10 > migration-rollback-point.txt
+```
+
+### During Migration
+
+1. **Commit after each phase:**
+```bash
+git commit -m "feat: complete phase 1.1 - testing infrastructure"
+git push origin feature/code-quality-improvements
+```
+
+2. **Tag stable points:**
+```bash
+git tag -a phase-1-complete -m "Phase 1 complete and verified"
+git push origin phase-1-complete
+```
+
+### Rollback Procedure
+
+**If issues arise:**
 
 ```bash
-# Rollback to previous state
-git checkout main
-git reset --hard <commit-before-migration>
+# Rollback to specific phase
+git reset --hard phase-1-complete
 
-# Or if on feature branch
-git checkout main
-git branch -D refactor/folder-structure
+# Or rollback to pre-migration
+git reset --hard backup/pre-migration-$(date +%Y%m%d)
+
+# Force push (only if necessary)
+git push origin feature/code-quality-improvements --force
 ```
 
 ---
 
-## Troubleshooting
+## Timeline & Resource Allocation
 
-### Issue: Import Errors
-
-**Problem**: TypeScript shows import errors after migration.
-
-**Solution**:
-
-```bash
-# Clear TypeScript cache
-rm -rf node_modules/.vite
-rm -rf dist
-
-# Reinstall dependencies
-npm install
-
-# Restart TypeScript server in your IDE
-```
-
-### Issue: Build Fails
-
-**Problem**: `npm run build` fails with module not found errors.
-
-**Solution**:
-
--   Check that all path aliases are correctly set in both `tsconfig.json` and `vite.config.ts`
--   Verify that all import paths have been updated
--   Use TypeScript compiler to find issues: `npx tsc --noEmit`
-
-### Issue: Runtime Errors
-
-**Problem**: App runs but crashes at runtime.
-
-**Solution**:
-
--   Check browser console for specific errors
--   Verify that all dynamic imports are wrapped in Suspense (if using lazy loading)
--   Check that context providers are still wrapping components correctly
-
-### Issue: Slow Build Times
-
-**Problem**: Build times increased after migration.
-
-**Solution**:
-
--   Check for circular dependencies using a tool like `madge`
--   Ensure barrel exports don't re-export too much
--   Consider selective exports instead of `export *`
-
----
-
-## Verification Checklist
-
-After completing the migration, verify:
-
--   [ ] All pages load without errors
--   [ ] Form submission works correctly
--   [ ] All API calls succeed
--   [ ] TypeScript compilation succeeds
--   [ ] Build completes successfully
--   [ ] No console errors in browser
--   [ ] All tests pass (if applicable)
--   [ ] Bundle size is reasonable
--   [ ] Hot module replacement works in dev mode
--   [ ] Production build works correctly
--   [ ] All imports use path aliases
--   [ ] No duplicate code exists
--   [ ] Documentation is updated
--   [ ] Team is informed
-
----
-
-## Timeline Estimate
-
-| Phase     | Tasks             | Estimated Time | Risk Level |
-| --------- | ----------------- | -------------- | ---------- |
-| Phase 1   | Foundation setup  | 2-3 hours      | Low        |
-| Phase 2   | Feature migration | 4-6 hours      | Medium     |
-| Phase 3   | Refinement        | 1-2 hours      | Low        |
-| Phase 4   | Optimization      | 2-3 hours      | Low        |
-| **Total** |                   | **9-14 hours** |            |
-
-Spread this work across multiple days for best results.
+| Phase | Duration | Developers | Priority |
+|-------|----------|------------|----------|
+| Phase 1.1 (Testing) | 5 days | 2 | Critical |
+| Phase 1.2 (Accessibility) | 2 days | 1 | Critical |
+| Phase 2.1 (DIP) | 5 days | 2 | High |
+| Phase 2.2 (Error Handling) | 4 days | 1 | High |
+| Phase 2.3 (API Standardization) | 2 days | 1 | High |
+| Phase 3.1 (Interface Segregation) | 3 days | 1 | Medium |
+| Phase 3.2 (Documentation) | 3 days | 1 | Medium |
+| **Total** | **24 days** | **2-3 devs** | - |
 
 ---
 
 ## Success Metrics
 
-After migration, you should see improvements in:
-
-1. **Developer Experience**
-
-    - Faster file location
-    - Clearer code organization
-    - Easier onboarding
-
-2. **Code Quality**
-
-    - Reduced coupling between features
-    - Better separation of concerns
-    - More testable code
-
-3. **Maintainability**
-
-    - Easier to add new features
-    - Simpler refactoring
-    - Better code reuse
-
-4. **Performance**
-    - Optimized bundle sizes
-    - Better tree-shaking
-    - Efficient code splitting
+| Metric | Before | Target | Measurement |
+|--------|--------|--------|-------------|
+| Overall Score | 7.5/10 | 10/10 | Code review |
+| Test Coverage | 0% | 80%+ | Vitest coverage |
+| Accessibility Score | 5/10 | 10/10 | A11y tests |
+| DIP Score | 6.5/10 | 10/10 | Architecture review |
+| Error Handling | 6/10 | 10/10 | Error boundary tests |
+| Build Errors | Unknown | 0 | CI/CD |
+| ESLint Warnings | Unknown | 0 | Linter |
 
 ---
 
-## Next Steps
+## Post-Migration Tasks
 
-1. Start with Phase 1 during a low-activity period
-2. Test thoroughly after each phase
-3. Commit frequently with descriptive messages
-4. Get team review after Phase 2
-5. Deploy to staging environment for testing
-6. Monitor for any issues
-7. Deploy to production
+1. **Update CI/CD pipeline:**
+   - Add test coverage requirements
+   - Add accessibility checks
+   - Add type checking step
 
----
+2. **Team training:**
+   - Document new patterns
+   - Conduct code review sessions
+   - Update contribution guidelines
 
-## Additional Resources
-
--   [React Folder Structure Best Practices](https://react.dev/learn/thinking-in-react)
--   [Feature-Sliced Design](https://feature-sliced.design/)
--   [Bulletproof React](https://github.com/alan2207/bulletproof-react)
--   [TypeScript Module Resolution](https://www.typescriptlang.org/docs/handbook/module-resolution.html)
+3. **Monitoring:**
+   - Set up error tracking (Sentry/LogRocket)
+   - Monitor test coverage trends
+   - Track accessibility metrics
 
 ---
 
-## Questions or Issues?
+## Support & Questions
 
-If you encounter issues during migration:
+For questions or issues during migration:
+- Create GitHub issues with `migration` label
+- Refer to this guide for step-by-step instructions
+- Consult SOLID principles documentation
 
-1. Review this guide thoroughly
-2. Check the troubleshooting section
-3. Consult with team members
-4. Create a rollback plan if needed
-5. Document any new issues for future reference
-
-Good luck with the migration!
+**Last Updated:** 2025-10-13
+**Version:** 1.0.0
