@@ -9,6 +9,12 @@ This document provides a comprehensive, step-by-step guide to improve the codeba
 **Estimated Effort:** 40-60 hours
 **Risk Level:** Low-Medium
 
+**Important Notes:**
+- ✅ This codebase uses **functional components** throughout (React hooks approach)
+- ✅ **No authentication** is required for this application
+- ✅ Button accessibility has already been partially implemented
+- ✅ All examples follow functional programming patterns
+
 ---
 
 ## Table of Contents
@@ -327,30 +333,19 @@ pnpm test:ui
 
 **Current Score:** 5/10 → **Target Score:** 10/10
 
-#### Step 1.2.1: Fix Button Component
+**Note:** ✅ The Button component has already been updated to use semantic HTML! The following shows what was done.
+
+#### Step 1.2.1: Fix Button Component ✅ ALREADY COMPLETED
 
 **File:** `src/components/ui/Button/Button.tsx`
 
-**Before:**
-```typescript
-import styles from "./Button.module.css";
+**What was changed:**
+- ✅ Replaced `<div>` with semantic `<button>` element
+- ✅ Added proper TypeScript interface `ButtonProps`
+- ✅ Added `type`, `disabled`, `ariaLabel`, `className` props
+- ✅ Functional component approach maintained
 
-export const Button = ({
-    children,
-    onClick,
-}: {
-    children: React.ReactNode;
-    onClick: () => void;
-}) => {
-    return (
-        <div className={styles.buttonContainer} onClick={onClick}>
-            {children}
-        </div>
-    );
-};
-```
-
-**After:**
+**Current implementation:**
 ```typescript
 import styles from "./Button.module.css";
 
@@ -562,24 +557,14 @@ export class AxiosApiClient implements IApiClient {
   }
 
   private setupInterceptors(): void {
-    // Request interceptor
-    this.client.interceptors.request.use(
-      (config) => {
-        // Add authentication token if available
-        const token = localStorage.getItem('auth_token');
-        if (token) {
-          config.headers.Authorization = `Bearer ${token}`;
-        }
-        return config;
-      },
-      (error) => Promise.reject(this.handleError(error))
-    );
-
-    // Response interceptor
+    // Response interceptor for error handling
     this.client.interceptors.response.use(
       (response) => response,
       (error) => Promise.reject(this.handleError(error))
     );
+
+    // Note: No authentication interceptor needed for this application
+    // Add request interceptor here if you need to add headers, tokens, etc.
   }
 
   private handleError(error: AxiosError): ApiError {
@@ -908,10 +893,11 @@ export const errorLogger = new ErrorLogger();
 
 **Create `src/components/errors/ErrorBoundary.tsx`:**
 
+**Note:** Error boundaries must be class components due to React limitations. This is the only exception to the functional component approach in this codebase.
+
 ```typescript
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { errorLogger } from '@/lib/errors/ErrorLogger';
-import { AppError } from '@/lib/errors/AppError';
 
 interface Props {
   children: ReactNode;
@@ -924,6 +910,11 @@ interface State {
   error?: Error;
 }
 
+/**
+ * Error Boundary Component
+ * Note: This must be a class component as React doesn't support
+ * error boundaries with functional components yet.
+ */
 export class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
@@ -970,6 +961,8 @@ export class ErrorBoundary extends Component<Props, State> {
 
 **Create `src/components/errors/ErrorFallback.tsx`:**
 
+**Note:** This is a functional component (following the codebase pattern).
+
 ```typescript
 import { Button } from '@/components/ui';
 import styles from './ErrorFallback.module.css';
@@ -979,6 +972,10 @@ interface ErrorFallbackProps {
   resetError: () => void;
 }
 
+/**
+ * Error Fallback UI Component
+ * Functional component that displays when an error boundary catches an error
+ */
 export const ErrorFallback = ({ error, resetError }: ErrorFallbackProps) => {
   return (
     <div className={styles.container}>
@@ -988,7 +985,9 @@ export const ErrorFallback = ({ error, resetError }: ErrorFallbackProps) => {
         {import.meta.env.DEV && (
           <pre className={styles.stack}>{error.stack}</pre>
         )}
-        <Button onClick={resetError}>Try Again</Button>
+        <Button onClick={resetError} type="button" ariaLabel="Retry after error">
+          Try Again
+        </Button>
       </div>
     </div>
   );

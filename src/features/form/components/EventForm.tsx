@@ -1,3 +1,5 @@
+import { Button } from "@/components";
+
 import { useEventDataContext } from "../contexts/eventDataContext";
 import { usePaginationContext } from "../contexts/paginationContext";
 import styles from "../FormPage.module.css";
@@ -28,12 +30,7 @@ const EventForm = ({ logId }: { logId: string | null }) => {
     };
 
     return (
-        <form
-            onSubmit={(event) => {
-                if (validateCurrentPage()) handleSubmit(event);
-            }}
-            className={styles.form}
-        >
+        <div className={styles.form}>
             <div className={styles.fieldsContainer}>
                 {pageGroups[currentPage]
                     .filter((field) => doesFieldValidatesConditions({ field, formData, eventData }))
@@ -48,11 +45,18 @@ const EventForm = ({ logId }: { logId: string | null }) => {
             </div>
 
             {currentPage === totalPages && (
-                <button type="submit" className={styles.submitButton} disabled={isSubmitting}>
+                <Button
+                    onClick={() => {
+                        if (validateCurrentPage()) handleSubmit();
+                    }}
+                    type="submit"
+                    className={styles.submitButton}
+                    disabled={isSubmitting}
+                >
                     {isSubmitting ? "Stepping In..." : "Step Into the Lair →"}
-                </button>
+                </Button>
             )}
-        </form>
+        </div>
     );
 };
 

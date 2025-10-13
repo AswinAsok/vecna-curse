@@ -26,7 +26,13 @@ const EventPage = () => {
             {currentStep === "about" && (
                 <>
                     <About />
-                    <Button onClick={() => setCurrentStep("form")}>Next →</Button>
+                    <Button
+                        type="button"
+                        onClick={() => setCurrentStep("form")}
+                        ariaLabel="View Form"
+                    >
+                        Next →
+                    </Button>
                 </>
             )}
             {currentStep === "form" && <FormPage />}

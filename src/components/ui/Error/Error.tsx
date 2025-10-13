@@ -11,7 +11,11 @@ const Error = ({ message = "Something went wrong. Please try again.", onRetry }:
         <div className={styles.loadingBackgroundContainer}>
             <div className={styles.errorContainer}>
                 <p className={styles.errorMessage}>{message}</p>
-                {onRetry && <Button onClick={onRetry}> Try Again</Button>}
+                {onRetry && (
+                    <Button type="button" onClick={onRetry} ariaLabel="Retry Action">
+                        Try Again
+                    </Button>
+                )}
             </div>
         </div>
     );

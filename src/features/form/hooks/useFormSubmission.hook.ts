@@ -21,8 +21,7 @@ export const useFormSubmission = ({ logId }: { logId?: string | null }) => {
 
     const { handleError } = useFormErrorHandler();
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSubmit = async () => {
         setIsSubmitting(true);
         setError(null);
 

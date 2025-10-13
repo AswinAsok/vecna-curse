@@ -10,10 +10,31 @@
     cursor: pointer;
     transition: background-color 0.2s;
     width: fit-content;
+    background: inherit;
+    font: inherit;
 }
 
 .buttonContainer:hover {
     background-color: #a05555;
+}
+
+.buttonContainer:focus {
+    outline: 2px solid var(--focus-color, #ad6565);
+    outline-offset: 2px;
+}
+
+.buttonContainer:focus:not(:focus-visible) {
+    outline: none;
+}
+
+.buttonContainer:focus-visible {
+    outline: 2px solid var(--focus-color, #ad6565);
+    outline-offset: 2px;
+}
+
+.buttonContainer:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
 }
 
 /* Tablet responsive styles */

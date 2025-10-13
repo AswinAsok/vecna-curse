@@ -21,6 +21,10 @@ const createOperatorRegistry = () => {
         },
 
         has: (operator: string): boolean => operators.has(operator),
+
+        clear: () => {
+            operators.clear();
+        },
     };
 };
 
