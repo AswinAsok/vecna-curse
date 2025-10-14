@@ -28,15 +28,13 @@ describe("trimTransformer", () => {
         const result = trimTransformer({
             name: "   hello  world   ",
         });
-        expect(result.name).toBe({
-            name: "",
-        });
+        expect(result.name).toBe("hello  world");
     });
 
     it("should handle empty string", () => {
         const result = trimTransformer({
             name: "",
         });
-        expect(result).toBe("");
+        expect(result.name).toBe("");
     });
 });
