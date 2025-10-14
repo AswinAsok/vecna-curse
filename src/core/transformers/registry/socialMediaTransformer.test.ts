@@ -59,7 +59,8 @@ describe("socialMediaTransformer", () => {
             const result = instagramTransformer(formData);
 
             expect(result.__vecna_sees_your_instagram_id).toBe("https://www.instagram.com/johndoe");
-            expect(result.partner_instagram_id).toBe("http://instagram.com/janedoe");
+
+            expect(result.partner_instagram_id).toBe("https://www.instagram.com/janedoe");
         });
 
         it("should preserve other form fields unchanged", () => {

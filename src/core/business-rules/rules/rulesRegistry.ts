@@ -28,6 +28,18 @@ const createBusinessRuleRegistry = () => {
 
             return fieldRules.some((rule) => rule(context));
         },
+
+        clear: () => {
+            rules.clear();
+        },
+
+        has: (rule: string) => {
+            return rules.has(rule);
+        },
+
+        count: () => {
+            return rules.size;
+        },
     };
 };
 
