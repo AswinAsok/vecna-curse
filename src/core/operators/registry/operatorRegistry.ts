@@ -25,6 +25,10 @@ const createOperatorRegistry = () => {
         clear: () => {
             operators.clear();
         },
+
+        count: () => {
+            return operators.size;
+        },
     };
 };
 
