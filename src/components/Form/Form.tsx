@@ -55,16 +55,6 @@ const Form = () => {
                 return false;
             }
 
-            // Special condition for email field - only validate if phone code is not +91
-            if (field.field_key === "email") {
-                const phoneFields = eventData.form.filter((f) => f.type === "phone");
-                const hasNonIndianPhone = phoneFields.some((phoneField) => {
-                    const code = phoneCountryCode[phoneField.field_key] || "+91";
-                    return code !== "+91";
-                });
-                return hasNonIndianPhone;
-            }
-
             return true;
         });
         const newErrors: Record<string, string> = {};
@@ -476,19 +466,6 @@ const Form = () => {
                             // Check standard field conditions
                             if (!checkFieldConditions(field, formData, eventData.form)) {
                                 return false;
-                            }
-
-                            // Special condition for email field - only show if phone code is not +91
-                            if (field.field_key === "email") {
-                                const phoneFields = eventData.form.filter(
-                                    (f) => f.type === "phone"
-                                );
-                                // Check if any phone field has a country code that's not +91
-                                const hasNonIndianPhone = phoneFields.some((phoneField) => {
-                                    const code = phoneCountryCode[phoneField.field_key] || "+91";
-                                    return code !== "+91";
-                                });
-                                return hasNonIndianPhone;
                             }
 
                             return true;
