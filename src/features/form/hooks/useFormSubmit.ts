@@ -1,4 +1,4 @@
-import { submitForm, type SubmitFormResponse,updateFormLog } from "../api";
+import { submitForm, type SubmitFormResponse, updateFormLog } from "../api";
 import { useEventDataContext } from "../contexts/eventDataContext";
 import { transformFormData } from "../utils";
 
@@ -9,7 +9,6 @@ export const useFormSubmit = () => {
         formData: Record<string, string>,
         logId: string | null | undefined
     ): Promise<SubmitFormResponse> => {
-        //Pre-Submission: Update Form Log
         if (eventData.id && eventData.tickets?.length > 0 && logId) {
             await updateFormLog(eventData.id, formData, logId);
         }

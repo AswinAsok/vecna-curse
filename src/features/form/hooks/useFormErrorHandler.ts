@@ -14,6 +14,8 @@ export const useFormErrorHandler = () => {
                 .flat()
                 .filter((msg) => typeof msg === "string");
 
+            console.log(errors);
+
             if (errors.length > 0) {
                 toast.error(errors[0]);
                 return errors[0];
