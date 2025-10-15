@@ -1,16 +1,13 @@
 import { useMemo, useState } from "react";
 
 import type { FormField } from "../../../types/form.types";
-import { useEventDataContext } from "../contexts/eventDataContext";
 
-export const usePagination = () => {
-    const eventData = useEventDataContext();
-
+export const usePagination = ({ form }: { form: FormField[] }) => {
     const [currentPage, setCurrentPage] = useState<number>(1);
 
     const pageGroups = useMemo(() => {
         const groups: Record<number, FormField[]> = {};
-        eventData.form.forEach((field) => {
+        form.forEach((field) => {
             if (!field.hidden) {
                 if (!groups[field.page_num]) {
                     groups[field.page_num] = [];
@@ -19,12 +16,14 @@ export const usePagination = () => {
             }
         });
         return groups;
-    }, [eventData.form]);
+    }, [form]);
 
     const totalPages = Object.keys(pageGroups).length;
 
     const handleNext = () => {
-        if (currentPage < totalPages) {
+        const maxPageNumber = Math.max(...Object.keys(pageGroups).map((key) => Number(key)));
+
+        if (currentPage < totalPages && currentPage < maxPageNumber) {
             setCurrentPage((prev) => prev + 1);
         }
     };

@@ -1,9 +1,13 @@
+import { useEventDataContext } from "../contexts";
 import { PaginationDataContext } from "../contexts/paginationContext";
 import styles from "../FormPage.module.css";
 import { usePagination } from "../hooks/usePagination.hook";
 
 const FormPaginationLayout = ({ children }: { children: React.ReactNode }) => {
-    const { currentPage, totalPages, handleNext, handlePrevious } = usePagination();
+    const eventData = useEventDataContext();
+    const { currentPage, totalPages, handleNext, handlePrevious } = usePagination({
+        form: eventData.form,
+    });
 
     return (
         <PaginationDataContext.Provider value={currentPage}>

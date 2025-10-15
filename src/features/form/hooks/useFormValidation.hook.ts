@@ -1,28 +1,29 @@
 import { businessRuleRegistry } from "../../../core/business-rules";
 import { validateField } from "../../../core/validators";
 import type { FormField } from "../../../types/form.types";
-import { useEventDataContext } from "../contexts/eventDataContext";
 import { checkFieldConditions } from "../utils";
 
 export const useFormValidation = ({
     currentFields,
     formData,
+    allFields,
 }: {
     currentFields: FormField[];
     formData: Record<string, string>;
+    allFields: FormField[];
 }) => {
-    const eventData = useEventDataContext();
     const validateCurrentPage = (): boolean => {
         const fieldsToValidate = currentFields.filter((field) => {
             // Check standard field conditions
-            if (!checkFieldConditions(field, formData, eventData.form)) {
+
+            if (!checkFieldConditions(field, formData, allFields)) {
                 return false;
             }
 
             return businessRuleRegistry.shouldValidate({
                 field,
                 formData,
-                allFormFields: eventData.form,
+                allFormFields: allFields,
             });
         });
 

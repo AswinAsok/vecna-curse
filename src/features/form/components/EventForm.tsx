@@ -16,10 +16,11 @@ const EventForm = ({ logId }: { logId: string | null }) => {
 
     const currentPage = usePaginationContext();
 
-    const { totalPages, pageGroups } = usePagination();
+    const { totalPages, pageGroups } = usePagination({ form: eventData.form });
     const { validateCurrentPage } = useFormValidation({
         currentFields: pageGroups[currentPage],
         formData,
+        allFields: eventData.form,
     });
 
     const handleInputChange = (fieldKey: string, value: string) => {
