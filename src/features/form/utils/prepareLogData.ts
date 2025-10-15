@@ -6,7 +6,7 @@ import { getTicketIdBasedOnRadio } from "./ticketMapping";
  */
 export const prepareFormLogData = (
     formData: Record<string, string>,
-    logId: string | null
+    logId?: string | null
 ): FormData => {
     const backendFormData = new FormData();
 
@@ -40,5 +40,6 @@ export const prepareFormLogData = (
     backendFormData.append("is_next_btn_clk", "false");
     backendFormData.append("is_ticket_selected", "true");
 
+    console.log(backendFormData);
     return backendFormData;
 };
