@@ -2,9 +2,6 @@ import { operatorRegistry } from "../../../core/operators";
 import type { FormField } from "../../../types/form.types";
 import type { EventData } from "../../event/types/event.types";
 
-/**
- * Checks if field conditions are met based on form data
- */
 export const checkFieldConditions = (
     field: FormField,
     formData: Record<string, string>,
@@ -28,7 +25,6 @@ export const checkFieldConditions = (
         return true;
     }
 
-    // Find the referenced field to get its field_key
     const referencedField = allFormFields.find((f) => f.id === fieldId);
     if (!referencedField) {
         return true;
@@ -36,14 +32,9 @@ export const checkFieldConditions = (
 
     const currentValue = formData[referencedField.field_key] || "";
 
-    // Use operator registry instead of switch
     return operatorRegistry.evaluate(operator, currentValue, conditionValue);
 };
 
-/**
- * Validates if a field should be displayed based on its conditions
- * Includes special business rules for email field visibility
- */
 export const doesFieldValidatesConditions = ({
     field,
     formData,
@@ -53,8 +44,7 @@ export const doesFieldValidatesConditions = ({
     formData: Record<string, string>;
     eventData: EventData;
 }): boolean => {
-    // Check standard field conditions
-    if (!checkFieldConditions(field, formData, eventData.form)) {
+    if (field.hidden || !checkFieldConditions(field, formData, eventData.form)) {
         return false;
     }
 

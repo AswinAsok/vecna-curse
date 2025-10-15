@@ -1,3 +1,4 @@
+import type { EventData } from "@/features/event/types/event.types";
 import type { FormField } from "@/types/form.types";
 
 export const mockFormField = (): FormField => {
@@ -16,5 +17,91 @@ export const mockFormField = (): FormField => {
         team_field: false,
         description: null,
         placeholder: "Enter Name",
+    };
+};
+
+export const mockEventData = (): EventData => {
+    return {
+        id: "65edd42b-caa3-4c5b-baed-9ba34d5a4570",
+        name: "vecnas-curse",
+        title: "Vecna's Curse - Stranger Things Halloween Night",
+        description:
+            "<p>📍 Kochi 🕸️ Invite Only. <br>No entry without the mark. <br>🩸 23+ ID Mandatory</p>",
+        reg_start_date: null,
+        event_start_date: "2025-10-31 18:00:00",
+        event_end_date: null,
+        logo: "https://hoomans-blob-prod.s3.ap-south-1.amazonaws.com/makemypass/event/65edd42b-caa3-4c5b-baed-9ba34d5a4570/29-logo.png",
+        banner: "https://hoomans-blob-prod.s3.ap-south-1.amazonaws.com/makemypass/event/65edd42b-caa3-4c5b-baed-9ba34d5a4570/89-banner.png",
+        location: {
+            lat: 35.1672673,
+            lng: -111.2589191,
+        },
+        place: "Casino - Durbar Hall",
+        timezone: "Asia/Calcutta",
+        socials: {
+            twitter: null,
+            facebook: null,
+            linkedin: null,
+            telegram: null,
+            whatsapp: null,
+            instagram: null,
+        },
+        hosts: [
+            {
+                id: "c26a2d8a-702c-4859-b21b-f4e6cbd3e6d6",
+                title: "TurnUp",
+                name: "turnup",
+                role: "Owner",
+                profile_pic: null,
+                is_private: false,
+                is_org: true,
+            },
+        ],
+        verification_settings: {},
+        speakers: [],
+        sponsors: [],
+        is_child_event: false,
+        type_of_event: "parent",
+        is_team_event: false,
+        team_settings: {},
+        include_gst: false,
+        has_schedule: false,
+        total_participants: 21,
+        claim_ticket_id: null,
+        claim_code_message: null,
+        form: [mockFormField()],
+        tickets: [],
+        script_injection: [],
+        has_scratch_card: false,
+        paid_perks: [],
+        coupon: {
+            status: false,
+        },
+        is_online: false,
+        close_form: false,
+        is_private: false,
+        is_checkout: false,
+        parse_audio: true,
+        is_sub_event: false,
+        map_new_code: false,
+        print_ticket: false,
+        remote_print: null,
+        resubmission: false,
+        is_random_user: false,
+        edit_submission: false,
+        is_scratch_card: false,
+        edit_ticket_code: false,
+        approval_required: false,
+        is_grouped_ticket: false,
+        is_public_insight: false,
+        show_ticket_first: false,
+        edit_mail_template: false,
+        thank_you_new_page: false,
+        select_multi_ticket: false,
+        add_custom_mail_alias: null,
+        disable_delete_ticket_cron: false,
+        required_field_invite_guest: true,
+        checkin_confirmation_required: false,
+        show_associate_users_on_checkin: false,
     };
 };

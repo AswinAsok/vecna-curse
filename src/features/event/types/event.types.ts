@@ -6,8 +6,8 @@ export interface EventData {
     title: string;
     description: string;
     reg_start_date: string | null;
-    event_start_date: string;
-    event_end_date: string;
+    event_start_date: string | null;
+    event_end_date: string | null;
     logo: string | null;
     banner: string;
     location: {
