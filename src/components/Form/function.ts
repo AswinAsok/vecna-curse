@@ -62,9 +62,9 @@ export const getTicketIdBasedOnRadio = (formData: FormData): string | undefined 
         case "🕷 The Marked One (Stag Male) – Heard the clock. Chose to stay.":
             return "711b96c6-b9d9-4995-a86b-ac2d1b53b1f7";
         case "🩸 The Unshaken (Stag Female) – Not afraid of the flicker.":
-            return "8839c1be-b1b8-4d20-a469-7cbdf12de501";
+            return "c2f97b31-5d21-4de9-8aa4-b7924f1d462d";
         case "👁 The Bonded Souls (Couple) – If Vecna takes one, he takes both.":
-            return "646d2ca6-f068-4b01-a3b9-a5363dff9965";
+            return "19350de5-0a26-49e8-9e9c-3051dba46989";
         default:
             toast.error("Something went wrong. Please try again.");
     }
