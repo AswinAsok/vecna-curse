@@ -60,9 +60,9 @@ export const getTicketIdBasedOnRadio = (formData: FormData): string | undefined 
 
     switch (radioSelection) {
         case "🕷 The Marked One (Stag Male) – Heard the clock. Chose to stay.":
-            return "711b96c6-b9d9-4995-a86b-ac2d1b53b1f7";
+            return "cabe5bb9-babf-4dbf-8ea4-d98cfe38c9a7";
         case "🩸 The Unshaken (Stag Female) – Not afraid of the flicker.":
-            return "02a9271a-2e6b-4f7b-98ef-0116d6704428";
+            return "03abcfe7-8221-45ea-9f82-53d4efaeb348";
         case "👁 The Bonded Souls (Couple) – If Vecna takes one, he takes both.":
             return "19350de5-0a26-49e8-9e9c-3051dba46989";
         default:
