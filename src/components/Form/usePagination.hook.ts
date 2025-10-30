@@ -56,6 +56,13 @@ export const usePagination = () => {
         }
     };
 
+    const navigateToPage = (pageNum: number) => {
+        if (pageNum >= 1 && pageNum <= totalPages && pageNum !== currentPage) {
+            justNavigatedRef.current = true;
+            setCurrentPage(pageNum);
+        }
+    };
+
     return {
         currentPage,
         totalPages,
@@ -63,6 +70,7 @@ export const usePagination = () => {
         handleNext,
         handlePrevious,
         handleBack,
+        navigateToPage,
         errors,
         setErrors,
         justNavigatedRef,

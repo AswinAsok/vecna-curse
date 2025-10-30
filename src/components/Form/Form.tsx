@@ -29,8 +29,15 @@ const Form = () => {
         setLogId,
     });
 
-    const { currentPage, totalPages, currentFields, handleNext, handleBack, justNavigatedRef } =
-        usePagination();
+    const {
+        currentPage,
+        totalPages,
+        currentFields,
+        handleNext,
+        handleBack,
+        navigateToPage,
+        justNavigatedRef,
+    } = usePagination();
 
     // Group form fields by page_num
     const handleInputChange = (fieldKey: string, value: string) => {
@@ -105,7 +112,10 @@ const Form = () => {
             }
 
             // Instagram field keys that need to be converted to profile links
-            const instagramFieldKeys = ["__vecna_sees_your_instagram_id", "partner_instagram_id"];
+            const instagramFieldKeys = [
+                "__vecna_sees_your_instagram_username",
+                "partner_instagram_username",
+            ];
 
             // Transform Instagram IDs to full profile links
             const transformedFormData = { ...formData };
@@ -140,6 +150,18 @@ const Form = () => {
                         fieldErrors[fieldKey] = errorMessages[0];
                     }
                 });
+
+                // Find the page number of the first error field and navigate to it
+                const firstErrorFieldKey = Object.keys(fieldErrors)[0];
+                if (firstErrorFieldKey) {
+                    const errorField = eventData.form.find(
+                        (field) => field.field_key === firstErrorFieldKey
+                    );
+                    if (errorField && errorField.page_num !== currentPage) {
+                        navigateToPage(errorField.page_num);
+                    }
+                }
+
                 setErrors(fieldErrors);
             } else {
                 toast.error("Failed to submit the form. Please try again.");
