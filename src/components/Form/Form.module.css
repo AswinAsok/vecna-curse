@@ -64,7 +64,6 @@
     color: #ff6b6b;
     margin: 0.25rem 0 0 0;
 }
-
 .input,
 .textarea,
 .select {
@@ -277,6 +276,12 @@
 
     .error {
         font-size: 0.875rem;
+    }
+
+    .errorMessage {
+        margin-top: 1.5rem;
+        padding: 1rem;
+        font-size: 0.9375rem;
     }
 
     .input,

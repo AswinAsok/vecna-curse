@@ -22,14 +22,16 @@ export const usePagination = () => {
 
     const pageGroups = useMemo(() => {
         const groups: Record<number, FormField[]> = {};
-        eventData.form.forEach((field) => {
-            if (!field.hidden) {
-                if (!groups[field.page_num]) {
-                    groups[field.page_num] = [];
+        if (eventData.form) {
+            eventData.form.forEach((field) => {
+                if (!field.hidden) {
+                    if (!groups[field.page_num]) {
+                        groups[field.page_num] = [];
+                    }
+                    groups[field.page_num].push(field);
                 }
-                groups[field.page_num].push(field);
-            }
-        });
+            });
+        }
         return groups;
     }, [eventData.form]);
 

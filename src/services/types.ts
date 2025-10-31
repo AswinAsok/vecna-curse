@@ -64,15 +64,16 @@ export interface EventData {
     total_participants: number;
     claim_ticket_id: string | null;
     claim_code_message: string | null;
-    form: FormField[];
-    tickets: Array<{
+    err_message: string | null;
+    form?: FormField[];
+    tickets?: Array<{
         id: string;
         title: string;
         description: string | null;
         price: number;
         default_selected?: boolean;
     }>;
-    script_injection: unknown[];
+    script_injection?: unknown[];
     has_scratch_card: boolean;
     paid_perks: unknown[];
     coupon: {

@@ -63,14 +63,14 @@ const SEO = () => {
                         name: eventData.hosts[0]?.title || "TurnUp",
                         url: currentUrl,
                     },
-                    offers: eventData.tickets.map((ticket) => ({
+                    offers: eventData.tickets?.map((ticket) => ({
                         "@type": "Offer",
                         name: ticket.title,
                         price: ticket.price,
                         priceCurrency: "INR",
                         availability: "https://schema.org/InStock",
                         url: currentUrl,
-                    })),
+                    })) || [],
                 })}
             </script>
         </Helmet>

@@ -58,7 +58,7 @@ const Form = () => {
     const validateCurrentPage = (): boolean => {
         const fieldsToValidate = currentFields.filter((field) => {
             // Check standard field conditions
-            if (!checkFieldConditions(field, formData, eventData.form)) {
+            if (!checkFieldConditions(field, formData, eventData.form || [])) {
                 return false;
             }
 
@@ -102,7 +102,7 @@ const Form = () => {
         setIsSubmitting(true);
         try {
             // Update form log one final time before submitting
-            if (eventData.id && eventData.tickets && eventData.tickets.length > 0) {
+            if (eventData.id && eventData.tickets && eventData.tickets.length > 0 && eventData.form) {
                 await updateFormLog(eventData.id, formData, eventData.form, logId).catch(
                     (error) => {
                         console.error("Error updating form log before submit:", error);
@@ -153,7 +153,7 @@ const Form = () => {
 
                 // Find the page number of the first error field and navigate to it
                 const firstErrorFieldKey = Object.keys(fieldErrors)[0];
-                if (firstErrorFieldKey) {
+                if (firstErrorFieldKey && eventData.form) {
                     const errorField = eventData.form.find(
                         (field) => field.field_key === firstErrorFieldKey
                     );
@@ -465,7 +465,8 @@ const Form = () => {
         }
     };
 
-    if (eventData.form.length === 0) {
+    // If form is closed or no form data, return null (error will be shown on the About page)
+    if (!eventData.form || eventData.form.length === 0) {
         return null;
     }
 
@@ -486,7 +487,7 @@ const Form = () => {
                     {currentFields
                         .filter((field) => {
                             // Check standard field conditions
-                            if (!checkFieldConditions(field, formData, eventData.form)) {
+                            if (!checkFieldConditions(field, formData, eventData.form || [])) {
                                 return false;
                             }
 

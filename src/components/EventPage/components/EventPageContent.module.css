@@ -1,0 +1,31 @@
+.errorMessage {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background-color: rgba(139, 68, 68, 0.2);
+    border: 1px solid #8b4444;
+    border-radius: 0.5rem;
+    color: #ede0d4;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.errorMessage p {
+    margin: 0.5rem 0;
+}
+
+.errorMessage p:first-child {
+    margin-top: 0;
+}
+
+.errorMessage p:last-child {
+    margin-bottom: 0;
+}
+
+/* Mobile responsive styles */
+@media (max-width: 640px) {
+    .errorMessage {
+        margin-top: 1.5rem;
+        padding: 1rem;
+        font-size: 0.9375rem;
+    }
+}

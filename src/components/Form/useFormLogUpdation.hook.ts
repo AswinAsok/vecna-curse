@@ -17,7 +17,9 @@ export const useFormLogUpdation = ({
         const handler = setTimeout(() => {
             if (
                 (eventData.id || Object.keys(formData).length >= 0) &&
-                eventData.tickets.length > 0
+                eventData.tickets &&
+                eventData.tickets.length > 0 &&
+                eventData.form
             ) {
                 updateFormLog(eventData.id, formData, eventData.form, logId)
                     .then((response) => {
